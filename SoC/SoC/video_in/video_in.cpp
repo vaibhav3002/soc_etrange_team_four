@@ -16,7 +16,7 @@
 #include <systemc>
 
 #include "video_in.h"
-#include "video_gen.h"
+#include <video_gen.h>
 
 namespace soclib { namespace caba {
 

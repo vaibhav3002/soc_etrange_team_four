@@ -1,12 +1,12 @@
 # -*- python -*-
 
-Module('caba:wb_master_module',
-        classname = 'soclib::caba::WbMasterModule',
+Module('caba:VideoInModule',
+        classname = 'soclib::caba::VideoInModule',
         tmpl_parameters = [
             parameter.Module('wb_param',  default = 'caba:wb_param'),
         ],
-        header_files = ['wb_master_module.h',],
-        implementation_files = ['wb_master_module.cpp',],
+        header_files = ['video_in.h',],
+        implementation_files = ['video_in.cpp',],
         ports = [
         ],
         uses = [

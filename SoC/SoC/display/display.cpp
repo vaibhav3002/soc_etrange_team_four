@@ -9,7 +9,7 @@
 
 
 #include "display.h"
-#include "segmentation.h"
+#include <segmentation.h>
 
 
 namespace soclib { namespace caba {

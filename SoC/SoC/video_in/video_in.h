@@ -64,7 +64,7 @@ namespace soclib { namespace caba {
                     soclib::caba::WbMaster<wb_param> &p_wb
                     );
 
-            friend std::ostream& operator<< (std::ostream &o, WbMasterModule &wbm)
+            friend std::ostream& operator<< (std::ostream &o, VideoInModule &wbm)
             {
                 wbm._print(o);
                 return o;
