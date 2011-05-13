@@ -15,6 +15,8 @@ extern "C" {
 
 #include <cstdio>
 #include "video_gen.h"
+#include "segmentation.h"
+
 
 namespace soclib { namespace caba {
 

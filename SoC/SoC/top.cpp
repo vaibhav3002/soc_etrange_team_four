@@ -52,6 +52,11 @@
 // locals
 #include "segmentation.h"
 
+//Video-gen / display
+#include "video_gen.h"
+#include "display.h"
+
+
 // real SystemC main
 int _main(int argc, char *argv[])
 {
