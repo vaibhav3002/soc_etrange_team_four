@@ -3,9 +3,11 @@
  *
  *       Filename:  wb_master_module.cpp
  *
- *    Description:  generic wb module
+ *    Description:  video_in module
+ *		    based on the generic wb master module
  *
- *         Author:  Tarik Graba (TG), tarik.graba@telecom-paristech.fr
+ *         Author:  Thibault Porteboeuf, thibault.porteboeuf@telecom-paristech.fr
+ *	   Credit:  Tarik Graba (TG), tarik.graba@telecom-paristech.fr
  *        Company:  Telecom Paris TECH
  *
  * =============================================================================
@@ -13,7 +15,8 @@
 
 #include <systemc>
 
-#include "wb_master_module.h"
+#include "video_in.h"
+#include "video_gen.h"
 
 namespace soclib { namespace caba {
 
@@ -22,7 +25,7 @@ namespace soclib { namespace caba {
     ////////////////////////////////////////////////////////////////////////////
 
     template<typename wb_param>
-        uint32_t WbMasterModule<wb_param>::wb_read_at
+        uint32_t VideoInModule<wb_param>::wb_read_at
         ( uint32_t addr )
         {
             sc_core::wait(p_clk.negedge_event());
@@ -42,7 +45,7 @@ namespace soclib { namespace caba {
         }
 
     template<typename wb_param>
-        void     WbMasterModule<wb_param>::wb_write_at
+        void     VideoInModule<wb_param>::wb_write_at
         (uint32_t addr, uint8_t mask, uint32_t data)
         {
             // set request on clk falling edge
@@ -67,7 +70,7 @@ namespace soclib { namespace caba {
     ////////////////////////////////////////////////////////////////////////////
 
     template<typename wb_param>
-        void WbMasterModule<wb_param>::wb_read_blk
+        void VideoInModule<wb_param>::wb_read_blk
         ( uint32_t saddr, uint32_t num, uint32_t *dest)
         {
             for (uint32_t i = 0; i< num; i++)
@@ -92,7 +95,7 @@ namespace soclib { namespace caba {
         }
 
     template<typename wb_param>
-        void     WbMasterModule<wb_param>::wb_write_blk
+        void     VideoInModule<wb_param>::wb_write_blk
         ( uint32_t saddr, uint8_t *mask, uint32_t *data, uint32_t num)
         {
             for (uint32_t i = 0; i< num; i++)
@@ -119,7 +122,7 @@ namespace soclib { namespace caba {
 
     // Reset
     template<typename wb_param>
-        void     WbMasterModule<wb_param>:: reset()
+        void     VideoInModule<wb_param>:: reset()
         {
             trans_wait_cycles    = 0;
             num_writes           = 0;
@@ -129,7 +132,7 @@ namespace soclib { namespace caba {
 
     // print simulation statistics
     template<typename wb_param>
-        void     WbMasterModule<wb_param>:: print_stats()
+        void     VideoInModule<wb_param>:: print_stats()
         {
             std::cout << *this << std::endl;
         }
@@ -139,7 +142,7 @@ namespace soclib { namespace caba {
     ////////////////////////////////////////////////////////////////////////////
 
     template<typename wb_param>
-        WbMasterModule<wb_param>::WbMasterModule ( 
+        VideoInModule<wb_param>::VideoInModule ( 
                 sc_core::sc_in<bool> &p_clk,
                 soclib::caba::WbMaster<wb_param> &p_wb
                 ): p_clk(p_clk),p_wb(p_wb)

@@ -11,8 +11,8 @@
  * =============================================================================
  */
 
-#ifndef _WB_MASTER_MODULE_
-#define _WB_MASTER_MODULE_
+#ifndef _VIDEO_IN_MODULE_
+#define _VIDEO_IN_MODULE_
 
 
 #include <iostream>
@@ -24,7 +24,7 @@
 namespace soclib { namespace caba {
 
     template<typename wb_param>
-        class WbMasterModule
+        class VideoInModule
     {
         public:
             ////////////////////////////////////////////////////////////////////
@@ -60,7 +60,7 @@ namespace soclib { namespace caba {
             void print_stats();
 
             // constructor
-            WbMasterModule ( sc_core::sc_in<bool> &p_clk,
+            VideoInModule ( sc_core::sc_in<bool> &p_clk,
                     soclib::caba::WbMaster<wb_param> &p_wb
                     );
 
@@ -135,4 +135,4 @@ namespace soclib { namespace caba {
 }}
 
 
-#endif //_WB_MASTER_MODULE_
+#endif //_VIDEO_IN_MODULE_
