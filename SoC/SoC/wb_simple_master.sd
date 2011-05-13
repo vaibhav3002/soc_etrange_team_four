@@ -1,0 +1,21 @@
+
+# -*- python -*-
+
+Module('caba:wb_simple_master',
+        classname = 'soclib::caba::WbSimpleMaster',
+        tmpl_parameters = [
+            parameter.Module('wb_param',  default = 'caba:wb_param'),
+        ],
+        header_files = ['wb_simple_master.h',],
+        implementation_files = ['wb_simple_master.cpp',],
+        ports = [
+            Port('caba:wb_master', 'p_wb'),
+            Port('caba:bit_in', 'p_resetn', auto = 'resetn'),
+            Port('caba:clock_in', 'p_clk', auto = 'clock'),
+        ],
+        uses = [
+        Uses('caba:wishbone'),
+        ],
+        debug = True ,
+      )
+
