@@ -1,7 +1,7 @@
 /*
  * =============================================================================
  *
- *       Filename:  wb_master_module.cpp
+ *       Filename:  video_in.cpp
  *
  *    Description:  video_in module
  *		    based on the generic wb master module
@@ -17,8 +17,61 @@
 
 #include "video_in.h"
 #include <video_gen.h>
+#include "segmentation.h"
+
+#define tmpl(x) template<typename wb_param> x VideoInModule<wb_param>
 
 namespace soclib { namespace caba {
+
+	template<typename wb_param>
+	 void VideoInModule<wb_param>::clk_pix_event() {
+		if (frame_valid==0) {
+			//ACTIVATE WRITE SEQUENCE
+			write=true;
+			end_frame=true;
+		}	
+		else if (line_valid) {
+			Buffer[pos] = pixel_in.read();
+			pos++;
+			pos=pos%BUFFER_SIZE;
+			long delta = pos-offset;
+			if (delta<0) {delta+=BUFFER_SIZE;}
+
+			if (2*delta>=BUFFER_SIZE) {
+				//ACTIVATE WRITE SEQUENCE
+				write=true;
+			}
+		}
+
+	}
+
+	template<typename wb_param> 
+	void VideoInModule<wb_param>::clk_wb_event() {
+		if (write) {
+			write=false;
+			//CREATE A LOCAL COPY OF THE DATA TO BE TRANSFERED
+			unsigned char local_buffer[BUFFER_SIZE];
+			long p = offset;
+			long idx = 0;
+			long delta = p - pos;
+			if (delta<0) {delta+=BUFFER_SIZE;}
+			while (delta<4) {
+				for (int i=0; i<4; i++) {
+					local_buffer[idx] = Buffer[p];
+					idx++;
+					p++;
+					p=p%BUFFER_SIZE;
+				}
+				delta = p - pos;
+				if (delta<0) {delta+=BUFFER_SIZE;}
+			}
+			//FREEING SOME SPACE INSIDE THE SHARED BUFFER
+			offset+=idx;
+			offset=offset%BUFFER_SIZE;
+			
+			wb_write_blk(RAM_BASE,(uint32_t*) local_buffer,idx/4);
+		}
+	}
 
     ////////////////////////////////////////////////////////////////////////////
     // single read/write operation
@@ -96,7 +149,7 @@ namespace soclib { namespace caba {
 
     template<typename wb_param>
         void     VideoInModule<wb_param>::wb_write_blk
-        ( uint32_t saddr, uint8_t *mask, uint32_t *data, uint32_t num)
+        ( uint32_t saddr, uint32_t *data, uint32_t num)
         {
             for (uint32_t i = 0; i< num; i++)
             {
@@ -104,7 +157,7 @@ namespace soclib { namespace caba {
                 sc_core::wait(p_clk.negedge_event());
                 p_wb.DAT_O = *data++;
                 p_wb.ADR_O = saddr;
-                p_wb.SEL_O = *mask++;
+                p_wb.SEL_O = 0xFF;
                 p_wb.STB_O = true;
                 p_wb.CYC_O = true;
                 p_wb.WE_O  = true;
@@ -147,7 +200,16 @@ namespace soclib { namespace caba {
                 soclib::caba::WbMaster<wb_param> &p_wb
                 ): p_clk(p_clk),p_wb(p_wb)
         {
-        // Evetually add some messages
+		this->p_clk	(p_clk);
+		this->p_wb	(p_wb);
+
+		SC_THREAD(clk_pix_event);
+		sensitive << clk_pix.pos();
+		dont_initialize();
+
+		SC_THREAD(clk_wb_event);
+		sensitive << p_clk;
+		dont_initialize();
         }
 }}
 
