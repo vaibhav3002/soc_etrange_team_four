@@ -41,7 +41,6 @@ namespace soclib { namespace caba {
             // main thread
             void process();
             sc_fifo<unsigned char>* pix_fifo;
-	    long pos;
 	    long offset;
 	    bool write;
 	    bool end_frame;

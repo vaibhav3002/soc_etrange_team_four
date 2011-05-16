@@ -1,154 +1,96 @@
-/*
- * =============================================================================
- *
- *       Filename:  wb_slave_module.cpp
- *
- *    Description:  generic wb slave module
- *
- *         Author:  Thibault Porteboeuf
- *         Author:  Tarik Graba (TG), tarik.graba@telecom-paristech.fr
- *        Company:  Telecom Paris TECH
- *
- * =============================================================================
- */
-
-#include <systemc>
-
 #include "wb_slave_module.h"
+#include <iostream>
 
 namespace soclib { namespace caba {
+	// Constructor
+	template <typename wb_param> \
+		WbSlaveModule<wb_param>::WbSlaveModule(sc_core::sc_in<bool> &p_clk,
+				sc_core::sc_in<bool> &p_resetn,
+				soclib::caba::WbSlave<wb_param> &p_wb
+				): p_clk(p_clk), p_resetn(p_resetn), p_wb(p_wb)
+		{
 
-    ////////////////////////////////////////////////////////////////////////////
-    // single read/write operation
-    ////////////////////////////////////////////////////////////////////////////
+			SC_METHOD(transition);
+			sensitive << p_clk.pos();
 
-    template<typename wb_param>
-        uint32_t WbSlaveModule<wb_param>::wb_read_at
-        ( uint32_t addr )
-        {
-            sc_core::wait(p_clk.negedge_event());
-            p_wb.ADR_O = addr;
-            p_wb.SEL_O = 0xF;
-            p_wb.STB_O = true;
-            p_wb.CYC_O = true;
-            p_wb.WE_O  = false;
+			SC_METHOD(genMealy);
+			sensitive << p_clk.neg();
+			sensitive << p_wb;
+		}
 
-            // sc_core::wait for ack
-            WaitWbAck();
-            // clean request after clk falling edge
-            sc_core::wait(p_clk.negedge_event());
-            CleanWb();
-            num_reads++;
-            return (uint32_t) p_wb.DAT_I.read();
-        }
 
-    template<typename wb_param>
-        void     WbSlaveModule<wb_param>::wb_write_at
-        (uint32_t addr, uint8_t mask, uint32_t data)
-        {
-            // set request on clk falling edge
-            sc_core::wait(p_clk.negedge_event());
-            p_wb.DAT_O = data;
-            p_wb.ADR_O = addr;
-            p_wb.SEL_O = mask;
-            p_wb.STB_O = true;
-            p_wb.CYC_O = true;
-            p_wb.WE_O  = true;
+	// Synchronoue methode
+	template <typename wb_param> \
+		void WbSimpleSlave<wb_param>::transition() {
 
-            // sc_core::wait for ack
-            WaitWbAck();
-            // clean request after clk falling edge
-            sc_core::wait(p_clk.negedge_event());
-            CleanWb();
-            num_writes++;
-        }
+			if (p_resetn == false) {
+				// reset cycle couter
+				cycle = 0;
+				// reset write requests counter
+				w_req_cpt = 0;
+#ifdef SOCLIB_MODULE_DEBUG
+				std::cout << name() << " "
+					<< "RESET:: waiting for requests"
+					<< std::endl;
+#endif
+				return;
+			}
+			cycle++;
+			if (p_wb.STB_I ) {
+				if (p_wb.CYC_I ) {
+#ifdef SOCLIB_MODULE_DEBUG
+					std::cout << name() << " "
+						<< "Recived a valid strobe" << std::endl
+						<< p_wb
+						<< " at cycle "<< std::dec << cycle
+						<< std::endl;
+#endif
+					if (p_wb.WE_I) {
+						//Write request
+						w_req_cpt++;
+						status = Write;
+					}	
+					else {
+						//Read request
+						status = Read;
+					}
+				}
+				else  {
+					status = Wait;
+#ifdef SOCLIB_MODULE_DEBUG
+					std::cout << name() << " "
+						<< "Recived an invalid strobe" << std::endl
+						<< p_wb
+						<< " at cycle "<< std::dec << cycle
+						<< std::endl;
+#endif
+				}
+			} else {
+				status = Wait;
+			}
+		}
 
-    ////////////////////////////////////////////////////////////////////////////
-    // burst read/write operation to/from an uint32_t array
-    ////////////////////////////////////////////////////////////////////////////
+	// Synchronoue methode
+	template <typename wb_param> \
+		void WbSimpleSlave<wb_param>::genMealy() {
+			if (status !=Wait) {
+				// always acknowledge requests
+				p_wb.ACK_O = p_wb.STB_I && p_wb.STB_I;
 
-    template<typename wb_param>
-        void WbSlaveModule<wb_param>::wb_read_blk
-        ( uint32_t saddr, uint32_t num, uint32_t *dest)
-        {
-            for (uint32_t i = 0; i< num; i++)
-            {
-                sc_core::wait(p_clk.negedge_event());
-                p_wb.ADR_O = saddr;
-                p_wb.SEL_O = 0xF;
-                p_wb.STB_O = true;
-                p_wb.CYC_O = true;
-                p_wb.WE_O  = false;
+				if (status == Read) {
+					p_wb.DAT_O = slave_read(p_wb.ADD_I);
+				} else {
+					p_wb.DAT_O = slave_write(p_wb.ADD_I,p_wb.DAT_I);
+				}
+			}
 
-                // sc_core::wait for ack
-                WaitWbAck();
-                num_reads++;
-                *dest++ = (uint32_t) p_wb.DAT_I.read();
-                // next data
-                saddr = saddr + 4;
-            }
-            // clean request after clk falling edge
-            sc_core::wait(p_clk.negedge_event());
-            CleanWb();
-        }
+			virtual template <typename wb_param> \
+				uint32_t WbSimpleSlave<wb_param>::read(uint32_t ADDR) {
+					return 0;
+				}
 
-    template<typename wb_param>
-        void     WbSlaveModule<wb_param>::wb_write_blk
-        ( uint32_t saddr,
-//	 uint8_t *mask,
-	 uint32_t *data, uint32_t num)
-        {
-            for (uint32_t i = 0; i< num; i++)
-            {
-                // set request on clk falling edge
-                sc_core::wait(p_clk.negedge_event());
-                p_wb.DAT_O = *data++;
-                p_wb.ADR_O = saddr;
-  //              p_wb.SEL_O = *mask++;
-		p_wb.SEL_O = 0xF;
-                p_wb.STB_O = true;
-                p_wb.CYC_O = true;
-                p_wb.WE_O  = true;
-
-                // sc_core::wait for ack
-                WaitWbAck();
-                num_writes++;
-                // next data
-                saddr = saddr + 4;
-            }
-            // clean request after clk falling edge
-            sc_core::wait(p_clk.negedge_event());
-            CleanWb();
-        }
-
-    // Reset
-    template<typename wb_param>
-        void     WbSlaveModule<wb_param>:: reset()
-        {
-            trans_wait_cycles    = 0;
-            num_writes           = 0;
-            num_reads            = 0;
-            CleanWb();
-        }
-
-    // print simulation statistics
-    template<typename wb_param>
-        void     WbSlaveModule<wb_param>:: print_stats()
-        {
-            std::cout << *this << std::endl;
-        }
-
-    ////////////////////////////////////////////////////////////////////////////
-    //  Constructor
-    ////////////////////////////////////////////////////////////////////////////
-
-    template<typename wb_param>
-        WbSlaveModule<wb_param>::WbSlaveModule ( 
-                sc_core::sc_in<bool> &p_clk,
-                soclib::caba::WbSlave<wb_param> &p_wb
-                ): p_clk(p_clk),p_wb(p_wb)
-        {
-        // Evetually add some messages
-        }
-}}
-
+			virtual template <typename wb_param> \
+				uint32_t WbSimpleSlave<wb_param>::write(uint32_t ADDR,uint32_t DATA) {
+					return DATA;
+				}
+		}}

@@ -20,15 +20,15 @@
 
 #include <systemc>
 
-#include "wb_master.h"
+#include "wb_slave.h"
+
+typedef enum {Wait, Write, Read} Status;
 
 namespace soclib { namespace caba {
 
     template<typename wb_param>
         class WbSlaveModule
     {
-            protected:
-                SC_HAS_PROCESS(WbSimpleSlave);
 
         public:
 
@@ -37,8 +37,8 @@ namespace soclib { namespace caba {
 
             // constructor
             WbSlaveModule ( sc_core::sc_in<bool> &p_clk,
-                    soclib::caba::WbSlave<wb_param> &p_wb,
-		    sc_core::sc_in<bool> &p_resetn
+		    sc_core::sc_in<bool> &p_resetn,
+                    soclib::caba::WbSlave<wb_param> &p_wb
                     );
 
             friend std::ostream& operator<< (std::ostream &o, WbSlaveModule &wbm)
@@ -47,20 +47,25 @@ namespace soclib { namespace caba {
                 return o;
             }
 
-        private:
+
+	protected:
+	    SC_HAS_PROCESS(WbSlaveModule);
+	    Status status;
 
             // port are private and should be provided  as constructor arguments
             sc_core::sc_in<bool> &p_clk;
             soclib::caba::WbSlave<wb_param> &p_wb;
 	    sc_core::sc_in<bool> &p_resetn;
 
-            uint32_t cycme;
+            uint32_t cycle;
             uint32_t w_req_cpt;
+
 
 	    void transition();
 	    void genMealy();
 
-
+	    virtual uint32_t slave_read(uint32_t ADDR);
+	    virtual uint32_t slave_write(uint32_t ADDR, uint32_t DATA);
 
             inline void _print (std::ostream &o)
             {

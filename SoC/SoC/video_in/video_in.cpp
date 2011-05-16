@@ -35,12 +35,20 @@ namespace soclib { namespace caba {
 			if (frame_valid==0) {
 				//ACTIVATE WRITE SEQUENCE
 				write=true;
+
 				end_frame=true;
-			}	
+			}
 			else if (line_valid) {
 				pix_fifo->write(pixel_in.read());
 
 				if (2*pix_fifo->num_available()>=BUFFER_SIZE) {
+					
+					if (end_frame) {
+						//current frame's first line : resetting counter values and parameters
+						end_frame=false;
+						offset=0;
+					}
+
 					//ACTIVATE WRITE SEQUENCE
 					write=true;
 				}
@@ -56,7 +64,7 @@ namespace soclib { namespace caba {
 				unsigned char local_buffer[BUFFER_SIZE];
 				long idx = 0;
 				//CREATE A LOCAL COPY OF THE DATA TO BE TRANSFERED
-				while (endframe && (pix_fifo->num_available()>0)) {
+				while (end_frame && (pix_fifo->num_available()>0)) {
 					while (pix_fifo->num_available()>4) {
 						for (int i=0; i<4; i++) {
 							local_buffer[idx+i] = pix_fifo->read();
@@ -64,7 +72,9 @@ namespace soclib { namespace caba {
 						idx+=4;
 					}
 				}
-				master0.wb_write_blk(RAM_BASE,(uint32_t*) local_buffer, idx/4);
+				offset+= idx/4;
+				master0.wb_write_blk(RAM_BASE+offset-idx/4,(uint32_t*) local_buffer, idx/4);
+				
 			}
 			wait();
 		}
