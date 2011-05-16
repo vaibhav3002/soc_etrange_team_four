@@ -8,9 +8,13 @@ Module('caba:VideoInModule',
         header_files = ['video_in.h',],
         implementation_files = ['video_in.cpp',],
         ports = [
+            Port('caba:bit_in',     'p_resetn', auto = 'resetn'),
+            Port('caba:clock_in' ,  'p_clk', auto = 'clock'),
+            Port('caba:wb_master',  'p_wb'),
         ],
         uses = [
         Uses('caba:wishbone'),
+        Uses('caba:wb_master_module'),
         ],
         #debug = True ,
       )
