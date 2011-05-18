@@ -6,23 +6,20 @@
  *    Description:  generic wb slave module
  *
  *	   Author:  Thibault Porteboeuf
- *         Author:  Tarik Graba (TG), tarik.graba@telecom-paristech.fr
+ *         Credit:  Tarik Graba (TG), tarik.graba@telecom-paristech.fr
  *        Company:  Telecom Paris TECH
  *
  * =============================================================================
  */
 
-#ifndef _WB_SLAVE_MODULE_
-#define _WB_SLAVE_MODULE_
+#ifndef _WB_SLAVE_MODULE__
+#define _WB_SLAVE_MODULE__
 
 
 #include <iostream>
-
 #include <systemc>
-
 #include "wb_slave.h"
 
-typedef enum {Wait, Write, Read} Status;
 
 namespace soclib { namespace caba {
 
@@ -49,6 +46,8 @@ namespace soclib { namespace caba {
 
 
 	protected:
+	    typedef enum {Wait, Write, Read} Status;
+
 	    SC_HAS_PROCESS(WbSlaveModule);
 	    Status status;
 
@@ -64,8 +63,8 @@ namespace soclib { namespace caba {
 	    void transition();
 	    void genMealy();
 
-	    virtual uint32_t slave_read(uint32_t ADDR);
-	    virtual uint32_t slave_write(uint32_t ADDR, uint32_t DATA);
+	    uint32_t slave_read(uint32_t ADDR);
+	    uint32_t slave_write(uint32_t ADDR, uint32_t DATA);
 
             inline void _print (std::ostream &o)
             {

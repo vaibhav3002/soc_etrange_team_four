@@ -1,3 +1,5 @@
+//TODO: terminer l'interface avec Slave : creer un module avec heritage et un registre de config, puis l'inclure ici et interfacer le tout
+
 /*
  * =============================================================================
  *
@@ -82,8 +84,9 @@ namespace soclib { namespace caba {
 
 
 	tmpl(/**/)::VideoInModule (sc_module_name name )
-		:sc_core::sc_module(name), p_clk("p_clk"),p_resetn("p_resetn"), master0(p_clk,p_wb)
+		:sc_core::sc_module(name), p_clk("p_clk"),p_resetn("p_resetn"), master0(p_clk,p_wb), slave(p_clk,p_resetn,p_wb2)
 	{
+		
 		pix_fifo = new sc_fifo<unsigned char>(BUFFER_SIZE);
 
 		// sc thread

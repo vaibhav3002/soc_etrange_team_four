@@ -1,5 +1,4 @@
 #include "wb_slave_module.h"
-#include <iostream>
 
 namespace soclib { namespace caba {
 	// Constructor
@@ -18,10 +17,10 @@ namespace soclib { namespace caba {
 			sensitive << p_wb;
 		}
 
-
-	// Synchronoue methode
+	
+	// Synchronous methode
 	template <typename wb_param> \
-		void WbSimpleSlave<wb_param>::transition() {
+		void WbSlaveModule<wb_param>::transition() {
 
 			if (p_resetn == false) {
 				// reset cycle couter
@@ -72,25 +71,28 @@ namespace soclib { namespace caba {
 
 	// Synchronoue methode
 	template <typename wb_param> \
-		void WbSimpleSlave<wb_param>::genMealy() {
+		void WbSlaveModule<wb_param>::genMealy() {
 			if (status !=Wait) {
 				// always acknowledge requests
 				p_wb.ACK_O = p_wb.STB_I && p_wb.STB_I;
 
 				if (status == Read) {
-					p_wb.DAT_O = slave_read(p_wb.ADD_I);
+					p_wb.DAT_O = this->slave_read(p_wb.ADR_I);
 				} else {
-					p_wb.DAT_O = slave_write(p_wb.ADD_I,p_wb.DAT_I);
+					p_wb.DAT_O = this->slave_write(p_wb.ADR_I,p_wb.DAT_I);
 				}
 			}
+		}
 
-			virtual template <typename wb_param> \
-				uint32_t WbSimpleSlave<wb_param>::read(uint32_t ADDR) {
-					return 0;
-				}
 
-			virtual template <typename wb_param> \
-				uint32_t WbSimpleSlave<wb_param>::write(uint32_t ADDR,uint32_t DATA) {
-					return DATA;
-				}
-		}}
+
+	template <typename wb_param> \
+		uint32_t WbSlaveModule<wb_param>::slave_read(uint32_t ADDR) {
+			return 0;
+		}
+
+	template <typename wb_param> \
+		uint32_t WbSlaveModule<wb_param>::slave_write(uint32_t ADDR,uint32_t DATA) {
+			return DATA;
+		}
+}}
