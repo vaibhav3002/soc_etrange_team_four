@@ -40,9 +40,10 @@ int main(void)
 {
 
     printf("Read video_in 0x%x\n",*((volatile unsigned int*) 0xA2000000));
-    printf("Write...\n");
+    printf("Write OxAB... Return value: ");
     *((volatile unsigned int*) 0xA2000000) = 0xAB;
   
+    printf("0x%x\n",*((volatile unsigned int*) 0xA2000000));
     printf("Read video_in 0x%x\n",*((volatile unsigned int*) 0xA2000000));
 
     getchar();

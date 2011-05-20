@@ -12,7 +12,6 @@ namespace soclib { namespace caba {
 
 			SC_METHOD(genMealy);
 			sensitive << p_clk.neg();
-			sensitive << p_wb;
 		}
 
 	
@@ -34,7 +33,7 @@ namespace soclib { namespace caba {
 			}
 			cycle++;
 			if (p_wb.STB_I ) {
-				if (p_wb.CYC_I ) {
+				if ((p_wb.CYC_I) &&(status==Wait)) {
 #ifdef SOCLIB_MODULE_DEBUG
 					std::cout << name() << " "
 						<< "Recived a valid strobe" << std::endl
@@ -42,12 +41,14 @@ namespace soclib { namespace caba {
 						<< " at cycle "<< std::dec << cycle
 						<< std::endl;
 #endif
-					if (p_wb.WE_I.read()) {
+					if (p_wb.WE_I) {
+						printf("####### TRANSITION: WRITE #######\n");
 						//Write request
 						w_req_cpt++;
 						status = Write;
 					}	
 					else {
+						printf("####### TRANSITION: READ #######\n");
 						//Read request
 						status = Read;
 					}
@@ -62,8 +63,9 @@ namespace soclib { namespace caba {
 						<< std::endl;
 #endif
 				}
-			} else {
-				status = Wait;
+			} else if (!p_wb.CYC_I) {
+
+				status=Wait;
 			}
 		}
 
