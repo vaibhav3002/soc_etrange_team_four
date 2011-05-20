@@ -25,7 +25,7 @@
 #include "segmentation.h"
 
 
-#define tmpl(x) template<typename wb_param> x VideoInModule<wb_param>
+//#define tmpl(x) template<typename wb_param> x VideoInModule<wb_param>
 
 
 
@@ -83,8 +83,9 @@ namespace soclib { namespace caba {
 
 
 
-	tmpl(/**/)::VideoInModule (sc_module_name name )
-		:sc_core::sc_module(name), p_clk("p_clk"),p_resetn("p_resetn"), master0(p_clk,p_wb), slave(p_clk,p_resetn,p_wb2)
+	template<typename wb_param>  VideoInModule<wb_param>::
+		VideoInModule (sc_module_name name ) : 
+			sc_core::sc_module(name), p_clk("p_clk"),p_resetn("p_resetn"), master0(p_clk,p_wb), slave("wb_slave_video_in")
 	{
 		
 		pix_fifo = new sc_fifo<unsigned char>(BUFFER_SIZE);
@@ -102,7 +103,7 @@ namespace soclib { namespace caba {
 
 
 	// wait cycles
-	tmpl(void):: wait_cycles (uint32_t delay)
+	template<typename wb_param> void  VideoInModule<wb_param>:: wait_cycles (uint32_t delay)
 	{
 #ifdef SOCLIB_MODULE_DEBUG
 		std::cout

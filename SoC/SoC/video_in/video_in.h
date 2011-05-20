@@ -17,8 +17,8 @@
 
 #include <systemc>
 
-#include "wb_master_module.h"
 #include "wb_slave_reg.h"
+#include "wb_master_module.h"
 
 #define BUFFER_SIZE 512
 
@@ -31,8 +31,6 @@ namespace soclib { namespace caba {
             sc_core::sc_in<bool> p_clk;
             sc_core::sc_in<bool> p_resetn;
             soclib::caba::WbMaster<wb_param> p_wb;
-
-	    soclib::caba::WbSlave<wb_param> p_wb2;
 
 	    sc_core::sc_in<bool> p_clk_pix;
 	    sc_core::sc_in<bool> reset_n;

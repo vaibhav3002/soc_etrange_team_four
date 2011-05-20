@@ -24,19 +24,21 @@
 namespace soclib { namespace caba {
 
     template<typename wb_param>
-        class WbSlaveModule
+        class WbSlaveModule : sc_core::sc_module
     {
 
         public:
+
+            sc_core::sc_in<bool> p_clk;
+            soclib::caba::WbSlave<wb_param> p_wb;
+	    sc_core::sc_in<bool> p_resetn;
+
 
             void reset ();
             void print_stats();
 
             // constructor
-            WbSlaveModule ( sc_core::sc_in<bool> &p_clk,
-		    sc_core::sc_in<bool> &p_resetn,
-                    soclib::caba::WbSlave<wb_param> &p_wb
-                    );
+            WbSlaveModule ( sc_module_name name );
 
             friend std::ostream& operator<< (std::ostream &o, WbSlaveModule &wbm)
             {
@@ -49,13 +51,8 @@ namespace soclib { namespace caba {
 	    typedef enum {Wait, Write, Read} Status;
 
 	    SC_HAS_PROCESS(WbSlaveModule);
+	    
 	    Status status;
-
-            // port are private and should be provided  as constructor arguments
-            sc_core::sc_in<bool> &p_clk;
-            soclib::caba::WbSlave<wb_param> &p_wb;
-	    sc_core::sc_in<bool> &p_resetn;
-
             uint32_t cycle;
             uint32_t w_req_cpt;
 

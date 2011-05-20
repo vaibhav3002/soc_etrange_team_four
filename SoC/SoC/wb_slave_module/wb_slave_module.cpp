@@ -3,10 +3,8 @@
 namespace soclib { namespace caba {
 	// Constructor
 	template <typename wb_param> \
-		WbSlaveModule<wb_param>::WbSlaveModule(sc_core::sc_in<bool> &p_clk,
-				sc_core::sc_in<bool> &p_resetn,
-				soclib::caba::WbSlave<wb_param> &p_wb
-				): p_clk(p_clk), p_resetn(p_resetn), p_wb(p_wb)
+		WbSlaveModule<wb_param>::WbSlaveModule( sc_module_name name
+				): sc_core::sc_module(name)
 		{
 
 			SC_METHOD(transition);
@@ -77,9 +75,9 @@ namespace soclib { namespace caba {
 				p_wb.ACK_O = p_wb.STB_I && p_wb.STB_I;
 
 				if (status == Read) {
-					p_wb.DAT_O = this->slave_read(p_wb.ADR_I);
+					p_wb.DAT_O = this->slave_read(p_wb.ADR_I.read());
 				} else {
-					p_wb.DAT_O = this->slave_write(p_wb.ADR_I,p_wb.DAT_I);
+					p_wb.DAT_O = this->slave_write(p_wb.ADR_I.read(),p_wb.DAT_I.read());
 				}
 			}
 		}

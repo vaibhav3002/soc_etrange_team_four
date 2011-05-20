@@ -10,7 +10,7 @@ namespace soclib { namespace caba {
         class WbSlaveRegModule : public WbSlaveModule<wb_param>
     {
 	public:
-	    WbSlaveRegModule ( sc_core::sc_in<bool> &p_clk, sc_core::sc_in<bool> &p_resetn, soclib::caba::WbSlave<wb_param> &p_wb) : WbSlaveModule(p_clk, p_resetn, p_wb) 
+	    WbSlaveRegModule ( sc_module_name name ) : WbSlaveModule<wb_param>::WbSlaveModule(name) 
 		{
 		}
 	protected:
