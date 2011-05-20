@@ -20,6 +20,8 @@
 #include "wb_slave_reg.h"
 #include "wb_master_module.h"
 
+#include "video_gen.h"
+
 #define BUFFER_SIZE 512
 
 namespace soclib { namespace caba {
@@ -34,9 +36,14 @@ namespace soclib { namespace caba {
 
 	    sc_core::sc_in<bool> p_clk_pix;
 	    sc_core::sc_in<bool> reset_n;
-	    sc_core::sc_in<bool> line_valid;
-	    sc_core::sc_in<bool> frame_valid;
-	    sc_core::sc_in<unsigned char> pixel_in;
+	    sc_core::sc_signal<bool> line_valid;
+	    sc_core::sc_signal<bool> frame_valid;
+	    sc_core::sc_signal<unsigned char> pixel_in;
+
+	//Slave needs to be available from the top
+	    WbSlaveRegModule<wb_param> slave;
+
+	    VideoGen videogen;
 
         private:
             // main thread
@@ -49,7 +56,6 @@ namespace soclib { namespace caba {
             void     wait_cycles (uint32_t delay);
             WbMasterModule<wb_param> master0;
 
-	    WbSlaveRegModule<wb_param> slave;
 
 	    void clk_pix_event();
 	    void clk_wb_event();

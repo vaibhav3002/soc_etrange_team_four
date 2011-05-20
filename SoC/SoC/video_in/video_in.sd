@@ -11,12 +11,12 @@ Module('caba:VideoInModule',
             Port('caba:bit_in',     'p_resetn', auto = 'resetn'),
             Port('caba:clock_in' ,  'p_clk', auto = 'clock'),
             Port('caba:wb_master',  'p_wb'),
-	    Port('caba:wb_slave',   'p_wb2'),
         ],
         uses = [
         Uses('caba:wishbone'),
         Uses('caba:wb_master_module'),
 	Uses('caba:wb_slave_reg'),
+	Uses('caba:video_gen')
         ],
         #debug = True ,
       )

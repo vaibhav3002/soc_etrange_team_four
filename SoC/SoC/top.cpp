@@ -53,6 +53,7 @@
 #include "segmentation.h"
 
 //Video-gen / display
+#include <video_in.h>
 #include <video_gen.h>
 #include <display.h>
 
@@ -78,10 +79,13 @@ int _main(int argc, char *argv[])
     maptab.add(Segment("ram" , RAM_BASE , RAM_SIZE , IntTab(1), true));
     maptab.add(Segment("tty"  , TTY_BASE  , TTY_SIZE  , IntTab(2), false));
     maptab.add(Segment("wb_slave", WBS_BASE, WBS_SIZE, IntTab(3), false));
+    maptab.add(Segment("wb_video_in", VIN_BASE, VIN_SIZE, IntTab(4), false));
 
     // Gloabal signals
     sc_time     clk_periode(10, SC_NS); // clk period
+    sc_time     clk_periode_pix(40, SC_NS); // clk period
     sc_clock	signal_clk("signal_clk",clk_periode);
+    sc_clock	signal_clk_pix("signal_pix_clk",clk_periode_pix);
     sc_signal<bool> signal_resetn("signal_resetn");
 
     // interconnection signals
@@ -96,6 +100,8 @@ int _main(int argc, char *argv[])
     soclib::caba::WbSignal<wb_param> signal_wb_tty("signal_wb_tty");
     soclib::caba::WbSignal<wb_param> signal_wb_slave("signal_wb_slave");
     soclib::caba::WbSignal<wb_param> signal_wb_master("signal_wb_master");
+    soclib::caba::WbSignal<wb_param> signal_wb_slave_videoin("signal_wb_slave_videoin");
+    soclib::caba::WbSignal<wb_param> signal_wb_master_videoin("signal_wb_master_videoin");
 
     // irq from uart
     sc_signal<bool> signal_tty_irq("signal_tty_irq");
@@ -123,9 +129,12 @@ int _main(int argc, char *argv[])
     soclib::caba::VciRam<vci_param> ram("ram", IntTab(1), maptab, loader);
     soclib::caba::VciMultiTty<vci_param> vcitty("vcitty",	IntTab(2), maptab, "tty.log", NULL);
 
+    //Video in module
+    soclib::caba::VideoInModule<wb_param> videoin("wb_video_in");
+
     // WB interconnect
     //                                           sc_name    maptab  masters slaves
-    soclib::caba::WbInterco<wb_param> wbinterco("wbinterco",maptab, 2,4);
+    soclib::caba::WbInterco<wb_param> wbinterco("wbinterco",maptab, 3,5);
 
     ////////////////////////////////////////////////////////////
     /////////////////// WB -> VCI Wrappers /////////////////////
@@ -171,11 +180,27 @@ int _main(int argc, char *argv[])
 
     wbinterco.p_from_master[0](signal_wb_lm32);
     wbinterco.p_from_master[1](signal_wb_master);
+    wbinterco.p_from_master[2](signal_wb_master_videoin);
 
     wbinterco.p_to_slave[0](signal_wb_rom);
     wbinterco.p_to_slave[1](signal_wb_ram);
     wbinterco.p_to_slave[2](signal_wb_tty);
     wbinterco.p_to_slave[3](signal_wb_slave);
+    wbinterco.p_to_slave[4](signal_wb_slave_videoin);
+
+    //VideoIN: slave
+      videoin.slave.p_wb(signal_wb_slave_videoin);
+      videoin.slave.p_resetn(signal_resetn);
+      videoin.slave.p_clk(signal_clk);
+    //VideoIN: master
+      videoin.p_clk(signal_clk);
+      videoin.p_resetn(signal_resetn);
+      videoin.p_wb(signal_wb_master_videoin);
+    //VideoIN: Videogen
+      videoin.videogen.clk(signal_clk_pix);
+      videoin.videogen.reset_n(signal_resetn);
+      videoin.p_clk_pix(signal_clk_pix);
+      videoin.reset_n(signal_resetn);
 
     // lm32
     lm32.p_clk(signal_clk);

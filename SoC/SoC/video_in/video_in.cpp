@@ -85,10 +85,15 @@ namespace soclib { namespace caba {
 
 	template<typename wb_param>  VideoInModule<wb_param>::
 		VideoInModule (sc_module_name name ) : 
-			sc_core::sc_module(name), p_clk("p_clk"),p_resetn("p_resetn"), master0(p_clk,p_wb), slave("wb_slave_video_in")
+			sc_core::sc_module(name), master0(p_clk,p_wb), slave("wb_slave_video_in"), videogen("video_in::video_gen")
 	{
 		
 		pix_fifo = new sc_fifo<unsigned char>(BUFFER_SIZE);
+
+		videogen.line_valid(line_valid);
+		videogen.frame_valid(frame_valid);
+		videogen.pixel_out(pixel_in);
+
 
 		// sc thread
 		SC_THREAD(clk_pix_event);

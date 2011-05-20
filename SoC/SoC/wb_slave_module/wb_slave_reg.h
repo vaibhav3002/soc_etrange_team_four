@@ -13,15 +13,19 @@ namespace soclib { namespace caba {
 	    WbSlaveRegModule ( sc_module_name name ) : WbSlaveModule<wb_param>::WbSlaveModule(name) 
 		{
 		}
+
+	sc_signal<uint32_t> reg; //Internal register that must be accessible from the outside world
+
 	protected:
 
-	uint32_t reg; //Internal register
 
 	uint32_t slave_read(uint32_t ADDR) {
-		return (reg);
+		printf("########## SLAVE REG: READ ###############\n");
+		return (reg.read());
 	};
 	
 	uint32_t slave_write(uint32_t ADDR, uint32_t DATA) {
+		printf("########## SLAVE REG: WRITE ###############\n");
 		reg = DATA;
 		return 0x0;
 	};

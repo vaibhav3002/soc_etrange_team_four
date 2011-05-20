@@ -51,3 +51,5 @@
 #define	TTY_SIZE    0x00000100
 #define WBS_BASE    0xA1000000
 #define WBS_SIZE    0x00100000 // 1M
+#define VIN_BASE    0xA2000000
+#define VIN_SIZE    0x00000001 // one 32 bits word

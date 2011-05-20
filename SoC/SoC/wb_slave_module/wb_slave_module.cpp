@@ -42,7 +42,7 @@ namespace soclib { namespace caba {
 						<< " at cycle "<< std::dec << cycle
 						<< std::endl;
 #endif
-					if (p_wb.WE_I) {
+					if (p_wb.WE_I.read()) {
 						//Write request
 						w_req_cpt++;
 						status = Write;
@@ -86,7 +86,7 @@ namespace soclib { namespace caba {
 
 	template <typename wb_param> \
 		uint32_t WbSlaveModule<wb_param>::slave_read(uint32_t ADDR) {
-			return 0;
+			return 0x123456789;
 		}
 
 	template <typename wb_param> \
