@@ -10,7 +10,7 @@ namespace soclib { namespace caba {
 			SC_METHOD(transition);
 			sensitive << p_clk.pos();
 
-			SC_METHOD(genMealy);
+			SC_METHOD(genMoore);
 			sensitive << p_clk.neg();
 		}
 
@@ -42,13 +42,13 @@ namespace soclib { namespace caba {
 						<< std::endl;
 #endif
 					if (p_wb.WE_I) {
-						printf("####### TRANSITION: WRITE #######\n");
+					//	printf("####### TRANSITION: WRITE #######\n");
 						//Write request
 						w_req_cpt++;
 						status = Write;
 					}	
 					else {
-						printf("####### TRANSITION: READ #######\n");
+					//	printf("####### TRANSITION: READ #######\n");
 						//Read request
 						status = Read;
 					}
@@ -71,7 +71,10 @@ namespace soclib { namespace caba {
 
 	// Synchronoue methode
 	template <typename wb_param> \
-		void WbSlaveModule<wb_param>::genMealy() {
+		void WbSlaveModule<wb_param>::genMoore() {
+			
+				p_wb.ACK_O = false;
+				p_wb.DAT_O = 0;
 			if (status !=Wait) {
 				// always acknowledge requests
 				p_wb.ACK_O = p_wb.STB_I && p_wb.STB_I;
@@ -88,7 +91,7 @@ namespace soclib { namespace caba {
 
 	template <typename wb_param> \
 		uint32_t WbSlaveModule<wb_param>::slave_read(uint32_t ADDR) {
-			return 0x123456789;
+			return 0x12345678;
 		}
 
 	template <typename wb_param> \

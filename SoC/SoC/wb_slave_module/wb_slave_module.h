@@ -58,7 +58,8 @@ namespace soclib { namespace caba {
 
 
 	    void transition();
-	    void genMealy();
+	    void genMoore();
+
 
 	    virtual uint32_t slave_read(uint32_t ADDR);
 	    virtual uint32_t slave_write(uint32_t ADDR, uint32_t DATA);

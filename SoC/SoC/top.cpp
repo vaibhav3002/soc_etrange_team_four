@@ -57,6 +57,7 @@
 #include <video_gen.h>
 #include <display.h>
 
+#define DO_TRACES
 
 // real SystemC main
 int _main(int argc, char *argv[])
@@ -243,10 +244,11 @@ int _main(int argc, char *argv[])
     sc_trace (TRACEFILE, signal_resetn, "resetn" );
     sc_trace (TRACEFILE, signal_clk,    "clk"    );
     sc_trace (TRACEFILE, signal_wb_lm32,"lm32_wb");
-    sc_trace (TRACEFILE, signal_wb_ram, "ram_wb" );
-    sc_trace (TRACEFILE, signal_vci_rom,"rom_vci");
-    sc_trace (TRACEFILE, signal_wb_rom, "rom_wb" );
-    sc_trace (TRACEFILE, signal_wb_tty, "tty_wb" );
+//    sc_trace (TRACEFILE, signal_wb_ram, "ram_wb" );
+//    sc_trace (TRACEFILE, signal_vci_rom,"rom_vci");
+//    sc_trace (TRACEFILE, signal_wb_rom, "rom_wb" );
+//    sc_trace (TRACEFILE, signal_wb_tty, "tty_wb" );
+    sc_trace (TRACEFILE, signal_wb_slave_videoin, "wb_slave");
 #endif
 
     ////////////////////////////////////////////////////////////

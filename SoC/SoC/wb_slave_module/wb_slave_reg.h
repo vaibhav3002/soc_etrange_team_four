@@ -20,14 +20,12 @@ namespace soclib { namespace caba {
 
 
 	uint32_t slave_read(uint32_t ADDR) {
-		printf("########## SLAVE REG: READ 0x%x ###############\n",reg.read());
 		return (reg.read());
 	};
 	
 	uint32_t slave_write(uint32_t ADDR, uint32_t DATA) {
-		printf("########## SLAVE REG: WRITE 0x%x->0x%x ###############\n",DATA,ADDR);
 		reg = DATA;
-		return 0x0;
+		return 0xDE;
 	};
 
     };
