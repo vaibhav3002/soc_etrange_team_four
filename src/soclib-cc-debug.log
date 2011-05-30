@@ -1,0 +1,585 @@
+
+==== stdout ====
+Soclib-cc is in bug-report mode. Every output will go to 'soclib-cc-debug.log'
+Command: ['/comelec/softs/opt/soclib/utils/lib/python/soclib_cc_main.py', '-P', '-j4', '-p', 'platform_desc', '-I', '.', '-x', '-o', 'simulation.x', '--bug-report']
+Environment:
+COLORTERM: 'gnome-terminal'
+DBUS_SESSION_BUS_ADDRESS: 'unix:abstract=/tmp/dbus-bNrHCWuNM0,guid=1937d78df686ee257127627000227319'
+DESKTOP_SESSION: 'default'
+DISPLAY: ':0.0'
+GDMSESSION: 'default'
+GDM_LANG: 'fr_FR.UTF-8'
+GDM_XSERVER_LOCATION: 'local'
+GNOME_DESKTOP_SESSION_ID: 'this-is-deprecated'
+GNOME_KEYRING_CONTROL: '/tmp/keyring-lM8fhY'
+GNOME_KEYRING_PID: '29747'
+GPG_AGENT_INFO: '/tmp/seahorse-xRKeXx/S.gpg-agent:29839:1'
+GTK_RC_FILES: '/etc/gtk/gtkrc:/stud/users/msc/theodoro/.gtkrc-1.2-gnome2'
+HISTFILE: '/stud/users/msc/theodoro/.zhistory'
+HISTSIZE: '10000'
+HOME: '/stud/users/msc/theodoro'
+LANG: 'fr_FR.UTF-8'
+LESS: '-r'
+LOGNAME: 'theodoro'
+LS_COLORS: 'no=00:fi=00:di=01;31:ln=01;36:pi=40;33:so=01;35:do=01;35:bd=40;33;01:cd=40;33;01:or=40;31;01:su=37;41:sg=30;43:tw=30;42:ow=34;42:st=37;44:ex=01;32:*.tar=01;31:*.tgz=01;31:*.arj=01;31:*.taz=01;31:*.lzh=01;31:*.zip=01;31:*.z=01;31:*.Z=01;31:*.gz=01;31:*.bz2=01;31:*.deb=01;31:*.rpm=01;31:*.jar=01;31:*.jpg=01;35:*.jpeg=01;35:*.gif=01;35:*.bmp=01;35:*.pbm=01;35:*.pgm=01;35:*.ppm=01;35:*.tga=01;35:*.xbm=01;35:*.xpm=01;35:*.tif=01;35:*.tiff=01;35:*.png=01;35:*.mov=01;35:*.mpg=01;35:*.mpeg=01;35:*.avi=01;35:*.fli=01;35:*.gl=01;35:*.dl=01;35:*.xcf=01;35:*.xwd=01;35:*.flac=01;35:*.mp3=01;35:*.mpc=01;35:*.ogg=01;35:*.wav=01;35:'
+ORBIT_SOCKETDIR: '/tmp/orbit-theodoro'
+PATH: '/comelec/softs/bin:/comelec/softs/bin:/usr/local/bin:/usr/bin:/bin:/usr/local/games:/usr/games:/comelec/softs/bin:/usr/local/jacorb/bin:/opt/matlab/bin:/comelec/softs/opt/soclib/bin:/comelec/softs/opt/soclib/utils/bin:/comelec/softs/bin:/comelec/softs/opt/soclib/bin:/comelec/softs/opt/soclib/utils/bin:/comelec/softs/bin:/comelec/softs/opt/soclib/bin:/comelec/softs/opt/soclib/utils/bin:/comelec/softs/bin'
+PWD: '/stud/users/msc/theodoro/SOC342/hello_world'
+PYTHONPATH: '/comelec/softs/opt/soclib/utils/lib/python'
+SAVEHIST: '10000'
+SESSION_MANAGER: 'local/a405-10:@/tmp/.ICE-unix/29757,unix/a405-10:/tmp/.ICE-unix/29757'
+SHELL: '/bin/zsh'
+SHLVL: '1'
+SOCLIB_DIR: '/comelec/softs/opt/soclib'
+SSH_AGENT_PID: '29825'
+SSH_AUTH_SOCK: '/tmp/keyring-lM8fhY/ssh'
+SYSSTARTUP: '/usr/local/startup'
+SYSTEMC: '/comelec/softs/opt/systemc-2.2.0/'
+TERM: 'xterm'
+USER: 'theodoro'
+USERNAME: 'theodoro'
+WINDOWID: '35651587'
+WINDOWPATH: '8:8:8:8:8:8:8:8:8:8:8:8:8:8:8:8:8:8:8'
+XAUTHORITY: '/stud/users/msc/theodoro/.Xauthority'
+XDG_DATA_DIRS: '/usr/share/gnome:/usr/local/share/:/usr/share/:/usr/share/gdm/'
+XDG_SESSION_COOKIE: '9fa8607b55f77858309a00a900000043-1305383686.806286-1218188347'
+
+
+==== stderr ====
+Traceback (most recent call last):
+  File "/comelec/softs/opt/soclib/utils/lib/python/soclib_cc_main.py", line 410, in <module>
+    sys.exit(main())
+  File "/comelec/softs/opt/soclib/utils/lib/python/soclib_cc_main.py", line 285, in main
+    return compile_platform(opts.platform, opts)
+  File "/comelec/softs/opt/soclib/utils/lib/python/soclib_cc_main.py", line 356, in compile_platform
+    return todo_do(todo, opts)
+  File "/comelec/softs/opt/soclib/utils/lib/python/soclib_cc_main.py", line 362, in todo_do
+    todo.clean()
+  File "/comelec/softs/opt/soclib/utils/lib/python/soclib_builder/todo.py", line 130, in clean
+    self.prepare()
+  File "/comelec/softs/opt/soclib/utils/lib/python/soclib_builder/todo.py", line 85, in prepare
+    todo, bblocks = self._getall_bbs(self.dests)
+  File "/comelec/softs/opt/soclib/utils/lib/python/soclib_builder/todo.py", line 67, in _getall_bbs
+    gen.prepare()
+  File "/comelec/softs/opt/soclib/utils/lib/python/soclib_cc/actions/cxx.py", line 116, in prepare
+    self.prepare_deps()
+  File "/comelec/softs/opt/soclib/utils/lib/python/soclib_cc/actions/cxx.py", line 122, in prepare_deps
+    deps = self.__process_deps(s)
+  File "/comelec/softs/opt/soclib/utils/lib/python/soclib_cc/actions/cxx.py", line 77, in __process_deps
+    filename.generator.process()
+  File "/comelec/softs/opt/soclib/utils/lib/python/soclib_builder/action.py", line 174, in process
+    self.todo_launch(True)
+  File "/comelec/softs/opt/soclib/utils/lib/python/soclib_builder/action.py", line 230, in todo_launch
+    self.__next()
+  File "/comelec/softs/opt/soclib/utils/lib/python/soclib_builder/action.py", line 222, in __next
+    cmd.run(self.__sync)
+  File "/comelec/softs/opt/soclib/utils/lib/python/soclib_builder/command.py", line 165, in run
+    fd = open(self.__filename, 'w')
+IOError: [Errno 13] Permission denied: '/tmp/build/sc/release/caba:wb_master_module_-42e33d3e00416b0a_soclib::caba::WbMasterModule<soclib::caba::WbParams<32,32_>__>__wb_master_module.cpp'
+
+==== stdout ====
+
+SoCLib-cc failed unexpectedly.
+
+Config:
+configurations:
+  SDL_build_env = BuildEnv(
+      cache_file = '/tmp/build/sc/soclib_cc.cache',
+      libraries = [
+          Library(
+            cflags = [
+                '-I/comelec/softs/opt/systemc-2.2.0//include',
+              ],
+            dir = '/comelec/softs/opt/systemc-2.2.0/',
+            includedir = '/comelec/softs/opt/systemc-2.2.0//include',
+            libdir = '/comelec/softs/opt/systemc-2.2.0//lib-linux64',
+            libs = [
+                '-L/comelec/softs/opt/systemc-2.2.0//lib-linux64',
+                '-lsystemc',
+                '-lpthread',
+              ],
+            name = 'systemc',
+            os = 'linux64',
+            vendor = 'OSCI',
+          ),
+        ],
+      repos = '/tmp/build/sc',
+      sd_ignore_regexp = None,
+      toolchain = Toolchain(
+          always_include = [
+            ],
+          cflags = [
+              '-Wall',
+              '-Wno-pmf-conversions',
+              '-DSOCLIB',
+              '-include',
+              'sys/types.h',
+              '-include',
+              'inttypes.h',
+              '-I/comelec/softs/opt/soclib/soclib/lib/include',
+              '-I/usr/include/SDL',
+              '-D_GNU_SOURCE=1',
+              '-D_REENTRANT',
+              '-I/usr/include',
+            ],
+          debug_cflags = [
+              '-ggdb',
+              '-DSOCLIB_MODE_DEBUG',
+            ],
+          debug_libs = [
+            ],
+          lib_ext = 'a',
+          libs = [
+              '-lpthread',
+              '-L/usr/lib',
+              '-lSDL',
+              '-lpng',
+            ],
+          max_processes = 4,
+          obj_ext = 'o',
+          prefix = '',
+          prof_cflags = [
+              '-pg',
+              '-DSOCLIB_MODE_PROFILE',
+            ],
+          prof_libs = [
+              '-pg',
+            ],
+          release_cflags = [
+              '-O2',
+              '-DSOCLIB_MODE_RELEASE',
+            ],
+          release_libs = [
+            ],
+          tool_CC = 'gcc',
+          tool_CC_LINKER = 'gcc',
+          tool_CXX = 'g++',
+          tool_CXX_LINKER = 'g++',
+          tool_LD = 'ld',
+          vflags = [
+            ],
+        ),
+    ),
+  TPT_build_env = BuildEnv(
+      cache_file = '/tmp/soclib_build_theodoro/SC/soclib_cc.cache',
+      libraries = [
+          Library(
+            cflags = [
+                '-I/comelec/softs/opt/systemc-2.2.0//include',
+              ],
+            dir = '/comelec/softs/opt/systemc-2.2.0/',
+            includedir = '/comelec/softs/opt/systemc-2.2.0//include',
+            libdir = '/comelec/softs/opt/systemc-2.2.0//lib-linux64',
+            libs = [
+                '-L/comelec/softs/opt/systemc-2.2.0//lib-linux64',
+                '-lsystemc',
+                '-lpthread',
+              ],
+            name = 'systemc',
+            os = 'linux64',
+            vendor = 'OSCI',
+          ),
+        ],
+      repos = '/tmp/soclib_build_theodoro/SC',
+      sd_ignore_regexp = None,
+      toolchain = Toolchain(
+          always_include = [
+            ],
+          cflags = [
+              '-Wall',
+              '-Wno-pmf-conversions',
+              '-DSOCLIB',
+              '-include',
+              'sys/types.h',
+              '-include',
+              'inttypes.h',
+              '-I/comelec/softs/opt/soclib/soclib/lib/include',
+            ],
+          debug_cflags = [
+              '-ggdb',
+              '-DSOCLIB_MODE_DEBUG',
+            ],
+          debug_libs = [
+            ],
+          lib_ext = 'a',
+          libs = [
+              '-lpthread',
+            ],
+          max_processes = 1,
+          obj_ext = 'o',
+          prefix = '',
+          prof_cflags = [
+              '-pg',
+              '-DSOCLIB_MODE_PROFILE',
+            ],
+          prof_libs = [
+              '-pg',
+            ],
+          release_cflags = [
+              '-O2',
+              '-DSOCLIB_MODE_RELEASE',
+            ],
+          release_libs = [
+            ],
+          tool_CC = 'gcc',
+          tool_CC_LINKER = 'gcc',
+          tool_CXX = 'g++',
+          tool_CXX_LINKER = 'g++',
+          tool_LD = 'ld',
+          vflags = [
+            ],
+        ),
+    ),
+  build_env = BuildEnv(
+      cache_file = '/tmp/build/sc/soclib_cc.cache',
+      libraries = [
+          Library(
+            cflags = [
+                '-I/comelec/softs/opt/systemc-2.2.0//include',
+              ],
+            dir = '/comelec/softs/opt/systemc-2.2.0/',
+            includedir = '/comelec/softs/opt/systemc-2.2.0//include',
+            libdir = '/comelec/softs/opt/systemc-2.2.0//lib-linux64',
+            libs = [
+                '-L/comelec/softs/opt/systemc-2.2.0//lib-linux64',
+                '-lsystemc',
+                '-lpthread',
+              ],
+            name = 'systemc',
+            os = 'linux64',
+            vendor = 'OSCI',
+          ),
+        ],
+      repos = '/tmp/build/sc',
+      sd_ignore_regexp = None,
+      toolchain = Toolchain(
+          always_include = [
+            ],
+          cflags = [
+              '-Wall',
+              '-Wno-pmf-conversions',
+              '-DSOCLIB',
+              '-include',
+              'sys/types.h',
+              '-include',
+              'inttypes.h',
+              '-I/comelec/softs/opt/soclib/soclib/lib/include',
+            ],
+          debug_cflags = [
+              '-ggdb',
+              '-DSOCLIB_MODE_DEBUG',
+            ],
+          debug_libs = [
+            ],
+          lib_ext = 'a',
+          libs = [
+              '-lpthread',
+            ],
+          max_processes = 1,
+          obj_ext = 'o',
+          prefix = '',
+          prof_cflags = [
+              '-pg',
+              '-DSOCLIB_MODE_PROFILE',
+            ],
+          prof_libs = [
+              '-pg',
+            ],
+          release_cflags = [
+              '-O2',
+              '-DSOCLIB_MODE_RELEASE',
+            ],
+          release_libs = [
+            ],
+          tool_CC = 'gcc',
+          tool_CC_LINKER = 'gcc',
+          tool_CXX = 'g++',
+          tool_CXX_LINKER = 'g++',
+          tool_LD = 'ld',
+          vflags = [
+            ],
+        ),
+    ),
+  libsystemc_sccom = Library(
+      cflags = [
+          '-fPIC',
+          '-I/comelec/softs/opt/mentor/modelsim/current/include/systemc',
+          '-I/comelec/softs/opt/mentor/modelsim/current/include',
+        ],
+      libs = [
+        ],
+      name = 'systemc',
+      sc_workpath = 'work/_sc/linux_x86_64_gcc-4.1.2',
+      vendor = 'sccom',
+    ),
+  sccom = BuildEnv(
+      cache_file = '/tmp/soclib_build_theodoro/MSIM/soclib_cc.cache',
+      libraries = [
+          Library(
+            cflags = [
+                '-fPIC',
+                '-I/comelec/softs/opt/mentor/modelsim/current/include/systemc',
+                '-I/comelec/softs/opt/mentor/modelsim/current/include',
+              ],
+            libs = [
+              ],
+            name = 'systemc',
+            sc_workpath = 'work/_sc/linux_x86_64_gcc-4.1.2',
+            vendor = 'sccom',
+          ),
+        ],
+      repos = '/tmp/soclib_build_theodoro/MSIM',
+      sd_ignore_regexp = None,
+      toolchain = Toolchain(
+          always_include = [
+            ],
+          cflags = [
+              '-m64',
+              '-I/comelec/softs/opt/soclib/soclib/lib/include',
+            ],
+          debug_cflags = [
+              '-ggdb',
+              '-DSOCLIB_MODE_DEBUG',
+            ],
+          debug_libs = [
+            ],
+          lib_ext = 'a',
+          libs = [
+            ],
+          max_processes = 1,
+          obj_ext = 'o',
+          prefix = '',
+          prof_cflags = [
+              '-pg',
+              '-DSOCLIB_MODE_PROFILE',
+            ],
+          prof_libs = [
+              '-pg',
+            ],
+          release_cflags = [
+              '-O2',
+              '-DSOCLIB_MODE_RELEASE',
+            ],
+          release_libs = [
+            ],
+          tool_CC = '/comelec/softs/opt/mentor/modelsim/current/gcc-4.1.2-linux_x86_64/bin/gcc',
+          tool_CC_LINKER = 'sccom_nolinwarn -suppress 6102',
+          tool_CXX = '/comelec/softs/opt/mentor/modelsim/current/gcc-4.1.2-linux_x86_64/bin/g++',
+          tool_CXX_LINKER = 'sccom_nolinwarn -suppress 6102',
+          tool_LD = 'ld',
+          tool_SCCOM_CC = 'sccom_nolinwarn -suppress 6102',
+          tool_SCCOM_CXX = 'sccom_nolinwarn -suppress 6102',
+          tool_VERILOG = 'vlog',
+          tool_VHDL = 'vcom',
+          vflags = [
+            ],
+        ),
+    ),
+  systemc = Library(
+      cflags = [
+          '-I/comelec/softs/opt/systemc-2.2.0//include',
+        ],
+      dir = '/comelec/softs/opt/systemc-2.2.0/',
+      includedir = '/comelec/softs/opt/systemc-2.2.0//include',
+      libdir = '/comelec/softs/opt/systemc-2.2.0//lib-linux64',
+      libs = [
+          '-L/comelec/softs/opt/systemc-2.2.0//lib-linux64',
+          '-lsystemc',
+          '-lpthread',
+        ],
+      name = 'systemc',
+      os = 'linux64',
+      vendor = 'OSCI',
+    ),
+  toolchain = Toolchain(
+      always_include = [
+        ],
+      cflags = [
+          '-Wall',
+          '-Wno-pmf-conversions',
+          '-DSOCLIB',
+          '-include',
+          'sys/types.h',
+          '-include',
+          'inttypes.h',
+          '-I/comelec/softs/opt/soclib/soclib/lib/include',
+        ],
+      debug_cflags = [
+          '-ggdb',
+          '-DSOCLIB_MODE_DEBUG',
+        ],
+      debug_libs = [
+        ],
+      lib_ext = 'a',
+      libs = [
+          '-lpthread',
+        ],
+      max_processes = 1,
+      obj_ext = 'o',
+      prefix = '',
+      prof_cflags = [
+          '-pg',
+          '-DSOCLIB_MODE_PROFILE',
+        ],
+      prof_libs = [
+          '-pg',
+        ],
+      release_cflags = [
+          '-O2',
+          '-DSOCLIB_MODE_RELEASE',
+        ],
+      release_libs = [
+        ],
+      tool_CC = 'gcc',
+      tool_CC_LINKER = 'gcc',
+      tool_CXX = 'g++',
+      tool_CXX_LINKER = 'g++',
+      tool_LD = 'ld',
+      vflags = [
+        ],
+    ),
+  toolchain_SDL = Toolchain(
+      always_include = [
+        ],
+      cflags = [
+          '-Wall',
+          '-Wno-pmf-conversions',
+          '-DSOCLIB',
+          '-include',
+          'sys/types.h',
+          '-include',
+          'inttypes.h',
+          '-I/comelec/softs/opt/soclib/soclib/lib/include',
+          '-I/usr/include/SDL',
+          '-D_GNU_SOURCE=1',
+          '-D_REENTRANT',
+          '-I/usr/include',
+        ],
+      debug_cflags = [
+          '-ggdb',
+          '-DSOCLIB_MODE_DEBUG',
+        ],
+      debug_libs = [
+        ],
+      lib_ext = 'a',
+      libs = [
+          '-lpthread',
+          '-L/usr/lib',
+          '-lSDL',
+          '-lpng',
+        ],
+      max_processes = 4,
+      obj_ext = 'o',
+      prefix = '',
+      prof_cflags = [
+          '-pg',
+          '-DSOCLIB_MODE_PROFILE',
+        ],
+      prof_libs = [
+          '-pg',
+        ],
+      release_cflags = [
+          '-O2',
+          '-DSOCLIB_MODE_RELEASE',
+        ],
+      release_libs = [
+        ],
+      tool_CC = 'gcc',
+      tool_CC_LINKER = 'gcc',
+      tool_CXX = 'g++',
+      tool_CXX_LINKER = 'g++',
+      tool_LD = 'ld',
+      vflags = [
+        ],
+    ),
+  toolchain_sccom = Toolchain(
+      always_include = [
+        ],
+      cflags = [
+          '-m64',
+          '-I/comelec/softs/opt/soclib/soclib/lib/include',
+        ],
+      debug_cflags = [
+          '-ggdb',
+          '-DSOCLIB_MODE_DEBUG',
+        ],
+      debug_libs = [
+        ],
+      lib_ext = 'a',
+      libs = [
+        ],
+      max_processes = 1,
+      obj_ext = 'o',
+      prefix = '',
+      prof_cflags = [
+          '-pg',
+          '-DSOCLIB_MODE_PROFILE',
+        ],
+      prof_libs = [
+          '-pg',
+        ],
+      release_cflags = [
+          '-O2',
+          '-DSOCLIB_MODE_RELEASE',
+        ],
+      release_libs = [
+        ],
+      tool_CC = '/comelec/softs/opt/mentor/modelsim/current/gcc-4.1.2-linux_x86_64/bin/gcc',
+      tool_CC_LINKER = 'sccom_nolinwarn -suppress 6102',
+      tool_CXX = '/comelec/softs/opt/mentor/modelsim/current/gcc-4.1.2-linux_x86_64/bin/g++',
+      tool_CXX_LINKER = 'sccom_nolinwarn -suppress 6102',
+      tool_LD = 'ld',
+      tool_SCCOM_CC = 'sccom_nolinwarn -suppress 6102',
+      tool_SCCOM_CXX = 'sccom_nolinwarn -suppress 6102',
+      tool_VERILOG = 'vlog',
+      tool_VHDL = 'vcom',
+      vflags = [
+        ],
+    ),
+
+default:SDL_build_env
+other:
+  debug = None,
+  desc_parsers = [
+      'sd_parser.sd.SdFile',
+    ],
+  desc_paths = [
+      '/comelec/softs/opt/soclib/soclib/communication',
+      '/comelec/softs/opt/soclib/soclib/lib',
+      '/comelec/softs/opt/soclib/soclib/module',
+      '/comelec/softs/opt/soclib/soclib/iss',
+      '/cal/nfs3/msc/theodoro/SOC342/hello_world',
+    ],
+  max_name_length = 0,
+  mode = 'release',
+  output = 'simulation.x',
+  path = '/comelec/softs/opt/soclib',
+  progress_bar = True,
+  quiet = True,
+  sd_ignore_regexp = [
+    ],
+  verbose = None,
+  workpath = '/cal/nfs3/msc/theodoro/SOC342/hello_world/work',
+
+Used modules:
+   <Module caba:wb_master in /comelec/softs/opt/soclib/soclib/communication/wishbone/caba/metadata/wishbone.sd>
+
+==== stderr ====
+Error in atexit._run_exitfuncs:
+Traceback (most recent call last):
+  File "/usr/lib/python2.6/atexit.py", line 24, in _run_exitfuncs
+    func(*targs, **kargs)
+  File "/comelec/softs/opt/soclib/utils/lib/python/soclib_cc/bugreport.py", line 95, in end_handler
+    for f in m.files():
+AttributeError: PortDecl instance has no attribute 'files'
+Error in sys.exitfunc:
+Traceback (most recent call last):
+  File "/usr/lib/python2.6/atexit.py", line 24, in _run_exitfuncs
+    func(*targs, **kargs)
+  File "/comelec/softs/opt/soclib/utils/lib/python/soclib_cc/bugreport.py", line 95, in end_handler
+    for f in m.files():
+AttributeError: PortDecl instance has no attribute 'files'
+
+==== stdout ====
+
+SoCLib-cc failed unexpectedly.
