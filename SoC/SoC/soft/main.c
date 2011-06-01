@@ -30,6 +30,7 @@
 #include <stdio.h>
 #include "lm32_sys.h"
 #include "../segmentation.h"
+#include "etrange.h"
 
 #define N 10
 #define WB_TARGET 0xA1000000
@@ -49,8 +50,17 @@ void UART_IrqHandler() {
 
 int main(void)
 {
+	P0 p0;
+	P1 p1;
+	P2 p2;
+	P3 p3;
 
+	int j;
 
+	for (j=0;j<10;j++) {
+		p3.a[j]=(mfixed) 0;
+	}
+	etrange_initialize(&p3,&p2,&p1,&p0);
 	//Test interrupt UART
 	RegisterIrqEntry(0,UART_IrqHandler);
 	//Enable global interrutps
