@@ -1,0 +1,7 @@
+#ifndef __COMMON_H
+#define __COMMON_H
+#define VIDEO_FIFO_SIZE 16
+#define VIDEO_NUM_OF_BLOCKS 2
+#define VIDEO_BLOCK_RD_WR_SIZE VIDEO_FIFO_SIZE/VIDEO_NUM_OF_BLOCKS 
+
+#endif
