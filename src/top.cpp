@@ -57,7 +57,7 @@
 
 #define VIDEO_IN 1
 #define VIDEO_OUT 1
-
+#define DUMMY_COPRO 0
 //#define DO_TRACES
 
 // SystemC main
@@ -129,21 +129,21 @@ int _main(int argc, char *argv[])
     my_display.frame_valid(display_frame_valid);
     my_display.pixel_in(display_pixel);
 
- 
-    //dummy read instanciation
-      soclib::caba::Master_dummy <wb_param>    master_dummy  ("master_dummy");
-      master_dummy.p_clk_100mhz(sys_signal_clk);
-      master_dummy.p_resetn(signal_resetn);
-      master_dummy.p_wb(signal_wb_dummy);
-      master_dummy.p_clk(video_signal_clk);
+#if DUMMY_COPRO
+	//dummy read instanciation
+	soclib::caba::Master_dummy <wb_param>    master_dummy  ("master_dummy");
+	master_dummy.p_clk_100mhz(sys_signal_clk);
+	master_dummy.p_resetn(signal_resetn);
+	master_dummy.p_wb(signal_wb_dummy);
+	master_dummy.p_clk(video_signal_clk);
 
-   //dummy write instanciation
-     soclib::caba::Master_dummy_write <wb_param>    master_dummy_write  ("master_dummy_write");
-      master_dummy_write.p_clk_100mhz(sys_signal_clk);
-      master_dummy_write.p_resetn(signal_resetn);
-      master_dummy_write.p_wb(signal_wb_dummy_write);
-      master_dummy_write.p_clk(video_signal_clk);
-
+	//dummy write instanciation
+	soclib::caba::Master_dummy_write <wb_param>    master_dummy_write  ("master_dummy_write");
+	master_dummy_write.p_clk_100mhz(sys_signal_clk);
+	master_dummy_write.p_resetn(signal_resetn);
+	master_dummy_write.p_wb(signal_wb_dummy_write);
+	master_dummy_write.p_clk(video_signal_clk);
+#endif
 
     // memories
     soclib::caba::VciRam<vci_param> ram("ram", IntTab(0), maptab);

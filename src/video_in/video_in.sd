@@ -16,6 +16,6 @@ Module('caba:video_in',
         Uses('caba:wishbone'),
         Uses('caba:wb_master_module'),
         ],
-        debug = True ,
+#        debug = True ,
       )
 

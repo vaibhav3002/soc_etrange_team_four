@@ -169,7 +169,7 @@ namespace soclib { namespace caba {
 					{
 						// 4 bytes are available
 						uint32_t temp_write = 0;
-
+					
 						for(uint8_t count = 0; count < 4; count++)
 						{
 							// blocking call to pixel fifo
