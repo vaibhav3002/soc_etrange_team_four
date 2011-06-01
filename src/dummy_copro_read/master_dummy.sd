@@ -1,12 +1,12 @@
 # -*- python -*-
 
-Module('caba:video_in',
-        classname = 'soclib::caba::Video_in',
+Module('caba:master_dummy',
+        classname = 'soclib::caba::Master_dummy',
         tmpl_parameters = [
             parameter.Module('wb_param',  default = 'caba:wb_param'),
         ],
-        header_files = ['video_in.h',],
-        implementation_files = ['video_in.cpp',],
+        header_files = ['master_dummy.h',],
+        implementation_files = ['master_dummy.cpp',],
         ports = [
             Port('caba:bit_in',     'p_resetn', auto = 'resetn'),
             Port('caba:clock_in' ,  'p_clk', auto = 'clock'),
@@ -16,6 +16,6 @@ Module('caba:video_in',
         Uses('caba:wishbone'),
         Uses('caba:wb_master_module'),
         ],
-        debug = True ,
+        #debug = True ,
       )
 

@@ -43,11 +43,17 @@
 // locals
 #include "segmentation.h"
 
-#include "master.h"
+//#include "master.h"
 #include "video_gen.h"
 #include "display.h"
 #include "video_in.h"
 #include "video_out.h"
+
+//dummy read
+#include "master_dummy.h"
+
+//dummy write
+#include "master_dummy_write.h"
 
 #define VIDEO_IN 1
 #define VIDEO_OUT 1
@@ -81,7 +87,7 @@ int _main(int argc, char *argv[])
     
     // WB interconnect
     // sc_name    maptab  masters slaves
-    soclib::caba::WbInterco<wb_param> wbinterco("wbinterco",maptab, 2,1);
+    soclib::caba::WbInterco<wb_param> wbinterco("wbinterco",maptab, 4,1);
 
 
     // WB interconnect signals
@@ -102,6 +108,9 @@ int _main(int argc, char *argv[])
     sc_signal<bool>        display_frame_valid("display_frame_val");
 
     sc_signal<unsigned char> display_pixel("display_pixel_val");
+    
+	soclib::caba::WbSignal<wb_param> signal_wb_dummy("wb_dummy"); 
+    soclib::caba::WbSignal<wb_param> signal_wb_dummy_write("wb_dummy_write"); 
 
 
     VideoGen my_videogen ("video_gen");
@@ -119,6 +128,23 @@ int _main(int argc, char *argv[])
     my_display.line_valid(display_line_valid);
     my_display.frame_valid(display_frame_valid);
     my_display.pixel_in(display_pixel);
+
+ 
+    //dummy read instanciation
+      soclib::caba::Master_dummy <wb_param>    master_dummy  ("master_dummy");
+      master_dummy.p_clk_100mhz(sys_signal_clk);
+      master_dummy.p_resetn(signal_resetn);
+      master_dummy.p_wb(signal_wb_dummy);
+      master_dummy.p_clk(video_signal_clk);
+
+   //dummy write instanciation
+     soclib::caba::Master_dummy_write <wb_param>    master_dummy_write  ("master_dummy_write");
+      master_dummy_write.p_clk_100mhz(sys_signal_clk);
+      master_dummy_write.p_resetn(signal_resetn);
+      master_dummy_write.p_wb(signal_wb_dummy_write);
+      master_dummy_write.p_clk(video_signal_clk);
+
+
     // memories
     soclib::caba::VciRam<vci_param> ram("ram", IntTab(0), maptab);
     // Maitre simple
@@ -143,6 +169,8 @@ int _main(int argc, char *argv[])
 
     wbinterco.p_from_master[0](signal_wb_video_in);
     wbinterco.p_from_master[1](signal_wb_video_out);
+    wbinterco.p_from_master[2](signal_wb_dummy);
+    wbinterco.p_from_master[3](signal_wb_dummy_write);
 
     wbinterco.p_to_slave[0](signal_wb_ram);
 #if VIDEO_IN
