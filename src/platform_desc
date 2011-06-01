@@ -12,7 +12,9 @@ todo = Platform('caba', 'top.cpp',
         Uses('caba:wb_slave_vci_initiator_wrapper'),
      	Uses('caba:wb_interco'),
         Uses('caba:master_dummy'),
-        Uses('caba:master_dummy_write')
+        Uses('caba:master_dummy_write'),
+        Uses('caba:wb_slave_module'),
+        Uses('caba:wb_slave_reg')
         ],
         cell_size = 4,
         plen_size = 8,
