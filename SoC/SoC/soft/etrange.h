@@ -21,6 +21,7 @@ typedef struct {
 } P0;
 
 void etrange_initialize(P3* p3, P2* p2, P1* p1, P0* p0);
+void etrange_polyinit(P3* p3, P2* p2, P1* p1, mfixed x, mfixed y, mfixed* p30, mfixed* p20, mfixed* p10);
 
 
 #endif

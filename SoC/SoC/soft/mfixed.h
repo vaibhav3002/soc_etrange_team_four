@@ -22,6 +22,8 @@ typedef union {
     int all;
 }mfixed;
 
+
+// The following functions are implemented in mfixed.c and their prototypes are given directly in etrange.c (compilation issues arose)
 //	// fixed point multiplication
 //	inline mfixed fx_mul  (mfixed A, mfixed B);
 //	// fixed point addition
