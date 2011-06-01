@@ -17,7 +17,7 @@
 
 
 #include <systemc>
-
+#include "../common.h"
 #include "wb_master_module.h"
 
 #define p_WIDTH      640 
@@ -59,7 +59,7 @@ namespace soclib { namespace caba {
             WbMasterModule<wb_param> master0;
 
             // Image Cache 
-	    const  unsigned int BUFFER_SIZE;
+	    unsigned int BUFFER_SIZE;
 	    sc_fifo<unsigned char> pixel_fifo;
 
 	    unsigned int pixel_c; 
@@ -71,7 +71,7 @@ namespace soclib { namespace caba {
 
         public:
             // constructor
-            Video_in ( sc_module_name name , unsigned int buf_size = 256);
+            Video_in ( sc_module_name name , unsigned int buf_size = VIDEO_FIFO_SIZE);
     };
 }}
 

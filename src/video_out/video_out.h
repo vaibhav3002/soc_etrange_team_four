@@ -17,7 +17,7 @@
 
 
 #include <systemc>
-
+#include "../common.h"
 #include "wb_master_module.h"
 
 #define p_WIDTH      640 
@@ -69,7 +69,7 @@ namespace soclib { namespace caba {
 
         public:
             // constructor
-            Video_out ( sc_module_name name , unsigned int buf_size = 8);
+            Video_out ( sc_module_name name , unsigned int buf_size = VIDEO_FIFO_SIZE);
     };
 }}
 
