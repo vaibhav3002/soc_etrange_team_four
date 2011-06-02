@@ -1,0 +1,23 @@
+# -*- python -*-
+
+Module('caba:video_out_master',
+        classname = 'soclib::caba::Video_out_Master',
+        tmpl_parameters = [
+            parameter.Module('wb_param',  default = 'caba:wb_param'),
+        ],
+        header_files = ['video_out_master.h',],
+        implementation_files = ['video_out_master.cpp',],
+        ports = [
+            Port('caba:bit_in',     'p_resetn', auto = 'resetn'),
+            Port('caba:clock_in' ,  'p_clk', auto = 'clock'),
+            Port('caba:wb_master',  'p_wb'),
+        ],
+        uses = [
+        Uses('caba:wishbone'),
+        Uses('caba:wb_master_module'),
+        Uses('caba:wb_slave_module'),
+        Uses('caba:wb_slave_reg'),
+        ],
+        #debug = True ,
+      )
+

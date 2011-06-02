@@ -1,0 +1,20 @@
+# -*- python -*-
+
+Module('caba:master_dummy_write',
+        classname = 'soclib::caba::Master_dummy_write',
+        tmpl_parameters = [
+            parameter.Module('wb_param',  default = 'caba:wb_param'),
+        ],
+        header_files = ['master_dummy_write.h',],
+        implementation_files = ['master_dummy_write.cpp',],
+        ports = [
+            Port('caba:bit_in',     'p_resetn', auto = 'resetn'),
+            Port('caba:wb_master',  'p_wb'),
+        ],
+        uses = [
+        Uses('caba:wishbone'),
+        Uses('caba:wb_master_module'),
+        ],
+        #debug = True ,
+      )
+
