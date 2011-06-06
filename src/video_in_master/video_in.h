@@ -55,7 +55,8 @@ namespace soclib { namespace caba {
             uint32_t * buffer_pnt;
             void     wait_cycles (uint32_t delay);
             WbMasterModule<wb_param> master0;
-	    bool frame_valid_mem; 
+	    bool frame_valid_mem;
+	    bool reset_config; 
         protected:
             SC_HAS_PROCESS(Video_in);
 

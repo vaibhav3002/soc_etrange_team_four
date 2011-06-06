@@ -50,7 +50,8 @@ void UART_IrqHandler() {
 
 void Videoin_IrqHandler() {
 	//Received Irq, anwsering
-	*((volatile unsigned long*) VIDEO_IN_REG) = 0x0;
+	*((volatile unsigned long*) VIDEO_IN_REG) = RAM_BASE;
+	printf("IRQ ACK\n");
 }
 
 int main(void)
@@ -62,9 +63,11 @@ int main(void)
 
 	int j;
 
+
 	for (j=0;j<10;j++) {
 		p3.a[j]=(mfixed) 0;
 	}
+
 	etrange_initialize(&p3,&p2,&p1,&p0);
 	//Test interrupt UART
 	RegisterIrqEntry(0,UART_IrqHandler);
@@ -74,12 +77,12 @@ int main(void)
 	unsigned long mask = 1;
 	asm volatile("wcsr IE,%0" ::"r"(mask));
 	
-	printf("Read video_in 0x%x\n",*((volatile unsigned int*) 0xA2000000));
-	printf("Write OxAB... Return value: ");
-	*((volatile unsigned int*) 0xA2000000) = 0xAB;
-
-	printf("0x%x\n",*((volatile unsigned int*) 0xA2000000));
-	printf("Read video_in 0x%x\n",*((volatile unsigned int*) 0xA2000000));
+//	printf("Read video_in 0x%x\n",*((volatile unsigned int*) 0xA2000000));
+//	printf("Write OxAB... Return value: ");
+//	*((volatile unsigned int*) 0xA2000000) = 0xAB;
+//
+//	printf("0x%x\n",*((volatile unsigned int*) 0xA2000000));
+//	printf("Read video_in 0x%x\n",*((volatile unsigned int*) 0xA2000000));
 
 
 

@@ -6,10 +6,12 @@
 
 namespace soclib { namespace caba {
 
+
     template<typename wb_param>
         class WbSlaveRegIrqModule : public WbSlaveModule<wb_param>
     {
 	public:
+
 	    WbSlaveRegIrqModule ( sc_module_name name ) : WbSlaveModule<wb_param>::WbSlaveModule(name), irq_out("irq_out") 
 		{
 	//		irq_out=false;
@@ -20,12 +22,17 @@ namespace soclib { namespace caba {
 	sc_core::sc_out<bool> irq_out;
 
 
-	void slave_raiseIrq() {
-		this->irq_out=true;
+	void slave_raiseIrq(){ 
+		this->irq=true;
 	};
 
-	protected:
+	void slave_ackIrq() {
+		this->irq=false;
+	};
 
+	bool irq;
+
+	protected:
 
 	uint32_t slave_read(uint32_t ADDR) {
 		return (reg.read());
@@ -33,7 +40,7 @@ namespace soclib { namespace caba {
 	
 	uint32_t slave_write(uint32_t ADDR, uint32_t DATA) {
 		//Acknowledge any pending IRQ
-		irq_out=false;
+		slave_ackIrq();
 		reg = DATA;
 		return 0xDE;
 	};

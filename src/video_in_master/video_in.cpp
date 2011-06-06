@@ -49,15 +49,18 @@ namespace soclib { namespace caba {
       uint32_t index;        //word index 
       uint32_t index_8;      //byte index
       uint32_t mask_and=0xFFFFFFFF;
-      for (;;) {
-         
+    for (;;) {
          wait(p_clk.posedge_event());                                                     //next clock
+	this->reg0.irq_out = this->reg0.irq;
+
          if (!p_resetn) // rese
          {
             reset_done = true;
             index=0;
             index_8=0;
             write_count=0;
+
+	       this->reg0.slave_raiseIrq();
          }
          else // clk event
          {
@@ -73,12 +76,16 @@ namespace soclib { namespace caba {
                continue;
             }
 
-	    if (!this->reg0.irq_out.read()) {
+	    if (this->reg0.irq_out.read()) {
 		//Skip
 		continue;
 	    }
 
             if (frame_valid){
+		if (!frame_valid_mem) {
+			//reset buffer to ram process config
+			reset_config=true;
+		}
 	       frame_valid_mem=true;
                if (line_valid){
 
@@ -143,16 +150,21 @@ namespace soclib { namespace caba {
          // wait rising edge of clk
          wait(p_clk_100mhz.posedge_event());
 
+	if ((!p_resetn)||(reset_config)) {
+		reset_config=false;
+		mem=reg0.reg.read();
+            initial_image_position= mem;
+		printf("VIDEOIN DESTINATION ADDRESS 0x%x\n",mem);
+	} 
          if (!p_resetn) // reset
          {
             master0.reset();
             reset_done = true;
             buffer_pnt=data;
-            mem=0x41000000;  //starting from a fixed address since we have processor latency
-            initial_image_position= mem;
-            read_count=0;
-            buffer_count=0;
+//            mem=0x41000000;  //starting from a fixed address since we have processor latency
+           buffer_count=0;
 
+            read_count=0;
             for (int i=0;i<(int) VIDEO_IN_WINDOW_SIZE;i++){  //initialising mask array
                mask[i]=0xFF;
             }
@@ -171,18 +183,17 @@ namespace soclib { namespace caba {
 #endif
                continue;
             }
-
 	    //Check whether an unacknoledged IRQ has been raised
 
             if (read_count!=write_count){ //we load a piece of the buffer to ram  only when available 
                master0.wb_write_blk(mem,mask_pnt,buffer_pnt,BLOCK_SIZE);     //converting byte length to word length       
                mem=mem+(4*BLOCK_SIZE);
-               if ((mem>RAM_BASE+RAM_SIZE -4*(BLOCK_SIZE)) || (mem-initial_image_position)>=0x0004b000) //load_next image memory adress once image is loaded
-               {                                                                                            
-                 // mem=master0.wb_read_at(VIDEO_IN_REG);
-                  mem=reg0.reg.read();
-                  initial_image_position=mem;
-               }
+//               if ((mem>RAM_BASE+RAM_SIZE -4*(BLOCK_SIZE)) || (mem-initial_image_position)>=0x0004b000) //load_next image memory adress once image is loaded
+//               {                                                                                            
+//                 // mem=master0.wb_read_at(VIDEO_IN_REG);
+//                  mem=reg0.reg.read();
+//                  initial_image_position=mem;
+//               }
                read_count++;                                                    //read counter is 0 when we ave written second half 
                read_count=read_count % BLOCK_MODULO;                                       //of the buffer 1 when we have writen first half
                buffer_count++;                                                  //Counts times we have loaded blocks to ram               
