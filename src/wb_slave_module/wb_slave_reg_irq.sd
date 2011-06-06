@@ -1,0 +1,17 @@
+# -*- python -*-
+
+Module('caba:wb_slave_reg_irq',
+        classname = 'soclib::caba::WbSlave',
+        tmpl_parameters = [
+            parameter.Module('wb_param',  default = 'caba:wb_param'),
+        ],
+        header_files = ['wb_slave_reg_irq.h',],
+#       implementation_files = ['wb_slave_module.cpp',],
+        ports = [
+        ],
+        uses = [
+        Uses('caba:wishbone'),
+        ],
+        #debug = True ,
+      )
+

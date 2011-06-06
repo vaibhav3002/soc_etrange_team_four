@@ -30,54 +30,98 @@
 #include <stdio.h>
 #include "lm32_sys.h"
 #include "../segmentation.h"
+#include "etrange.h"
 
 #define N 10
+#define WB_TARGET 0xA1000000
+
+
+extern char inbyte(void);
+
 
 int fibo(int n);
-unsigned int read_write(unsigned int valeur , unsigned intaddress );
+
+volatile unsigned long cnt=0;
+
+void UART_IrqHandler() {
+	cnt ++;
+	printf("UART CHARACTER RECV +%c+\n",inbyte());
+}
+
 int main(void)
 {
-     printf("Start"); 
-    //mfixed A,B,C,D;
-    int i;
-    int  fibov[N], fibot[N];
-    fibot[0] = get_cc();
-    for (i = 1; i < N; i++)
-    {
-        fibov[i] = fibo(i);fibot[i] = get_cc();
-    }
-    fibov [0]= get_cc();
+	P0 p0;
+	P1 p1;
+	P2 p2;
+	P3 p3;
 
-    printf(" Start time %d\n", fibot[0]);
+	int j;
 
-    for (i = 1; i < 10; i++){
-        printf(" Fibo %d : %d at %d\n",i,fibov[i],fibot[i]-fibot[i-1]);
+	for (j=0;j<10;j++) {
+		p3.a[j]=(mfixed) 0;
+	}
+	etrange_initialize(&p3,&p2,&p1,&p0);
+	//Test interrupt UART
+	RegisterIrqEntry(0,UART_IrqHandler);
+	//Enable global interrutps
+	unsigned long mask = 1;
+	asm volatile("wcsr IE,%0" ::"r"(mask));
+	
+	printf("Read video_in 0x%x\n",*((volatile unsigned int*) 0xA2000000));
+	printf("Write OxAB... Return value: ");
+	*((volatile unsigned int*) 0xA2000000) = 0xAB;
 
-        }
-    printf(" Video in register at adress : %x Content is  %x\n ",VIDEO_IN_REG,read_write((unsigned int) 0X40005000 ,(unsigned int) VIDEO_IN_REG));
-    printf(" Video out register at adress: %x Content is  %x\n ",VIDEO_OUT_REG,read_write((unsigned int)0X40005000 ,(unsigned int) VIDEO_OUT_REG));
-     
-    printf("End  time %d\n", fibov[0]);
- 
-    getchar();
-    return 0;
+	printf("0x%x\n",*((volatile unsigned int*) 0xA2000000));
+	printf("Read video_in 0x%x\n",*((volatile unsigned int*) 0xA2000000));
+
+
+
+	while (cnt<5) {}
+
+	return 0;
+
+	//mfixed A,B,C,D;
+	int i;
+	int  fibov[N], fibot[N];
+	fibot[0] = get_cc();
+	for (i = 1; i < N; i++)
+	{
+		fibov[i] = fibo(i);fibot[i] = get_cc();
+	}
+	fibov [0]= get_cc();
+
+
+	for (i = 1; i < 10; i++)
+		printf(" Fibo %d : %d at %d\n",i,fibov[i],fibot[i]-fibot[i-1]);
+
+	printf("End  time %d\n\n", fibov[0]);
+
+	printf("Number of correct received requests: %d\n",*((volatile unsigned int*) WB_TARGET));
+	printf("Number of correct received requests: %d\n",*((volatile unsigned int*) WB_TARGET));
+	printf("\nSending write request to simple_slave...\n");
+	*((volatile unsigned int*) WB_TARGET) = 123;
+	printf("Number of correct received requests: %d\n",*((volatile unsigned int*) WB_TARGET));
+	printf("\nSending write request to simple_slave...\n");
+	*((volatile unsigned int*) WB_TARGET) = 123;
+	printf("Number of correct received requests: %d\n",*((volatile unsigned int*) WB_TARGET));
+	printf("Number of correct received requests: %d\n",*((volatile unsigned int*) WB_TARGET));
+	printf("\nSending write request to simple_slave...\n");
+	*((volatile unsigned int*) WB_TARGET) = 123;
+	printf("Number of correct received requests: %d\n",*((volatile unsigned int*) WB_TARGET));
+
+	printf("\nDone.\n");
+
+	getchar();
+	return 0;
 }
 
 
 int fibo(int n)
 {
-    if (n==0)
-        return 1;
-    else if (n==1)
-        return 1;
-    else return fibo(n-1) + fibo(n-2);
+	if (n==0)
+		return 1;
+	else if (n==1)
+		return 1;
+	else return fibo(n-1) + fibo(n-2);
 }
-
- unsigned int  read_write(unsigned int valeur, unsigned int address)
- {
-   
-      *( (volatile unsigned int *) address ) = valeur;
-      valeur = *((volatile unsigned int *) address);
-      return valeur;
- }
 

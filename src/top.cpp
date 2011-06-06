@@ -108,7 +108,6 @@ int _main(int argc, char *argv[])
     sc_signal<bool>        line_out_valid;   // Les données sont sur une ligne valide
     sc_signal<bool>        frame_out_valid;   // Les données sont sur la partie valide de l'image
     sc_signal<unsigned char> pixel_out;       // La valeur des pixels
-    sc_signal<bool>        start_loading_connection;
 
    //video_gen to master signals 
    sc_time                 clk25_periode(40, SC_NS);
@@ -132,9 +131,12 @@ int _main(int argc, char *argv[])
     soclib::caba::WbSignal<wb_param> signal_wb_video_out_reg("signal_wb_video_out_reg");
     // irq from uart
     sc_signal<bool> signal_tty_irq("signal_tty_irq");
+    // irq from video_in
+    sc_signal<bool> signal_videoin_irq("signal_videoin_irq");
     // unconnected irqs
     sc_signal<bool> unconnected_irq ("unconnected_irq");
-    
+    // to-be-removed signal
+    sc_signal<bool> start_loading_connection;
 
     // Components
     // lm32 real cache configuration can be:
@@ -170,18 +172,18 @@ int _main(int argc, char *argv[])
     
     //Video_in Master generation and instantiotion
     
-    soclib::caba::Video_in<wb_param>    master_module  ("video_in");
-    master_module.p_clk(signal25_clk); 
-    master_module.p_clk_100mhz(signal_clk);
-    master_module.p_resetn(signal_resetn);
-    master_module.line_valid(line_in_valid);
-    master_module.frame_valid(frame_in_valid);
-    master_module.pixel_in(pixel_in);
-    master_module.p_wb(signal_wb_mastermodule);
-    master_module.start_loading(start_loading_connection);
-    master_module.reg0.p_clk(signal_clk);
-    master_module.reg0.p_wb(signal_wb_video_in_reg);
-    master_module.reg0.p_resetn(signal_resetn);
+    soclib::caba::Video_in<wb_param>    video_in_master_module  ("video_in");
+    video_in_master_module.p_clk(signal25_clk); 
+    video_in_master_module.p_clk_100mhz(signal_clk);
+    video_in_master_module.p_resetn(signal_resetn);
+    video_in_master_module.line_valid(line_in_valid);
+    video_in_master_module.frame_valid(frame_in_valid);
+    video_in_master_module.pixel_in(pixel_in);
+    video_in_master_module.p_wb(signal_wb_mastermodule);
+    video_in_master_module.reg0.irq_out(signal_videoin_irq);
+    video_in_master_module.reg0.p_clk(signal_clk);
+    video_in_master_module.reg0.p_wb(signal_wb_video_in_reg);
+    video_in_master_module.reg0.p_resetn(signal_resetn);
    
     //Video_out Master generation and instanciation
 	
@@ -194,11 +196,12 @@ int _main(int argc, char *argv[])
 	video_out_master_module.pixel_out(pixel_out);
 	video_out_master_module.p_wb(signal_wb_video_out_mastermodule);
 	video_out_master_module.start_loading(start_loading_connection);
-   video_out_master_module.reg0.p_clk(signal_clk);
-   video_out_master_module.reg0.p_resetn(signal_resetn);
-   video_out_master_module.reg0.p_wb(signal_wb_video_out_reg);
-   //display instanciation
-	
+	video_out_master_module.reg0.p_clk(signal_clk);
+	video_out_master_module.reg0.p_resetn(signal_resetn);
+	video_out_master_module.reg0.p_wb(signal_wb_video_out_reg);
+
+
+   //display instanciation	
    soclib::caba::Display display("display"); 
 	display.clk(signal25_clk);
 	display.reset_n(signal_resetn);
@@ -277,7 +280,8 @@ int _main(int argc, char *argv[])
     // To avoid adding inverters here, we consider
     // them active high
     lm32.p_irq[0] (signal_tty_irq);
-    for (int i=1; i<32; i++)
+    lm32.p_irq[1] (signal_videoin_irq);
+    for (int i=2; i<32; i++)
         lm32.p_irq[i] (unconnected_irq);
 
     ////////////////////////////////////////////////////////////

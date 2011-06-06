@@ -71,7 +71,7 @@ namespace soclib { namespace caba {
                continue;
             }
 
-	    if (!this->reg0->irq_out.read()) {
+	    if (!this->reg0.irq_out.read()) {
 		//Skip
 		continue;
 	    }
@@ -95,7 +95,7 @@ namespace soclib { namespace caba {
                }
             } else if (frame_valid_mem) {
 		//Raise an IrQ
-		this->reg0->slave_raiseIrq();
+		this->reg0.slave_raiseIrq();
 		frame_valid_mem=false;
 	    }
          }
@@ -165,9 +165,6 @@ namespace soclib { namespace caba {
                   << " : has not been reseted yet!!!"
                   << std::endl;
 #endif
-		//Raise an interrupt in order to get a destination address
-		irq_out=false;
-
                continue;
             }
 
