@@ -10,9 +10,9 @@ namespace soclib { namespace caba {
         class WbSlaveRegIrqModule : public WbSlaveModule<wb_param>
     {
 	public:
-	    WbSlaveRegIrqModule ( sc_module_name name ) : WbSlaveModule<wb_param>::WbSlaveModule(name) 
+	    WbSlaveRegIrqModule ( sc_module_name name ) : WbSlaveModule<wb_param>::WbSlaveModule(name), irq_out("irq_out") 
 		{
-			irq_out=false;
+	//		irq_out=false;
 		}
 
 	sc_signal<uint32_t> reg; //Internal register that must be accessible from the outside world
@@ -21,8 +21,8 @@ namespace soclib { namespace caba {
 
 
 	void slave_raiseIrq() {
-		this->irq_out=false;
-	}
+		this->irq_out=true;
+	};
 
 	protected:
 
@@ -33,7 +33,7 @@ namespace soclib { namespace caba {
 	
 	uint32_t slave_write(uint32_t ADDR, uint32_t DATA) {
 		//Acknowledge any pending IRQ
-		irq_out=true;
+		irq_out=false;
 		reg = DATA;
 		return 0xDE;
 	};

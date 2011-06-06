@@ -5,6 +5,7 @@ OUTPUT_LOG = simu.log
 PLATFORM_DESC    =  platform_desc
 SOCLIB_INCLUDES  = -I .
 SOCLIB_CC_ARGS   = -j4 -p $(PLATFORM_DESC) $(SOCLIB_INCLUDES)
+SOCLIB_CC_ARGS += -m debug
 
 SOCLIB_CC = soclib-cc
 

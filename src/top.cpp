@@ -22,7 +22,7 @@
  *
  */
 
-//#define DO_TRACES 1  
+#define DO_TRACES 1  
 
 // C/C++ std libs
 #include <iostream>
@@ -180,7 +180,7 @@ int _main(int argc, char *argv[])
     video_in_master_module.frame_valid(frame_in_valid);
     video_in_master_module.pixel_in(pixel_in);
     video_in_master_module.p_wb(signal_wb_mastermodule);
-    video_in_master_module.reg0.irq_out(signal_videoin_irq);
+    video_in_master_module.irq_out(signal_videoin_irq);
     video_in_master_module.reg0.p_clk(signal_clk);
     video_in_master_module.reg0.p_wb(signal_wb_video_in_reg);
     video_in_master_module.reg0.p_resetn(signal_resetn);
@@ -325,6 +325,8 @@ int _main(int argc, char *argv[])
     sc_trace(TRACEFILE, frame_in_valid,"frame_in_valid");
     sc_trace(TRACEFILE, signal_wb_video_out_mastermodule,"video_out_master");
     sc_trace(TRACEFILE, start_loading_connection,"start_loading");
+
+    sc_trace(TRACEFILE, signal_videoin_irq, "videoin_irq");
 
     /*
      

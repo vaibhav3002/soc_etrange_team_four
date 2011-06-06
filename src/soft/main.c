@@ -33,7 +33,7 @@
 #include "etrange.h"
 
 #define N 10
-#define WB_TARGET 0xA1000000
+//#define WB_TARGET 0xA1000000
 
 
 extern char inbyte(void);
@@ -46,6 +46,11 @@ volatile unsigned long cnt=0;
 void UART_IrqHandler() {
 	cnt ++;
 	printf("UART CHARACTER RECV +%c+\n",inbyte());
+}
+
+void Videoin_IrqHandler() {
+	//Received Irq, anwsering
+	*((volatile unsigned long*) VIDEO_IN_REG) = 0x0;
 }
 
 int main(void)
@@ -63,6 +68,8 @@ int main(void)
 	etrange_initialize(&p3,&p2,&p1,&p0);
 	//Test interrupt UART
 	RegisterIrqEntry(0,UART_IrqHandler);
+	//Videoin interrupt
+	RegisterIrqEntry(1,Videoin_IrqHandler);
 	//Enable global interrutps
 	unsigned long mask = 1;
 	asm volatile("wcsr IE,%0" ::"r"(mask));

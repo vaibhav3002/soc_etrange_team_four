@@ -28,9 +28,10 @@
 namespace soclib { namespace caba {
 
    tmpl(/**/)::Video_in (sc_module_name name )
-      :sc_core::sc_module(name), p_clk("p_clk"),p_resetn("p_resetn"), master0(p_clk_100mhz,p_wb), reg0("reg0")
+      :sc_core::sc_module(name), p_clk("p_clk"),p_resetn("p_resetn"), master0(p_clk_100mhz,p_wb), reg0("reg0"), irq_out("videoinirq")
 
     {
+      reg0.irq_out(irq_out);
       frame_valid_mem=true;
       // sc thread
       SC_THREAD(process_write_buffer);
@@ -50,6 +51,7 @@ namespace soclib { namespace caba {
       uint32_t mask_and=0xFFFFFFFF;
       for (;;) {
          
+         wait(p_clk.posedge_event());                                                     //next clock
          if (!p_resetn) // rese
          {
             reset_done = true;
@@ -104,7 +106,6 @@ namespace soclib { namespace caba {
          //         std::cout<< read_count <<"read_count"<< write_count <<"write_count"<< std::endl;
  //        if (iterations==640*480)
  //             sc_stop();
-         wait(p_clk.posedge_event());                                                     //next clock
       }
 
    } // infinite loop
@@ -138,6 +139,9 @@ namespace soclib { namespace caba {
       uint8_t * mask_pnt;
       uint8_t buffer_count;
       for (;;) {
+
+         // wait rising edge of clk
+         wait(p_clk_100mhz.posedge_event());
 
          if (!p_resetn) // reset
          {
@@ -187,8 +191,6 @@ namespace soclib { namespace caba {
 
             }
          }
-         // wait rising edge of clk
-         wait(p_clk_100mhz.posedge_event());
       }      //thread that sends buffer data to ram
    }
 

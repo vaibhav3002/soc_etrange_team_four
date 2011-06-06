@@ -41,6 +41,7 @@ namespace soclib { namespace caba {
             sc_core::sc_in<bool> line_valid;
             sc_core::sc_in<bool> frame_valid;
             sc_core::sc_in<unsigned char> pixel_in;
+	    sc_core::sc_out<bool> irq_out;
             soclib::caba::WbMaster<wb_param> p_wb;
             WbSlaveRegIrqModule<wb_param> reg0;
         private:
