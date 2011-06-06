@@ -16,7 +16,7 @@ Module('caba:video_in',
         Uses('caba:wishbone'),
         Uses('caba:wb_master_module'),
         Uses('caba:wb_slave_module'),
-        Uses('caba:wb_slave_reg'),
+        Uses('caba:wb_slave_reg_irq'),
         ],
 #        debug = True ,
       )

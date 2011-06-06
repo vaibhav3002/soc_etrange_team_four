@@ -31,6 +31,7 @@ namespace soclib { namespace caba {
       :sc_core::sc_module(name), p_clk("p_clk"),p_resetn("p_resetn"), master0(p_clk_100mhz,p_wb), reg0("reg0")
 
     {
+      frame_valid_mem=true;
       // sc thread
       SC_THREAD(process_write_buffer);
       // no sensitivity list, waits have to be explicit
@@ -70,7 +71,13 @@ namespace soclib { namespace caba {
                continue;
             }
 
+	    if (!this->reg0->irq_out.read()) {
+		//Skip
+		continue;
+	    }
+
             if (frame_valid){
+	       frame_valid_mem=true;
                if (line_valid){
 
                   data[index]=data[index]|(pixel_in<<8*(index_8 % 4));
@@ -86,7 +93,11 @@ namespace soclib { namespace caba {
                   }              
                   index=  index==VIDEO_IN_WINDOW_SIZE? 0:index;                           //checking if we are at the end of the buffer
                }
-            }
+            } else if (frame_valid_mem) {
+		//Raise an IrQ
+		this->reg0->slave_raiseIrq();
+		frame_valid_mem=false;
+	    }
          }
 
          iterations++;
@@ -154,9 +165,15 @@ namespace soclib { namespace caba {
                   << " : has not been reseted yet!!!"
                   << std::endl;
 #endif
+		//Raise an interrupt in order to get a destination address
+		irq_out=false;
+
                continue;
             }
-            if (read_count!=write_count){                                       //we load a piece of the buffer to ram  only when available 
+
+	    //Check whether an unacknoledged IRQ has been raised
+
+            if (read_count!=write_count){ //we load a piece of the buffer to ram  only when available 
                master0.wb_write_blk(mem,mask_pnt,buffer_pnt,BLOCK_SIZE);     //converting byte length to word length       
                mem=mem+(4*BLOCK_SIZE);
                if ((mem>RAM_BASE+RAM_SIZE -4*(BLOCK_SIZE)) || (mem-initial_image_position)>=0x0004b000) //load_next image memory adress once image is loaded
@@ -171,9 +188,6 @@ namespace soclib { namespace caba {
                mask_pnt=&mask[read_count*(BLOCK_SIZE)];
                buffer_pnt=&data[read_count*(BLOCK_SIZE)];                    //point accordingly to multiple of half
 
-               if (buffer_count==2){                                            //Notify reading process once we have loaded 
-                  start_loading=true;                                           //4 blocks
-               }
             }
          }
          // wait rising edge of clk

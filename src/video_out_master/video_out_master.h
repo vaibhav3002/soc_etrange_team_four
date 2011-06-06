@@ -17,7 +17,7 @@
 
 #include <systemc>
 #include "wb_master_module.h"
-#include "../video_buffer.h"
+#include "../common.h"
 #include "wb_slave_reg.h"
 
 #define VIDEO_OUT_WINDOW_SIZE  VIDEO_BUFFER_SIZE 

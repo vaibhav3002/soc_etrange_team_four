@@ -18,8 +18,8 @@
 
 #include <systemc>
 #include "wb_master_module.h"
-#include "../video_buffer.h"
-#include "wb_slave_reg.h"
+#include "../common.h"
+#include "wb_slave_reg_irq.h"
 
 #define VIDEO_IN_WINDOW_SIZE  VIDEO_BUFFER_SIZE 
 #define BLOCK_SIZE VIDEO_BUFFER_BLOCK_SIZE //this defines the size of the
@@ -42,8 +42,7 @@ namespace soclib { namespace caba {
             sc_core::sc_in<bool> frame_valid;
             sc_core::sc_in<unsigned char> pixel_in;
             soclib::caba::WbMaster<wb_param> p_wb;
-            sc_core::sc_out<bool> start_loading;
-            WbSlaveRegModule<wb_param> reg0;
+            WbSlaveRegIrqModule<wb_param> reg0;
         private:
             
             // send data to ram 
@@ -54,7 +53,8 @@ namespace soclib { namespace caba {
             int write_count;
             uint32_t * buffer_pnt;
             void     wait_cycles (uint32_t delay);
-            WbMasterModule<wb_param> master0; 
+            WbMasterModule<wb_param> master0;
+	    bool frame_valid_mem; 
         protected:
             SC_HAS_PROCESS(Video_in);
 
