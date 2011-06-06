@@ -1,4 +1,17 @@
-
+/*:v
+ * =============================================================================
+ *
+ *       Filename:  video_out_master.cpp
+ *
+ *    Description:  Video OUT - Type WB master
+ *                  This module takes the pixels stored on the ram and gives  
+ * 					them to video display.
+ *
+ *         Author:  Ted
+ *        Company:  Telecom Paris TECH
+ *
+ * =============================================================================
+ */
 #include <cstdio>
 
 #include <fstream>

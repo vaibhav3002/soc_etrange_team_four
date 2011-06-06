@@ -1,12 +1,13 @@
-/*
+/*:v
  * =============================================================================
  *
- *       Filename:  master.h
+ *       Filename:  video_in.h
  *
- *    Description:  generic wb master
- *                  This module demonstrate WbMasterModule usage
+ *    Description:  Video IN - Type WB master
+ *                  This module takes the pixels from video generator and stores 
+ * 					on to ram.
  *
- *         Author:  Tarik Graba (TG), tarik.graba@telecom-paristech.fr
+ *         Author:  Ted
  *        Company:  Telecom Paris TECH
  *
  * =============================================================================

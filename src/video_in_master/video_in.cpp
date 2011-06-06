@@ -1,10 +1,11 @@
 /*:v
  * =============================================================================
  *
- *       Filename:  master.cpp
+ *       Filename:  video_in.cpp
  *
- *    Description:  WB master
- *                  This module demonstrate WbMasterModule usage
+ *    Description:  Video IN - Type WB master
+ *                  This module takes the pixels from video generator and stores 
+ * 					on to ram.
  *
  *         Author:  Ted
  *        Company:  Telecom Paris TECH
