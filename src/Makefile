@@ -1,42 +1,59 @@
-SIM_BINARY = simulation.x
-SOFT       = soft/soft.elf
-OUTPUT_LOG = simu.log
+# SocLib tools
+PLATFORM_DESC   =  platform_desc
+SOCLIB_INCLUDES = -I.
+# use modelsim's sccom
+SOCLIB_CC_ARGS  = -j4 $(SOCLIB_INCLUDES) -t sccom
 
-PLATFORM_DESC    =  platform_desc
-SOCLIB_INCLUDES  = -I .
-SOCLIB_CC_ARGS   = -j4 -p $(PLATFORM_DESC) $(SOCLIB_INCLUDES)
+SOCLIB_CC       = soclib-cc
 
-SOCLIB_CC = soclib-cc
+# Verilog compilation
+VLOG            = vlog +acc
+VLOG_SRC        = wb_simple_slave.sv
+VLOG_DAT        = $(patsubst %.sv,work/%/_primary.dat,$(VLOG_SRC))
 
-SOCLIB = $(shell $(SOCLIB_CC) --getpath)
-export SOCLIB
+# SystemC wrappers for verilog modules
+WRAP_DIR = hdl/include
+WRAPPERS =  $(patsubst %.sv,$(WRAP_DIR)/%.h,$(VLOG_SRC))
+SCGENMOD = scgenmod
+# wraps wires to bool and vectors to sc_uint
+# 'scgenmod -help' for more options
+SCGENMOD_OPT = -sc_uint -bool
 
+vpath %.sv hdl/SystemVerilog
 
-.PHONY: all soft simlog soft_clean $(SIM_BINARY)
+.PHONY: all clean soft soclibcomp soft_clean vlogcompile
 
+all: soft soclibcomp vlogcompile
 
-all: test_soclib $(SIM_BINARY) soft
+sim:
+	vsim -c sc_main
+
+work:
+	vlib work
+
+$(WRAP_DIR):
+	mkdir $@
+
+soclibcomp: $(PLATFORM_DESC) $(WRAPPERS) | work
+	$(SOCLIB_CC) -P $(SOCLIB_CC_ARGS) -p $<
 
 soft:
 	$(MAKE) -C soft
 
-test_soclib:
-	@test -z "$(SOCLIB)" && (\
-	echo "You must have soclib-cc in your $$PATH" ; exit 1 ) || exit 0
-	@test ! -z "$(SOCLIB)"
+vlogcompile: $(VLOG_DAT)
 
-$(SIM_BINARY): $(PLATFORM_DESC)
-	$(SOCLIB_CC) -P $(SOCLIB_CC_ARGS) $(SOCLIB_CC_ADD_ARGS) -o $@
+work/%/_primary.dat:%.sv | work
+	$(VLOG) $<
 
-simlog: $(SIM_BINARY) soft
-	set -o pipefail ; SOCLIB_TTY=TERM ./$(SIM_BINARY) $(SIMULATION_ARGS) < /dev/null 2>&1 | tee $(OUTPUT_LOG)
-
+$(WRAP_DIR)/%.h:work/%/_primary.dat | $(WRAP_DIR)
+	$(SCGENMOD) $(SCGENMOD_OPT) $* > $@
 
 clean: soft_clean
-	$(SOCLIB_CC) -P $(SOCLIB_CC_ARGS) $(SOCLIB_CC_ADD_ARGS) -x -o $(SIM_BINARY)
-	rm -f tty.log
-	rm -f vcd_traces.vcd
-	rm -f $(OUTPUT_LOG)
+	@rm -f  tty.log
+	rm -rf work
+	rm -rf $(WRAP_DIR)
+	@rm -f  transcript vsim.wlf
+	$(SOCLIB_CC) -P $(SOCLIB_CC_ARGS) -p $(PLATFORM_DESC) -x
 
 soft_clean:
 	$(MAKE) -C soft clean
