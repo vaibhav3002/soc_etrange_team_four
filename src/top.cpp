@@ -53,7 +53,7 @@
 #include "video_gen.h"
 
 //video_in_master_module
-#include "video_in.h"
+#include "hdl/include/video_in.h"
 
 //dummy read
 #include "master_dummy.h"
@@ -124,7 +124,7 @@ int _main(int argc, char *argv[])
     soclib::caba::WbSignal<wb_param> signal_wb_rom("signal_wb_rom");
     soclib::caba::WbSignal<wb_param> signal_wb_tty("signal_wb_tty");
     soclib::caba::WbSignal<wb_param> signal_wb_mastermodule("master");      //Initialising Master wishbone
-    soclib::caba::WbSignal<wb_param> signal_wb_video_out_mastermodule("video_out_master");      //Initialising Master wishbone
+    soclib::caba::WbSignal<wb_param> signal_wb_video_out_mastermodule("signal_wb_video_out_master");      //Initialising Master wishbone
     soclib::caba::WbSignal<wb_param> signal_wb_dummy("wb_dummy"); 
     soclib::caba::WbSignal<wb_param> signal_wb_dummy_write("wb_dummy_write"); 
     soclib::caba::WbSignal<wb_param> signal_wb_video_in_reg("signal_wb_video_in_reg");
@@ -172,19 +172,31 @@ int _main(int argc, char *argv[])
     
     //Video_in Master generation and instantiotion
     
-    soclib::caba::Video_in<wb_param>    video_in_master_module  ("video_in");
+    video_in video_in_master_module("my_video_in", "video_in");
     video_in_master_module.p_clk(signal25_clk); 
     video_in_master_module.p_clk_100mhz(signal_clk);
     video_in_master_module.p_resetn(signal_resetn);
     video_in_master_module.line_valid(line_in_valid);
     video_in_master_module.frame_valid(frame_in_valid);
     video_in_master_module.pixel_in(pixel_in);
-    video_in_master_module.p_wb(signal_wb_mastermodule);
-    video_in_master_module.irq_out(signal_videoin_irq);
-    video_in_master_module.reg0.p_clk(signal_clk);
-    video_in_master_module.reg0.p_wb(signal_wb_video_in_reg);
-    video_in_master_module.reg0.p_resetn(signal_resetn);
-   
+    video_in_master_module.start_loading(start_loading_connection);
+    video_in_master_module.p_wb_DAT_O   (signal_wb_mastermodule.MWDAT );
+    video_in_master_module.p_wb_DAT_I   (signal_wb_mastermodule.MRDAT );
+    video_in_master_module.p_wb_ADR_O   (signal_wb_mastermodule.ADR );
+    video_in_master_module.p_wb_ACK_I   (signal_wb_mastermodule.ACK );
+    video_in_master_module.p_wb_CYC_O   (signal_wb_mastermodule.CYC );
+    video_in_master_module.p_wb_ERR_I   (signal_wb_mastermodule.ERR );
+    video_in_master_module.p_wb_LOCK_O  (signal_wb_mastermodule.LOCK);
+    video_in_master_module.p_wb_RTY_I   (signal_wb_mastermodule.RTY );
+    video_in_master_module.p_wb_SEL_O   (signal_wb_mastermodule.SEL );
+    video_in_master_module.p_wb_STB_O   (signal_wb_mastermodule.STB );
+    video_in_master_module.p_wb_WE_O    (signal_wb_mastermodule.WE  );
+
+/*
+    master_module.reg0.p_clk(signal_clk);
+    master_module.reg0.p_wb(signal_wb_video_in_reg);
+    master_module.reg0.p_resetn(signal_resetn);
+  */ 
     //Video_out Master generation and instanciation
 	
    soclib::caba::Video_out_Master <wb_param>    video_out_master_module  ("video_out_master");
