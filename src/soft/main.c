@@ -50,7 +50,7 @@ void UART_IrqHandler() {
 
 void Videoin_IrqHandler() {
 	//Received Irq, anwsering
-	*((volatile unsigned long*) VIDEO_IN_REG) = RAM_BASE;
+	*((volatile unsigned long*) VIDEO_IN_REG) = RAM_BASE+1000000;
 	printf("IRQ ACK\n");
 }
 
