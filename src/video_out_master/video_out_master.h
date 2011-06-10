@@ -18,7 +18,7 @@
 #include <systemc>
 #include "wb_master_module.h"
 #include "../common.h"
-#include "wb_slave_reg.h"
+#include "wb_slave_reg_irq.h"
 
 #define VIDEO_OUT_WINDOW_SIZE  VIDEO_BUFFER_SIZE 
 #define VIDEO_OUT_BLOCK_SIZE  VIDEO_BUFFER_BLOCK_SIZE    //here block 
@@ -48,10 +48,11 @@ namespace soclib { namespace caba {
             sc_core::sc_out<bool> frame_valid;
             sc_core::sc_out<unsigned char> pixel_out;
             soclib::caba::WbMaster<wb_param> p_wb;
-            sc_core::sc_in<bool> start_loading;
-            WbSlaveRegModule<wb_param> reg0;
+	    sc_core::sc_out<bool> irq_out;
+            WbSlaveRegIrqModule<wb_param> reg0;
         private:
             
+          //  sc_signal<bool> start_loading;
             // send data to ram 
             void process_load_buffer_from_ram();
             void process_buffer_out();

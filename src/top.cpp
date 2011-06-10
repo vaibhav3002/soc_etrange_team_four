@@ -133,10 +133,10 @@ int _main(int argc, char *argv[])
     sc_signal<bool> signal_tty_irq("signal_tty_irq");
     // irq from video_in
     sc_signal<bool> signal_videoin_irq("signal_videoin_irq");
+    // irq from video_out
+    sc_signal<bool> signal_videoout_irq("signal_videoout_irq");
     // unconnected irqs
     sc_signal<bool> unconnected_irq ("unconnected_irq");
-    // to-be-removed signal
-    sc_signal<bool> start_loading_connection;
 
     // Components
     // lm32 real cache configuration can be:
@@ -195,10 +195,10 @@ int _main(int argc, char *argv[])
 	video_out_master_module.frame_valid(frame_out_valid);
 	video_out_master_module.pixel_out(pixel_out);
 	video_out_master_module.p_wb(signal_wb_video_out_mastermodule);
-	video_out_master_module.start_loading(start_loading_connection);
 	video_out_master_module.reg0.p_clk(signal_clk);
 	video_out_master_module.reg0.p_resetn(signal_resetn);
 	video_out_master_module.reg0.p_wb(signal_wb_video_out_reg);
+	video_out_master_module.irq_out(signal_videoout_irq);
 
 
    //display instanciation	
@@ -281,7 +281,8 @@ int _main(int argc, char *argv[])
     // them active high
     lm32.p_irq[0] (signal_tty_irq);
     lm32.p_irq[1] (signal_videoin_irq);
-    for (int i=2; i<32; i++)
+    lm32.p_irq[2] (signal_videoout_irq);
+    for (int i=3; i<32; i++)
         lm32.p_irq[i] (unconnected_irq);
 
     ////////////////////////////////////////////////////////////
@@ -324,7 +325,6 @@ int _main(int argc, char *argv[])
     sc_trace(TRACEFILE, line_in_valid,"line_in_valid");
     sc_trace(TRACEFILE, frame_in_valid,"frame_in_valid");
     sc_trace(TRACEFILE, signal_wb_video_out_mastermodule,"video_out_master");
-    sc_trace(TRACEFILE, start_loading_connection,"start_loading");
 
     sc_trace(TRACEFILE, signal_videoin_irq, "videoin_irq");
 

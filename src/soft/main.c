@@ -42,16 +42,34 @@ extern char inbyte(void);
 int fibo(int n);
 
 volatile unsigned long cnt=0;
+int a=-1;
+unsigned long last_addr=0;
 
 void UART_IrqHandler() {
 	cnt ++;
 	printf("UART CHARACTER RECV +%c+\n",inbyte());
 }
 
+void Videoout_IrqHandler() {
+	*((volatile unsigned long*) VIDEO_OUT_REG) = last_addr;
+	printf("VIDEO_OUT IRQ ACK\n");
+}
+
 void Videoin_IrqHandler() {
 	//Received Irq, anwsering
-	*((volatile unsigned long*) VIDEO_IN_REG) = RAM_BASE+1000000;
-	printf("IRQ ACK\n");
+	if (a<0)
+		RegisterIrqEntry(2,Videoout_IrqHandler);
+	if (a<=0) {
+		*((volatile unsigned long*) VIDEO_IN_REG) = RAM_BASE+0x1000000;
+		if (a==0)
+			last_addr = RAM_BASE+0x1100000;
+		a=1;
+	} else {
+		*((volatile unsigned long*) VIDEO_IN_REG) = RAM_BASE+0x1100000;
+		a=0;
+		last_addr = RAM_BASE + 0x1000000;
+	}
+	printf("VIDEO_IN IRQ ACK\n");
 }
 
 int main(void)

@@ -29,6 +29,7 @@ namespace soclib { namespace caba {
       :sc_core::sc_module(name), p_clk("p_clk"),p_resetn("p_resetn"), master1(p_clk_100mhz,p_wb), reg0("video_out_slave_reg")
 
    {
+      reg0.irq_out(irq_out);
       // sc thread
       SC_THREAD(process_load_buffer_from_ram);
       // no sensitivity list, waits have to be explicit
@@ -37,7 +38,8 @@ namespace soclib { namespace caba {
 
    // write buffer process
    tmpl(void)::process_load_buffer_from_ram()
-   { 
+   {
+      bool reset_config = false; 
       bool reset_done;
       // handle a reset cmd
       uint32_t index_8;
@@ -48,14 +50,20 @@ namespace soclib { namespace caba {
       bool initial_write;
       for (;;) {
 
-         if (!p_resetn) // rese
+         wait(p_clk_100mhz.posedge_event());
+
+	 //I'm sorry about this...
+	 this->reg0.irq_out = this->reg0.irq;
+
+	 if (!p_resetn) // reset
          {
+	    reg0.slave_raiseIrq();
             reset_done = true;
             index=0;
             master1.reset();
             index_8=0;
-            mem=0x41000000;
-            initial_image_position=mem;
+//            mem=0x41000000;
+ //           initial_image_position=mem;
 //            mem=master1.wb_read_at(VIDEO_IN_REG);
             data[0]=0;
             buffer_pnt=data;
@@ -76,7 +84,21 @@ namespace soclib { namespace caba {
 #endif
                continue;
             }
-            if (start_loading){
+
+
+
+	    if (this->reg0.irq_out.read()) {
+		continue;
+	    }
+
+	    if (reset_config) {
+		    mem=reg0.reg.read();
+		    initial_image_position=mem;
+		    reset_config=false;
+		    printf("VIDEO_OUT IS READING FROM 0x%x\n",mem);
+	    } else {
+
+            //if (start_loading){
                
                //std::cout<<writes_count<<reads_count<<std::endl;
                if ((writes_count!=reads_count) || initial_write ){           //first time we will load data immediatly. After that we will write only once                                                                                                 //a vlock of data has been sent to the output
@@ -88,8 +110,10 @@ namespace soclib { namespace caba {
                mem=mem+4*(VIDEO_OUT_BLOCK_SIZE);                            //check next image adress once you hit the end of the image
                if ((mem> RAM_BASE+RAM_SIZE-4*(VIDEO_OUT_BLOCK_SIZE))|| ((mem- initial_image_position)>=0x0004b000)){
                  // mem=master1.wb_read_at(VIDEO_IN_REG);
-                  mem=reg0.reg.read();
-                  initial_image_position=mem;
+		  reg0.slave_raiseIrq();
+		  reset_config=true;
+//                  mem=reg0.reg.read();
+//                  initial_image_position=mem;
                }
                buffer_pnt=&data[writes_count*VIDEO_OUT_BLOCK_SIZE];         //next buffer block adress
                if(writes_count==0){
@@ -99,7 +123,6 @@ namespace soclib { namespace caba {
                }
             }
          }
-         wait(p_clk_100mhz.posedge_event());
       }
 
    } // infinite loop
