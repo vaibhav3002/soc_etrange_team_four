@@ -8,7 +8,7 @@ SOCLIB_CC       = soclib-cc
 
 # Verilog compilation
 VLOG            = vlog +acc
-VLOG_SRC        = wb_simple_slave.sv
+VLOG_SRC        = wb_simple_slave.sv wb_master_module.sv video_in.sv
 VLOG_DAT        = $(patsubst %.sv,work/%/_primary.dat,$(VLOG_SRC))
 
 # SystemC wrappers for verilog modules
@@ -17,7 +17,7 @@ WRAPPERS =  $(patsubst %.sv,$(WRAP_DIR)/%.h,$(VLOG_SRC))
 SCGENMOD = scgenmod
 # wraps wires to bool and vectors to sc_uint
 # 'scgenmod -help' for more options
-SCGENMOD_OPT = -sc_uint -bool
+SCGENMOD_OPT = -sc_uint -bool  -map "byte unsigned=unsigned char"
 
 vpath %.sv hdl/SystemVerilog
 

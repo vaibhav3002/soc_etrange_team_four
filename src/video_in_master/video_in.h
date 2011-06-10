@@ -66,6 +66,6 @@ namespace soclib { namespace caba {
     };
 }}
 
-#endif //__MASTER__
+#endif //__VIDEO_IN_
 
 
