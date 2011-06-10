@@ -54,7 +54,7 @@ int main(void)
         printf(" Fibo %d : %d at %d\n",i,fibov[i],fibot[i]-fibot[i-1]);
 
         }
-    printf(" Video in register at adress : %x Content is  %x\n ",VIDEO_IN_REG,read_write((unsigned int) 0X40005000 ,(unsigned int) VIDEO_IN_REG));
+//    printf(" Video in register at adress : %x Content is  %x\n ",VIDEO_IN_REG,read_write((unsigned int) 0X40005000 ,(unsigned int) VIDEO_IN_REG));
     printf(" Video out register at adress: %x Content is  %x\n ",VIDEO_OUT_REG,read_write((unsigned int)0X40005000 ,(unsigned int) VIDEO_OUT_REG));
      
     printf("End  time %d\n", fibov[0]);
