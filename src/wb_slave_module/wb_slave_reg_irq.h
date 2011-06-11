@@ -3,6 +3,7 @@
 
 #include <systemc>
 #include "wb_slave_module.h"
+#include "wb_slave.h"
 
 namespace soclib { namespace caba {
 
@@ -10,10 +11,13 @@ namespace soclib { namespace caba {
     template<typename wb_param>
         class WbSlaveRegIrqModule : public WbSlaveModule<wb_param>
     {
+
 	public:
+
 
 	    WbSlaveRegIrqModule ( sc_module_name name ) : WbSlaveModule<wb_param>::WbSlaveModule(name), irq_out("irq_out") 
 		{
+			Written=false;
 	//		irq_out=false;
 		}
 
@@ -23,14 +27,15 @@ namespace soclib { namespace caba {
 
 
 	void slave_raiseIrq(){ 
-		this->irq=true;
+		this->Irq=true;
 	};
 
 	void slave_ackIrq() {
-		this->irq=false;
+		this->Irq=false;
 	};
 
-	bool irq;
+	bool Written;
+	bool Irq;
 
 	protected:
 
@@ -41,13 +46,22 @@ namespace soclib { namespace caba {
 	uint32_t slave_write(uint32_t ADDR, uint32_t DATA) {
 		//Acknowledge any pending IRQ
 		slave_ackIrq();
+		Written=true;
 		reg = DATA;
 		return 0xDE;
 	};
+
+	private:
+	void transition() {
+			this->irq_out = Irq;
+			this->WbSlaveModule<wb_param>::transition();
+		}
 
 
     };
 }
 }
+
+
 
 #endif

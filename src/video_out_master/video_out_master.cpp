@@ -52,12 +52,10 @@ namespace soclib { namespace caba {
 
          wait(p_clk_100mhz.posedge_event());
 
-	 //I'm sorry about this...
-	 this->reg0.irq_out = this->reg0.irq;
 
 	 if (!p_resetn) // reset
          {
-	    reg0.slave_raiseIrq();
+//	    reg0.slave_raiseIrq();
             reset_done = true;
             index=0;
             master1.reset();
@@ -69,6 +67,7 @@ namespace soclib { namespace caba {
             buffer_pnt=data;
             start_reading=false;
             initial_write=true;
+	    reset_config = true;
             writes_count=0;
          }  
          else // clk event
@@ -87,7 +86,7 @@ namespace soclib { namespace caba {
 
 
 
-	    if (this->reg0.irq_out.read()) {
+	    if (!reg0.Written) {
 		continue;
 	    }
 
@@ -110,6 +109,8 @@ namespace soclib { namespace caba {
                mem=mem+4*(VIDEO_OUT_BLOCK_SIZE);                            //check next image adress once you hit the end of the image
                if ((mem> RAM_BASE+RAM_SIZE-4*(VIDEO_OUT_BLOCK_SIZE))|| ((mem- initial_image_position)>=0x0004b000)){
                  // mem=master1.wb_read_at(VIDEO_IN_REG);
+
+		  reg0.Written=false;
 		  reg0.slave_raiseIrq();
 		  reset_config=true;
 //                  mem=reg0.reg.read();

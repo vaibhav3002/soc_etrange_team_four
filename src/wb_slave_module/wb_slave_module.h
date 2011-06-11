@@ -57,7 +57,7 @@ namespace soclib { namespace caba {
             uint32_t w_req_cpt;
 
 
-	    void transition();
+	    virtual void transition();
 	    void genMoore();
 
 
