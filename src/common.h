@@ -1,7 +1,7 @@
 #ifndef __COMMON_H
 #define __COMMON_H
 //VIDEO_IN/VIDEO_OUT
-#define VIDEO_BUFFER_SIZE  ((uint32_t) 16) 
+#define VIDEO_BUFFER_SIZE  ((uint32_t) 32) 
 #define VIDEO_BUFFER_BLOCK_SIZE ((uint32_t) VIDEO_BUFFER_SIZE/2 ) 
 //CO-PROCESSOR DUMMY MODULE
 #define VIDEO_FIFO_SIZE 16

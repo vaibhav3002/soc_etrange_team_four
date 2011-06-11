@@ -42,7 +42,7 @@ extern char inbyte(void);
 int fibo(int n);
 
 volatile unsigned long cnt=0;
-int VideoInStatus=-1;
+volatile int VideoInStatus=-1;
 unsigned long last_addr=0;
 
 void UART_IrqHandler() {
@@ -51,23 +51,28 @@ void UART_IrqHandler() {
 }
 
 void Videoout_IrqHandler() {
+	disable_irq(2);
 	*((volatile unsigned long*) VIDEO_OUT_REG) = last_addr;
-	printf("VIDEO_OUT IRQ ACK\n");
+	printf("VIDEO_OUT IRQ ACK 0x%lx\n",last_addr);
 }
 
 void Videoin_IrqHandler() {
+	if (VideoInStatus>=0) {
+		enable_irq(2);
+	}
 	//Received Irq, anwsering
 	if (VideoInStatus<=0) {
 		*((volatile unsigned long*) VIDEO_IN_REG) = RAM_BASE+0x1000000;
 		if (VideoInStatus==0)
 			last_addr = RAM_BASE+0x1100000;
 		VideoInStatus=1;
+		printf("VIDEO_IN IRQ ACK 0x%x\n",RAM_BASE+0x1000000);
 	} else {
 		*((volatile unsigned long*) VIDEO_IN_REG) = RAM_BASE+0x1100000;
 		VideoInStatus=0;
 		last_addr = RAM_BASE + 0x1000000;
+		printf("VIDEO_IN IRQ ACK 0x%x\n",RAM_BASE+0x1100000);
 	}
-	printf("VIDEO_IN IRQ ACK\n");
 }
 
 int main(void)
@@ -78,7 +83,7 @@ int main(void)
 	P3 p3;
 
 	int j;
-	int OldVideoInStatus = -1;
+	volatile int OldVideoInStatus = -1;
 
 	for (j=0;j<10;j++) {
 		p3.a[j]=(mfixed) 0;
@@ -89,9 +94,10 @@ int main(void)
 	RegisterIrqEntry(0,UART_IrqHandler);
 	//Videoin interrupt
 	RegisterIrqEntry(1,Videoin_IrqHandler);
+	Videoin_IrqHandler();
 	//Videoout interrupt
 	RegisterIrqEntry(2,Videoout_IrqHandler);
-	Videoin_IrqHandler();
+	disable_irq(2);
 	//Enable global interrutps
 	unsigned long mask = 1;
 	asm volatile("wcsr IE,%0" ::"r"(mask));
@@ -104,10 +110,8 @@ int main(void)
 //	printf("Read video_in 0x%x\n",*((volatile unsigned int*) 0xA2000000));
 
 
-
 	while (cnt<5) {
-
-		if ((OldVideoInStatus==-1)&&(VideoInStatus==1)) {
+		if ((OldVideoInStatus==-1)&&(VideoInStatus==0)) {
 			Videoout_IrqHandler();
 			OldVideoInStatus=0;
 		}
