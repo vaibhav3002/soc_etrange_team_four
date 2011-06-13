@@ -162,7 +162,7 @@ namespace soclib { namespace caba {
 				mask_pnt=mask;                                   //initialising pointer to array
 			} else {
 
-				if ((reg0.Written)&&(reset_config)) {
+				if ((reg0.Written)&&(reset_config)&&(!(frame_valid))) {
 					init_done=true;
 					reset_config=false;
 					mem=this->reg0.reg.read();

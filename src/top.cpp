@@ -326,8 +326,9 @@ int _main(int argc, char *argv[])
     sc_trace(TRACEFILE, frame_in_valid,"frame_in_valid");
     sc_trace(TRACEFILE, signal_wb_video_out_mastermodule,"video_out_master");
 
-    sc_trace(TRACEFILE, signal_videoin_irq, "videoin_irq");
+    sc_trace(TRACEFILE, signal_videoin_irq, "video_in_irq");
 
+    sc_trace(TRACEFILE, signal_videoout_irq, "video_out_irq");
     /*
      
     sc_trace (TRACEFILE, signal_wb_ram, "ram_wb" );
@@ -336,7 +337,7 @@ int _main(int argc, char *argv[])
     sc_trace (TRACEFILE, signal_wb_rom, "rom_wb" );
     sc_trace (TRACEFILE, signal_wb_tty, "tty_wb" );
     */
-    sc_trace (TRACEFILE, signal_wb_mastermodule,"mastermoduleSIGNALS"  ); 
+    sc_trace (TRACEFILE, signal_wb_mastermodule,"video_in_master"  ); 
     sc_trace  (TRACEFILE, signal_wb_dummy_write,"dummywrite"  );
     sc_trace  (TRACEFILE, signal_wb_dummy,"dummyread"  );
     sc_trace  (TRACEFILE, signal_wb_video_in_reg,"signal_wb_slave");
