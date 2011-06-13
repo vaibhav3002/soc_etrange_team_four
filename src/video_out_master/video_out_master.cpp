@@ -94,6 +94,7 @@ namespace soclib { namespace caba {
 		    mem=reg0.reg.read();
 		    initial_image_position=mem;
 		    reset_config=false;
+		    initial_write=true;
 		    printf("VIDEO_OUT IS READING FROM 0x%x\n",mem);
 	    } else {
 
