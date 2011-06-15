@@ -179,7 +179,7 @@ int _main(int argc, char *argv[])
     video_in_master_module.line_valid(line_in_valid);
     video_in_master_module.frame_valid(frame_in_valid);
     video_in_master_module.pixel_in(pixel_in);
-    video_in_master_module.start_loading(start_loading_connection);
+    video_in_master_module.irq(signal_videoin_irq);
     video_in_master_module.p_wb_DAT_O   (signal_wb_mastermodule.MWDAT );
     video_in_master_module.p_wb_DAT_I   (signal_wb_mastermodule.MRDAT );
     video_in_master_module.p_wb_ADR_O   (signal_wb_mastermodule.ADR );
@@ -191,7 +191,20 @@ int _main(int argc, char *argv[])
     video_in_master_module.p_wb_SEL_O   (signal_wb_mastermodule.SEL );
     video_in_master_module.p_wb_STB_O   (signal_wb_mastermodule.STB );
     video_in_master_module.p_wb_WE_O    (signal_wb_mastermodule.WE  );
-
+    
+    video_in_master_module.p_wb_reg_DAT_I   (signal_wb_video_in_reg.MRDAT );
+    video_in_master_module.p_wb_reg_DAT_O   (signal_wb_video_in_reg.MWDAT );
+    video_in_master_module.p_wb_reg_ADR_I   (signal_wb_video_in_reg.ADR );
+    video_in_master_module.p_wb_reg_ACK_O   (signal_wb_video_in_reg.ACK );
+    video_in_master_module.p_wb_reg_CYC_I   (signal_wb_video_in_reg.CYC );
+    video_in_master_module.p_wb_reg_ERR_O   (signal_wb_video_in_reg.ERR );
+    video_in_master_module.p_wb_reg_LOCK_I  (signal_wb_video_in_reg.LOCK);
+    video_in_master_module.p_wb_reg_RTY_O   (signal_wb_video_in_reg.RTY );
+    video_in_master_module.p_wb_reg_SEL_I   (signal_wb_video_in_reg.SEL );
+    video_in_master_module.p_wb_reg_STB_I   (signal_wb_video_in_reg.STB );
+    video_in_master_module.p_wb_reg_WE_I    (signal_wb_video_in_reg.WE  );
+    
+    
 /*
     master_module.reg0.p_clk(signal_clk);
     master_module.reg0.p_wb(signal_wb_video_in_reg);
