@@ -38,27 +38,9 @@ unsigned int read_write(unsigned int valeur , unsigned intaddress );
 int main(void)
 {
      printf("Start"); 
-    //mfixed A,B,C,D;
-    int i;
-    int  fibov[N], fibot[N];
-    fibot[0] = get_cc();
-    for (i = 1; i < N; i++)
-    {
-        fibov[i] = fibo(i);fibot[i] = get_cc();
-    }
-    fibov [0]= get_cc();
-
-    printf(" Start time %d\n", fibot[0]);
-
-    for (i = 1; i < 10; i++){
-        printf(" Fibo %d : %d at %d\n",i,fibov[i],fibot[i]-fibot[i-1]);
-
-        }
 //    printf(" Video in register at adress : %x Content is  %x\n ",VIDEO_IN_REG,read_write((unsigned int) 0X40005000 ,(unsigned int) VIDEO_IN_REG));
     printf(" Video out register at adress: %x Content is  %x\n ",VIDEO_OUT_REG,read_write((unsigned int)0X40005000 ,(unsigned int) VIDEO_OUT_REG));
      
-    printf("End  time %d\n", fibov[0]);
- 
     getchar();
     return 0;
 }

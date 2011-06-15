@@ -8,7 +8,7 @@ SOCLIB_CC       = soclib-cc
 
 # Verilog compilation
 VLOG            = vlog +acc
-VLOG_SRC        = wb_simple_slave.sv wb_master_module.sv video_in.sv
+VLOG_SRC        = video_in.sv
 VLOG_DAT        = $(patsubst %.sv,work/%/_primary.dat,$(VLOG_SRC))
 
 # SystemC wrappers for verilog modules
