@@ -101,13 +101,13 @@ namespace soclib { namespace caba {
             //if (start_loading){
                
                //std::cout<<writes_count<<reads_count<<std::endl;
-               if ((writes_count!=reads_count) || initial_write ){           //first time we will load data immediatly. After that we will write only once                                                                                                 //a vlock of data has been sent to the output
+               if ((writes_count!=reads_count) || initial_write ){           //first time we will load data immediately. After that we will write only once                                                                                                 //a vlock of data has been sent to the output
                master1.wb_read_blk ( mem , VIDEO_OUT_BLOCK_SIZE , buffer_pnt); 
         //       std::cout<<"wrote a block"<<std::endl;
                writes_count++;                                              //Once we have loaded data from ram we increase counter
                writes_count=writes_count % VIDEO_OUT_MODULO;
                
-               mem=mem+4*(VIDEO_OUT_BLOCK_SIZE);                            //check next image adress once you hit the end of the image
+               mem=mem+4*(VIDEO_OUT_BLOCK_SIZE);                            //check next image address once you hit the end of the image
                if ((mem> RAM_BASE+RAM_SIZE-4*(VIDEO_OUT_BLOCK_SIZE))|| ((mem- initial_image_position)>=0x0004b000)){
                  // mem=master1.wb_read_at(VIDEO_IN_REG);
 
@@ -117,7 +117,7 @@ namespace soclib { namespace caba {
 //                  mem=reg0.reg.read();
 //                  initial_image_position=mem;
                }
-               buffer_pnt=&data[writes_count*VIDEO_OUT_BLOCK_SIZE];         //next buffer block adress
+               buffer_pnt=&data[writes_count*VIDEO_OUT_BLOCK_SIZE];         //next buffer block address
                if(writes_count==0){
                start_reading=true;                                          //The first time buffer gets full we start reading data
                }

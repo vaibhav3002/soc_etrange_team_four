@@ -161,7 +161,7 @@ int _main(int argc, char *argv[])
     //5 slaves, ram, rom, tty, video_in_ram target register, video_out_source register
     soclib::caba::WbInterco<wb_param> wbinterco("wbinterco",maptab, 5,5);
 
-    //Video Gen creation and instantation
+    //Video Gen creation and instantiation
     
     soclib::caba::VideoGen  videogen("video_gen");     
     videogen.clk(signal25_clk);
@@ -170,7 +170,7 @@ int _main(int argc, char *argv[])
     videogen.reset_n(signal_resetn);
     videogen.pixel_out(pixel_in);
     
-    //Video_in Master generation and instantiotion
+    //Video_in Master generation and instantiation
     
     soclib::caba::Video_in<wb_param>    video_in_master_module  ("video_in");
     video_in_master_module.p_clk(signal25_clk); 
@@ -185,7 +185,7 @@ int _main(int argc, char *argv[])
     video_in_master_module.reg0.p_wb(signal_wb_video_in_reg);
     video_in_master_module.reg0.p_resetn(signal_resetn);
    
-    //Video_out Master generation and instanciation
+    //Video_out Master generation and instantiation
 	
    soclib::caba::Video_out_Master <wb_param>    video_out_master_module  ("video_out_master");
 	video_out_master_module.p_clk_100mhz(signal_clk );
@@ -201,7 +201,7 @@ int _main(int argc, char *argv[])
 	video_out_master_module.irq_out(signal_videoout_irq);
 
 
-   //display instanciation	
+   //display instantiation	
    soclib::caba::Display display("display"); 
 	display.clk(signal25_clk);
 	display.reset_n(signal_resetn);
@@ -209,19 +209,19 @@ int _main(int argc, char *argv[])
 	display.frame_valid(frame_out_valid);
 	display.pixel_in(pixel_out);
 	
-   //dummy read instanciation
+   //dummy read instantiation
 	soclib::caba::Master_dummy <wb_param>    master_dummy  ("master_dummy_read");
 	master_dummy.p_clk_100mhz(signal_clk);
 	master_dummy.p_resetn(signal_resetn);
 	master_dummy.p_wb(signal_wb_dummy);
 
-	//dummy write instanciation
+	//dummy write instantiation
 	soclib::caba::Master_dummy_write <wb_param>    master_dummy_write  ("master_dummy_write");
 	master_dummy_write.p_clk_100mhz(signal_clk);
 	master_dummy_write.p_resetn(signal_resetn);
 	master_dummy_write.p_wb(signal_wb_dummy_write);
    
-   //test register instanciation
+   //test register instantiation
  //  soclib::caba::WbSlaveModule <wb_param> test_slave ("test_slave");
  //   test_slave.p_clk(signal_clk);
  //   test_slave.p_wb(signal_wb_slave);
@@ -359,7 +359,7 @@ int _main(int argc, char *argv[])
     sc_start(sc_core::sc_time(1, SC_NS));
     signal_resetn = true;
 
-    // print maping table
+    // print mapping table
     std::cout << "Let's go..." << std::endl;
     std::cout << maptab;
 
