@@ -60,7 +60,7 @@ void Videoin_IrqHandler() {
 	if (VideoInStatus>=0) {
 		enable_irq(2);
 	}
-	//Received Irq, anwsering
+	//Received Irq, answering
 	if (VideoInStatus<=0) {
 		*((volatile unsigned long*) VIDEO_IN_REG) = RAM_BASE+0x1000000;
 		if (VideoInStatus==0)
@@ -98,18 +98,10 @@ int main(void)
 	//Videoout interrupt
 	RegisterIrqEntry(2,Videoout_IrqHandler);
 	disable_irq(2);
-	//Enable global interrutps
+	//Enable global interrupts
 	unsigned long mask = 1;
 	asm volatile("wcsr IE,%0" ::"r"(mask));
 	
-//	printf("Read video_in 0x%x\n",*((volatile unsigned int*) 0xA2000000));
-//	printf("Write OxAB... Return value: ");
-//	*((volatile unsigned int*) 0xA2000000) = 0xAB;
-//
-//	printf("0x%x\n",*((volatile unsigned int*) 0xA2000000));
-//	printf("Read video_in 0x%x\n",*((volatile unsigned int*) 0xA2000000));
-
-
 	while (cnt<5) {
 		if ((OldVideoInStatus==-1)&&(VideoInStatus==0)) {
 			Videoout_IrqHandler();
@@ -120,48 +112,5 @@ int main(void)
 
 	return 0;
 
-	//mfixed A,B,C,D;
-	int i;
-	int  fibov[N], fibot[N];
-	fibot[0] = get_cc();
-	for (i = 1; i < N; i++)
-	{
-		fibov[i] = fibo(i);fibot[i] = get_cc();
-	}
-	fibov [0]= get_cc();
-
-
-	for (i = 1; i < 10; i++)
-		printf(" Fibo %d : %d at %d\n",i,fibov[i],fibot[i]-fibot[i-1]);
-
-	printf("End  time %d\n\n", fibov[0]);
-
-	printf("Number of correct received requests: %d\n",*((volatile unsigned int*) WB_TARGET));
-	printf("Number of correct received requests: %d\n",*((volatile unsigned int*) WB_TARGET));
-	printf("\nSending write request to simple_slave...\n");
-	*((volatile unsigned int*) WB_TARGET) = 123;
-	printf("Number of correct received requests: %d\n",*((volatile unsigned int*) WB_TARGET));
-	printf("\nSending write request to simple_slave...\n");
-	*((volatile unsigned int*) WB_TARGET) = 123;
-	printf("Number of correct received requests: %d\n",*((volatile unsigned int*) WB_TARGET));
-	printf("Number of correct received requests: %d\n",*((volatile unsigned int*) WB_TARGET));
-	printf("\nSending write request to simple_slave...\n");
-	*((volatile unsigned int*) WB_TARGET) = 123;
-	printf("Number of correct received requests: %d\n",*((volatile unsigned int*) WB_TARGET));
-
-	printf("\nDone.\n");
-
-	getchar();
-	return 0;
-}
-
-
-int fibo(int n)
-{
-	if (n==0)
-		return 1;
-	else if (n==1)
-		return 1;
-	else return fibo(n-1) + fibo(n-2);
 }
 

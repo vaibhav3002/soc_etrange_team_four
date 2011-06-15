@@ -8,6 +8,7 @@
  * 					on to ram.
  *
  *         Author:  Ted
+ 					Thibault Porteboeuf
  *        Company:  Telecom Paris TECH
  *
  * =============================================================================
@@ -32,7 +33,6 @@ namespace soclib { namespace caba {
 
 	{
 		reg0.irq_out(irq_out);
-		frame_valid_mem=true;
 		// sc thread
 		SC_THREAD(process_write_buffer);
 		// no sensitivity list, waits have to be explicit
@@ -52,7 +52,7 @@ namespace soclib { namespace caba {
 		for (;;) {
 			wait(p_clk.posedge_event());                                                     //next clock
 
-			if (!p_resetn) // rese
+			if (!p_resetn) // reset
 			{
 				reset_done = true;
 				index=0;
@@ -81,11 +81,6 @@ namespace soclib { namespace caba {
 				//				}
 
 				if (frame_valid){
-					if (!frame_valid_mem) {
-						//reset buffer to ram process config
-						//reset_config=true;
-					}
-					frame_valid_mem=true;
 					if (line_valid){
 
 						data[index]=data[index]|(pixel_in<<8*(index_8 % 4));
@@ -101,8 +96,6 @@ namespace soclib { namespace caba {
 						}              
 						index=  index==VIDEO_IN_WINDOW_SIZE? 0:index;                           //checking if we are at the end of the buffer
 					}
-				} else if (frame_valid_mem) {
-					frame_valid_mem=false;
 				}
 			}
 
