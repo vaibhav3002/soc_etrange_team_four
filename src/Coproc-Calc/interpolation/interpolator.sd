@@ -1,0 +1,15 @@
+# -*- python -*-
+
+Module('caba:interpolator_module',
+        classname = 'soclib::caba::interpolator',
+        tmpl_parameters = [
+        ],
+        header_files = ['interpolator.h',],
+        implementation_files = ['interpolator.cpp',],
+        ports = [
+        ],
+        uses = [
+        ],
+        #debug = True ,
+      )
+
