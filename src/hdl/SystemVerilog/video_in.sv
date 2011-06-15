@@ -55,6 +55,8 @@ module video_in
    logic [31:0]        address,start_address;
    bit		       go; // Indicates that a block of pixels have been loaded into fifo and are available to be written on ram.
 
+   integer 		buffer_count;
+
 
    typedef enum        { waitForBufferToBeFilled = 0, configureWbSignalsForBlkWrite, waitForWbAcknowledgement} VideoIN_States;
    VideoIN_States video_in_state;
@@ -66,6 +68,7 @@ module video_in
 	  begin 
 	     fifo_counter <= 0;
 	     go <= 1'b0;
+	     buffer_count = 0;
 	  end else
 	    begin
 	       if(frame_valid)
@@ -81,6 +84,7 @@ module video_in
 				begin
 				   go <= 1'b1;
 				   block_offset <= ((fifo_counter/(`BLOCK_SIZE - 1)) - 1)*8'd`BLOCK_SIZE;
+				   buffer_count++;
 				end
 			   end		
 			 
@@ -153,7 +157,7 @@ module video_in
 		      begin
 			 // Received Acknowledgement. 
 
-			 if(!block_offset)
+			 if(buffer_count == 16)
 			   start_loading <= 1;
 
 			 if(write_counter == `BLOCK_SIZE)	
