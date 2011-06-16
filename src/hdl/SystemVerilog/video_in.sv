@@ -219,7 +219,7 @@ module video_in
 			   start_loading <= 1;
 */
 			// Request new address
-      if ((write_counter == `BLOCK_SIZE - 4) && (address - start_address)>= 32'h0004b000 - 32'h00000004) 
+      if ((write_counter == `BLOCK_SIZE - 4) && (address - start_address)>= (32'h0004b000 - 32'h00000004)) 
 			raise_irq <= 1'b1;
 
 

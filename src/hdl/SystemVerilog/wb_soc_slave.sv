@@ -36,7 +36,6 @@ module wb_soc_slave (
 	  end
 	else
 	  cycle++;
-
 	if(((!p_wb_STB_I)||(!p_wb_CYC_I)||(!p_wb_WE_I))&&(raise_irq))
 		irq <= 1'b1;
 
