@@ -111,6 +111,8 @@ int main(void)
 
 	int j;
 	volatile int OldVideoInStatus = -1;
+	
+//        *((volatile unsigned long*) VIDEO_IN_REG) = 0x55555555;
 
 	for (j=0;j<10;j++) {
 		p3.a[j]=(mfixed) 0;

@@ -22,7 +22,7 @@
  *
  */
 
-#define DO_TRACES 1  
+#define DO_TRACES 0
 
 // C/C++ std libs
 #include <iostream>
@@ -192,8 +192,8 @@ int _main(int argc, char *argv[])
     video_in_master_module.p_wb_STB_O   (signal_wb_mastermodule.STB );
     video_in_master_module.p_wb_WE_O    (signal_wb_mastermodule.WE  );
     
-    video_in_master_module.p_wb_reg_DAT_I   (signal_wb_video_in_reg.MRDAT );
-    video_in_master_module.p_wb_reg_DAT_O   (signal_wb_video_in_reg.MWDAT );
+    video_in_master_module.p_wb_reg_DAT_I   (signal_wb_video_in_reg.MWDAT );
+    video_in_master_module.p_wb_reg_DAT_O   (signal_wb_video_in_reg.MRDAT );
     video_in_master_module.p_wb_reg_ADR_I   (signal_wb_video_in_reg.ADR );
     video_in_master_module.p_wb_reg_ACK_O   (signal_wb_video_in_reg.ACK );
     video_in_master_module.p_wb_reg_CYC_I   (signal_wb_video_in_reg.CYC );
@@ -334,7 +334,7 @@ int _main(int argc, char *argv[])
     //////////////// Traces ////////////////////////////////////
     ////////////////////////////////////////////////////////////
 
-#ifdef DO_TRACES
+#if DO_TRACES
     sc_trace_file *TRACEFILE;
     TRACEFILE = sc_create_vcd_trace_file("vcd_traces");
     sc_trace (TRACEFILE, signal_resetn, "resetn" );
@@ -394,7 +394,7 @@ int _main(int argc, char *argv[])
     
     sc_start( );
 
-#ifdef DO_TRACES
+#if DO_TRACES
     sc_close_vcd_trace_file(TRACEFILE);
 #endif
 
