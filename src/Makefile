@@ -13,7 +13,7 @@ SOCLIB = $(shell $(SOCLIB_CC) --getpath)
 export SOCLIB
 
 
-.PHONY: all soft simlog soft_clean $(SIM_BINARY)
+.PHONY: all soft simlog soft_clean $(SIM_BINARY) ctags
 
 
 all: test_soclib $(SIM_BINARY) soft
@@ -42,3 +42,5 @@ clean: soft_clean
 soft_clean:
 	$(MAKE) -C soft clean
 
+ctags:
+	ctags -R * > tags
