@@ -70,6 +70,14 @@
 //include slave register fro video_in video_out modules
 #include "wb_slave_reg.h"
 
+//include interpolator vector generator
+#include "interpolation_test_module.h"
+
+//include interpolator
+#include "interpolator.h"
+
+//include interpolator_out module
+#include "interpolator_out.h"
 
 // real SystemC main
 int _main(int argc, char *argv[])
@@ -113,6 +121,18 @@ int _main(int argc, char *argv[])
    sc_time                 clk25_periode(40, SC_NS);
    sc_clock                signal25_clk("signal25_clk",clk25_periode);        //25mhz clock piwel clock
 
+   //interpolator test signals
+   sc_signal<bool>                 signal_pixel_valid;
+   sc_signal<unsigned char>        signal_test_pixel_out;
+   sc_signal<unsigned char>        signal_dx;
+   sc_signal<unsigned char>        signal_dy;
+
+   //interpolator signals
+
+   sc_signal<unsigned char>     signal_interpolator_pixel_out;
+   sc_signal<bool>              signal_interpolator_pixel_valid;
+   sc_signal<bool>              signal_interpolator_pixel_out_valid;
+   
    // interconnection signals
     soclib::caba::VciSignals<vci_param> signal_vci_tty("signal_vci_tty");
     soclib::caba::VciSignals<vci_param> signal_vci_rom("signal_vci_vcirom");
@@ -129,12 +149,16 @@ int _main(int argc, char *argv[])
     soclib::caba::WbSignal<wb_param> signal_wb_dummy_write("wb_dummy_write"); 
     soclib::caba::WbSignal<wb_param> signal_wb_video_in_reg("signal_wb_video_in_reg");
     soclib::caba::WbSignal<wb_param> signal_wb_video_out_reg("signal_wb_video_out_reg");
+    soclib::caba::WbSignal<wb_param> signal_wb_interpolator_out("signal_wb_interpolator_out");
+    soclib::caba::WbSignal<wb_param> signal_wb_interpolator_out_reg("signal_wb_video_out_reg");
     // irq from uart
     sc_signal<bool> signal_tty_irq("signal_tty_irq");
     // irq from video_in
     sc_signal<bool> signal_videoin_irq("signal_videoin_irq");
     // irq from video_out
     sc_signal<bool> signal_videoout_irq("signal_videoout_irq");
+    //irq from interpolator_out 
+    sc_signal<bool> signal_interpolator_out_irq("signal_videoout_irq");
     // unconnected irqs
     sc_signal<bool> unconnected_irq ("unconnected_irq");
 
@@ -157,9 +181,9 @@ int _main(int argc, char *argv[])
     soclib::caba::VciRom<vci_param> rom("rom", IntTab(0), maptab, loader);
     soclib::caba::VciRam<vci_param> ram("ram", IntTab(1), maptab, loader);
     soclib::caba::VciMultiTty<vci_param> vcitty("vcitty",	IntTab(2), maptab, "tty.log", NULL);
-    //5 Masters: video_in, video_out, processor, dummy read, dummy write
-    //5 slaves, ram, rom, tty, video_in_ram target register, video_out_source register
-    soclib::caba::WbInterco<wb_param> wbinterco("wbinterco",maptab, 5,5);
+    //6 Masters: video_in, video_out, processor, dummy read, dummy write, interpolator_out
+    //6 slaves, ram, rom, tty, video_in_ram target register, video_out_source register,interpolator out
+    soclib::caba::WbInterco<wb_param> wbinterco("wbinterco",maptab, 6,6);
 
     //Video Gen creation and instantiation
     
@@ -220,7 +244,41 @@ int _main(int argc, char *argv[])
 	master_dummy_write.p_clk_100mhz(signal_clk);
 	master_dummy_write.p_resetn(signal_resetn);
 	master_dummy_write.p_wb(signal_wb_dummy_write);
-   
+
+//interpolator module instatiation
+
+   soclib::caba::testinterpolate testinterpolate("interpolator_vector"); 
+  	
+	testinterpolate.p_clk_100mhz(signal_clk); 
+	testinterpolate.p_resetn(signal_resetn); 
+	testinterpolate.dx(signal_dx); 
+	testinterpolate.dy(signal_dy); 
+	testinterpolate.pixel_valid(signal_pixel_valid); 
+	testinterpolate.pixel_out(signal_test_pixel_out); 
+
+//interpolator instanciation
+
+   soclib::caba::interpolator interpolator("interpolator"); 
+	interpolator.p_clk(signal_clk);
+	interpolator.p_resetn(signal_resetn);
+	interpolator.dx(signal_dx);
+	interpolator.dy(signal_dy);
+	interpolator.pixel_in(signal_test_pixel_out);
+	interpolator.pixel_valid(signal_pixel_valid);
+	interpolator.pixel_out_valid(signal_interpolator_pixel_valid);
+	interpolator.pixel_out(signal_interpolator_pixel_out);
+//interpolator out instanciation
+
+   soclib::caba::Interpolator_out<wb_param> interpolator_out("interpolator_out"); 
+   interpolator_out.p_clk_100mhz(signal_clk); 
+   interpolator_out.p_resetn(signal_resetn); 
+   interpolator_out.pixel_valid(signal_interpolator_pixel_valid); 
+   interpolator_out.pixel_in(signal_interpolator_pixel_out); 
+   interpolator_out.p_wb(signal_wb_interpolator_out);
+   interpolator_out.reg0.p_clk(signal_clk);
+   interpolator_out.reg0.p_resetn(signal_resetn);
+   interpolator_out.reg0.p_wb(signal_wb_interpolator_out_reg);
+   interpolator_out.irq_out(signal_interpolator_out_irq);
    //test register instantiation
  //  soclib::caba::WbSlaveModule <wb_param> test_slave ("test_slave");
  //   test_slave.p_clk(signal_clk);
@@ -267,10 +325,12 @@ int _main(int argc, char *argv[])
     wbinterco.p_to_slave[2](signal_wb_tty);
     wbinterco.p_to_slave[3](signal_wb_video_in_reg);
     wbinterco.p_to_slave[4](signal_wb_video_out_reg);
+    wbinterco.p_to_slave[5](signal_wb_interpolator_out_reg);
     wbinterco.p_from_master[1](signal_wb_mastermodule);
     wbinterco.p_from_master[2](signal_wb_video_out_mastermodule);
     wbinterco.p_from_master[3](signal_wb_dummy);
     wbinterco.p_from_master[4](signal_wb_dummy_write);
+    wbinterco.p_from_master[5](signal_wb_interpolator_out);
 
     // lm32
     lm32.p_clk(signal_clk);
@@ -282,7 +342,8 @@ int _main(int argc, char *argv[])
     lm32.p_irq[0] (signal_tty_irq);
     lm32.p_irq[1] (signal_videoin_irq);
     lm32.p_irq[2] (signal_videoout_irq);
-    for (int i=3; i<32; i++)
+    lm32.p_irq[3] (signal_interpolator_out_irq);
+    for (int i=4; i<32; i++)
         lm32.p_irq[i] (unconnected_irq);
 
     ////////////////////////////////////////////////////////////
@@ -316,6 +377,7 @@ int _main(int argc, char *argv[])
     
     sc_trace (TRACEFILE, signal_clk,    "100clk"    );
     sc_trace (TRACEFILE, signal25_clk,    "25clk"    );
+    /*
     sc_trace(TRACEFILE, pixel_out, "pixel_out");
     sc_trace(TRACEFILE, line_out_valid, "line_out_valid");
     sc_trace(TRACEFILE, frame_out_valid, "frame_out_valid");
@@ -329,6 +391,16 @@ int _main(int argc, char *argv[])
     sc_trace(TRACEFILE, signal_videoin_irq, "video_in_irq");
 
     sc_trace(TRACEFILE, signal_videoout_irq, "video_out_irq");
+    */
+   
+    sc_trace(TRACEFILE,signal_wb_interpolator_out, "signal_wb_interpol_out");
+    sc_trace(TRACEFILE,signal_interpolator_pixel_out, "signal_interpolator_pixel_out");
+    sc_trace(TRACEFILE,signal_dx, "signal_dx");
+    sc_trace(TRACEFILE,signal_dy, "signal_dy");
+    sc_trace(TRACEFILE,signal_pixel_valid, "signal_pixel_valid_interpolate_in");
+    sc_trace(TRACEFILE,signal_test_pixel_out, "signal_pixel_in_interpolate");
+    sc_trace(TRACEFILE,signal_interpolator_pixel_valid, "signal_pixel_out_interpolate_valid");
+    sc_trace(TRACEFILE,signal_interpolator_pixel_out, "signal_pixel_out_interpolate");
     /*
      
     sc_trace (TRACEFILE, signal_wb_ram, "ram_wb" );
@@ -336,12 +408,12 @@ int _main(int argc, char *argv[])
     sc_trace (TRACEFILE, signal_vci_rom,"rom_vci");
     sc_trace (TRACEFILE, signal_wb_rom, "rom_wb" );
     sc_trace (TRACEFILE, signal_wb_tty, "tty_wb" );
-    */
+    
     sc_trace (TRACEFILE, signal_wb_mastermodule,"video_in_master"  ); 
     sc_trace  (TRACEFILE, signal_wb_dummy_write,"dummywrite"  );
     sc_trace  (TRACEFILE, signal_wb_dummy,"dummyread"  );
     sc_trace  (TRACEFILE, signal_wb_video_in_reg,"signal_wb_slave");
-
+	*/
 #endif
        
     ////////////////////////////////////////////////////////////

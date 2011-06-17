@@ -1,0 +1,15 @@
+# -*- python -*-
+
+Module('caba:interpolator_test_module',
+        classname = 'soclib::caba::testinterpolate',
+        tmpl_parameters = [
+        ],
+        header_files = ['interpolation_test_module.h',],
+        implementation_files = ['interpolation_test_module.cpp',],
+        ports = [
+        ],
+        uses = [
+        ],
+        #debug = True ,
+      )
+
