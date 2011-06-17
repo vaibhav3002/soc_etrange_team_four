@@ -70,7 +70,7 @@ module video_in
    bit		       go; // Indicates that a block of pixels have been loaded into fifo and are available to be written on ram.
    logic raise_irq;
    bit 			new_image;
-
+   logic 	 	prev_frame_valid;
    integer 		buffer_count;
 
 
@@ -159,7 +159,15 @@ module video_in
 	  end
 	else
 	  begin
+	   prev_frame_valid <= frame_valid;
+	   if(frame_valid && ~prev_frame_valid)
+	    begin
+	    address <= module_register; 
+	    start_address <= module_register;
+	    end
+
 	     case (video_in_state)
+	 	
 
 	       waitForRamAddress:
 		if(initiliazed && !frame_valid)
@@ -180,6 +188,7 @@ module video_in
 	       waitForBufferToBeFilled: 
 		 begin
 		    // wait for the fifo counter to be equal to block size
+
 		    if(go)
 		      begin
 			 // Change to next state
@@ -230,8 +239,6 @@ module video_in
 			      // Check for address overflow or request for new start address once the image is complete 
 			      if ((address > `RAM_BASE + `RAM_SIZE -(`BLOCK_SIZE)) || (address - start_address)>= 32'h0004b000) 
 				begin
-				   address <= module_register; 
-				   start_address <= module_register;
 				   raise_irq <= 1'b0;
 				end
 
