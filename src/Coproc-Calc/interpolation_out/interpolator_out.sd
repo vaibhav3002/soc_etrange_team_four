@@ -1,0 +1,22 @@
+# -*- python -*-
+
+Module('caba:interpolator_out',
+        classname = 'soclib::caba::Interpolator_out',
+        tmpl_parameters = [
+            parameter.Module('wb_param',  default = 'caba:wb_param'),
+        ],
+        header_files = ['interpolator_out.h',],
+        implementation_files = ['interpolator_out.cpp',],
+        ports = [
+            Port('caba:bit_in',     'p_resetn', auto = 'resetn'),
+            Port('caba:wb_master',  'p_wb'),
+        ],
+        uses = [
+        Uses('caba:wishbone'),
+        Uses('caba:wb_master_module'),
+        Uses('caba:wb_slave_module'),
+        Uses('caba:wb_slave_reg_irq'),
+        ],
+#        debug = True ,
+      )
+
