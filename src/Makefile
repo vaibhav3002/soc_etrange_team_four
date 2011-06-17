@@ -21,12 +21,15 @@ SCGENMOD_OPT = -sc_uint -bool  -map "byte unsigned=unsigned char"
 
 vpath %.sv hdl/SystemVerilog
 
-.PHONY: all clean soft soclibcomp soft_clean vlogcompile
+.PHONY: all clean soft soclibcomp soft_clean vlogcompile xsim sim
 
 all: soft soclibcomp vlogcompile
 
 sim:
 	vsim -c sc_main
+
+xsim:
+	vsim sc_main
 
 work:
 	vlib work
