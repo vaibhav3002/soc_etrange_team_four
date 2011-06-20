@@ -67,7 +67,7 @@ module video_in
    logic [7:0] 	       fifo_counter, write_counter, block_offset;	
    logic [31:0]        address,start_address, module_register;
    bit		       initiliazed;
-   bit		       go; // Indicates that a block of pixels have been loaded into fifo and are available to be written on ram.
+   bit		       go, go_ack; // Indicates that a block of pixels have been loaded into fifo and are available to be written on ram.
    logic raise_irq;
    bit 			new_image;
    logic 	 	prev_frame_valid;
@@ -132,12 +132,13 @@ module video_in
 		      end
 		 end	
 		end
+	if(go_ack)
+		go <= 1'b0;
 	    end
      end
 
    always_ff @( posedge p_clk_100mhz or negedge p_resetn)
      begin
-
 	if(!p_resetn)	
 	  begin
 	     address <= 32'h41000000; // Fixed Starting Address 
@@ -192,7 +193,7 @@ module video_in
 		    if(go)
 		      begin
 			 // Change to next state
-			 go <= 1'b0;
+			 go_ack <= 1'b1; 
 			 video_in_state <= configureWbSignalsForBlkWrite;
 			 write_counter <= 8'h00;
 		      end
@@ -265,6 +266,8 @@ module video_in
 		 end // waitForWbAcknowledgement
 
 	     endcase // case block
+		if(!go && go_ack)
+		  go_ack <= 1'b0;
 
 	  end // reset block
      end // always_ff
