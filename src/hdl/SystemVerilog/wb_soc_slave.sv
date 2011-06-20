@@ -26,6 +26,8 @@ module wb_soc_slave (
    // read write request counter
    assign p_wb_DAT_O = module_register;
 
+   assign p_wb_ERR_O = 1'b0;
+   assign p_wb_RTY_O = 1'b0;
 
    always_ff @(posedge p_clk)
      begin : transition
