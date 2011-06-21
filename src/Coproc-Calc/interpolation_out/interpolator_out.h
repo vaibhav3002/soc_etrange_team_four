@@ -17,13 +17,13 @@
 #define __INTERPOLATOR_OUT_H__
 
 #include <systemc>
-#include "wb_master_module.h"
+#include "wb_master_module_tuille.h"
 #include "../common.h"
 #include "wb_slave_reg_irq.h"
 
-#define INTERPOLATOR_OUT_WINDOW_SIZE  VIDEO_BUFFER_SIZE 
-#define INTERPOLATOR_OUT_BLOCK_SIZE VIDEO_BUFFER_BLOCK_SIZE //this defines the size of the
-                                                        //the block sent to ram   
+#define INTERPOLATOR_OUT_WINDOW_SIZE ((uint32_t)128) //buffer size is two times tile size 
+#define INTERPOLATOR_OUT_BLOCK_SIZE ((uint32_t) 64) //this is the size of a tile
+                                                           
 #define INTERPOLATOR_OUT_BLOCK_MODULO (INTERPOLATOR_OUT_WINDOW_SIZE/INTERPOLATOR_OUT_BLOCK_SIZE)
 
 
@@ -51,7 +51,7 @@ namespace soclib { namespace caba {
             int write_count;
             uint32_t * buffer_pnt;
             void     wait_cycles (uint32_t delay);
-            WbMasterModule<wb_param> master0;
+            WbMasterModuleTuille<wb_param> master0;
 	    bool frame_valid_mem;
 	    bool reset_config; 
 

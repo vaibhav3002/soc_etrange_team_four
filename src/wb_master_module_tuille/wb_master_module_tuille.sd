@@ -1,0 +1,17 @@
+# -*- python -*-
+
+Module('caba:wb_master_module_tuille',
+        classname = 'soclib::caba::WbMasterModuleTuille',
+        tmpl_parameters = [
+            parameter.Module('wb_param',  default = 'caba:wb_param'),
+        ],
+        header_files = ['wb_master_module_tuille.h',],
+        implementation_files = ['wb_master_module_tuille.cpp',],
+        ports = [
+        ],
+        uses = [
+        Uses('caba:wishbone'),
+        ],
+        #debug = True ,
+      )
+

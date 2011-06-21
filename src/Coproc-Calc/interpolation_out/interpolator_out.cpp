@@ -153,19 +153,16 @@ namespace soclib { namespace caba {
 				}
 				mask_pnt=mask;                                   //initialising pointer to array
 			} else {
-				/*
-				if ((reg0.Written)&&(reset_config)) {//not checking for frame valid at all
+				
+				if ((reg0.Written)&&(init_done==false)) {//not checking for frame valid at all
 					init_done=true;
-					reset_config=false;
 					mem=this->reg0.reg.read();
 					initial_image_position= mem;
 					printf("INTERPOLATOROUT DESTINATION ADDRESS 0x%x\n",mem);
-				} else if (reset_config) {
-					continue;
-				} 
-				*/
+				}
+				
 				//the above commented lines should be uncommented after debugging
-				init_done=true; //to be removed after debbugin
+				init_done=true; //remove this line after testing
 				if (init_done) // clk event
 				{
 					// check if the reset has been done
@@ -182,22 +179,24 @@ namespace soclib { namespace caba {
 					//Check whether an unacknoledged IRQ has been raised
 
 					if (read_count!=write_count){ //we load a piece of the buffer to ram  only when available 
+						
 						master0.wb_write_blk(mem,mask_pnt,buffer_pnt,INTERPOLATOR_OUT_BLOCK_SIZE);     //converting byte length to word length       
-						mem=mem+(4*INTERPOLATOR_OUT_BLOCK_SIZE);
+						if (((buffer_count % ((IMAGE_X_DIMENSION/16)-1))==0)&&(buffer_count!=0)){
+						mem=mem+16+ 15*IMAGE_X_DIMENSION;	
+						}else{
+						mem=mem+16;
+						}
+						
 						if ((mem>RAM_BASE+RAM_SIZE -4*(INTERPOLATOR_OUT_BLOCK_SIZE)) || (mem-initial_image_position)>=0x0004b000) //load_next image memory adress once image is loaded
 						{                                                                                            
 							//                 // mem=master0.wb_read_at(VIDEO_IN_REG);
 							//                  mem=reg0.reg.read();
-							mem=0x40005000;//to be removed after debuging
-							initial_image_position=mem;//to be removed after debuging
-							//Raise an IrQ
-							/*
-							this->reg0.slave_raiseIrq();
-
-							reset_config=true;
-							reg0.Written=false;
-							*/
-							//above lines should be uncommented after testing
+							if (reg0.Written==true){
+							mem=this->reg0.reg.read();
+						        initial_image_position=mem;//to be removed after debuging
+							printf("INTERPOLATOROUT DESTINATION ADDRESS 0x%x\n",mem);
+							}
+							
 						}
 						read_count++;                                                    //read counter is 0 when we ave written second half 
 						read_count=read_count % INTERPOLATOR_OUT_BLOCK_MODULO;                                       //of the buffer 1 when we have writen first half

@@ -13,7 +13,7 @@ Module('caba:interpolator_out',
         ],
         uses = [
         Uses('caba:wishbone'),
-        Uses('caba:wb_master_module'),
+        Uses('caba:wb_master_module_tuille'),
         Uses('caba:wb_slave_module'),
         Uses('caba:wb_slave_reg_irq'),
         ],
