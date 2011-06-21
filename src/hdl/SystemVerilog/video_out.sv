@@ -4,20 +4,25 @@
  *       Filename:  video_out.sv
  *
  *    Description:  Video OUT - Type WB master
- *                  This module takes the pixels from the RAM and sends
- *                  them to the video display.
+ *                  This module takes the pixels from the RAM and sends them
+ *                  to the video display 
  *
- *         Author:  Vaibhav SINGH
- *         			Thibault Porteboeuf
+ *         Author:  Thibault Porteboeuf
+ *         			Vaibhav SINGH
  *        Company:  Telecom Paris TECH
  *
  * =============================================================================
  */
 
-`define VIDEO_IN_WINDOW_SIZE  64
+`define VIDEO_OUT_WINDOW_SIZE  64
 `define BLOCK_SIZE   32
 `define RAM_BASE     32'h40000000
 `define RAM_SIZE     32'h02000000
+
+`define IMAGE_HEIGHT 480
+`define IMAGE_WIDTH  640
+`define LINE_SYNCH   160
+`define FRAME_SYNCH  40
 
 `define BLOCK_MODULO  `VIDEO_OUT_WINDOW_SIZE/`BLOCK_SIZE
 
@@ -27,7 +32,8 @@ module video_out
    input  p_resetn, 
    input  p_clk_100mhz,
 
-   // Interface signals with Video display
+   // Interface signals with Video Display
+:w
 
    output  line_valid,
    output  frame_valid,
@@ -68,7 +74,7 @@ module video_out
    logic [7:0] 	       fifo_counter, write_counter, block_offset;	
    logic [31:0]        address,start_address, module_register;
    bit		       initiliazed;
-   bit		       go; // Indicates that a block of pixels have been loaded into fifo and are available to be written on ram.
+   bit		       go, go_ack; // Indicates that a block of pixels have been loaded into fifo and are available
    logic raise_irq;
    bit 			new_image;
    logic 	 	prev_frame_valid;
@@ -129,21 +135,22 @@ module video_out
 			   end		
 			 
 			 //reset fifo counter when it reaches window size
-			 fifo_counter <= (fifo_counter == `VIDEO_OUT_WINDOW_SIZE-1)?0:fifo_counter + 1;
+			 fifo_counter <= (fifo_counter == `VIDEO_IN_WINDOW_SIZE-1)?0:fifo_counter + 1;
 		      end
 		 end	
 		end
+	if(go_ack)
+		go <= 1'b0;
 	    end
      end
 
    always_ff @( posedge p_clk_100mhz or negedge p_resetn)
      begin
-
 	if(!p_resetn)	
 	  begin
 	     address <= 32'h41000000; // Fixed Starting Address 
 	     start_address <= 32'h41000000; // Fixed Starting Address 
-	     video_out_state <= waitForRamAddress;
+	     video_in_state <= waitForRamAddress;
 	     write_counter <= 8'h00;
 	    // start_loading <= 1'b0;
 	     // Clean Wb Signals
@@ -167,13 +174,13 @@ module video_out
 	    start_address <= module_register;
 	    end
 
-	     case (video_out_state)
+	     case (video_in_state)
 	 	
 
 	       waitForRamAddress:
 		if(initiliazed && !frame_valid)
 		begin
-		video_out_state <= waitForValidFrame;
+		video_in_state <= waitForValidFrame;
 		start_address <= module_register;
 	        address <= module_register;
 		end
@@ -183,7 +190,7 @@ module video_out
 		if(frame_valid)	
 		begin
 		new_image <= 1'b1;
-		video_out_state <= waitForBufferToBeFilled;
+		video_in_state <= waitForBufferToBeFilled;
 		end
  
 	       waitForBufferToBeFilled: 
@@ -193,8 +200,8 @@ module video_out
 		    if(go)
 		      begin
 			 // Change to next state
-			 go <= 1'b0;
-			 video_out_state <= configureWbSignalsForBlkWrite;
+			 go_ack <= 1'b1; 
+			 video_in_state <= configureWbSignalsForBlkWrite;
 			 write_counter <= 8'h00;
 		      end
 		 end 
@@ -210,7 +217,7 @@ module video_out
 		    address <= address + 4;
 		    write_counter <= write_counter + 4;
 		    // Change to state where we wait for acknowledgement
-		    video_out_state <= waitForWbAcknowledgement;
+		    video_in_state <= waitForWbAcknowledgement;
 		 end
 	       
 	       waitForWbAcknowledgement:
@@ -218,7 +225,7 @@ module video_out
 		    if (p_wb_ERR_I)
 		      begin
 			 // translate pragma off
-			 $display(" Video-Out: Error in WB transaction Cycle\n");
+			 $display(" Video-In: Error in WB transaction Cycle\n");
 			 // translate pragma on
 		      end
 		    if(p_wb_ACK_I)
@@ -254,11 +261,11 @@ module video_out
 			      p_wb_SEL_O  <= 4'hf;
 
 
-			      video_out_state <= waitForBufferToBeFilled;	
+			      video_in_state <= waitForBufferToBeFilled;	
 
 			   end else
 			     begin
-				video_out_state <= configureWbSignalsForBlkWrite;
+				video_in_state <= configureWbSignalsForBlkWrite;
 			     end // write_counter == `BLOCK_SIZE	
 
 		      end // p_wb_ACK_I
@@ -266,6 +273,8 @@ module video_out
 		 end // waitForWbAcknowledgement
 
 	     endcase // case block
+		if(!go && go_ack)
+		  go_ack <= 1'b0;
 
 	  end // reset block
      end // always_ff
