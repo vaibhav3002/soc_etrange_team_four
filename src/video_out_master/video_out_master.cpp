@@ -106,7 +106,7 @@ namespace soclib { namespace caba {
         //       std::cout<<"wrote a block"<<std::endl;
                writes_count++;                                              //Once we have loaded data from ram we increase counter
                writes_count=writes_count % VIDEO_OUT_MODULO;
-               
+                
                mem=mem+4*(VIDEO_OUT_BLOCK_SIZE);                            //check next image address once you hit the end of the image
                if ((mem> RAM_BASE+RAM_SIZE-4*(VIDEO_OUT_BLOCK_SIZE))|| ((mem- initial_image_position)>=0x0004b000)){
                  // mem=master1.wb_read_at(VIDEO_IN_REG);
