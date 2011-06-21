@@ -8,6 +8,7 @@
  * 					them to video display.
  *
  *         Author:  Ted
+ *        			Thibault Porteboeuf
  *        Company:  Telecom Paris TECH
  *
  * =============================================================================
