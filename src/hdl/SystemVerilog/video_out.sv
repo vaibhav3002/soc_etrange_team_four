@@ -78,7 +78,7 @@ module video_out
    logic [9:0] 	   	   pix_counter; //Counts up to 1023, required: img width+hsync=640+160=800
    logic [9:0]		   line_counter;//Counts up to 1023, required: img height+vsync=480+40=520
 
-   typedef enum        { waitForRamAddress=0,initialize,waitForGo,readSequence,waitForAck } VideoOUT_States;
+   typedef enum        { waitForRamAddress=0,initialize,waitForGo,initReadSequence,waitForAck } VideoOUT_States;
    VideoOUT_States video_out_state;
 
 // Module Instantiation
@@ -107,7 +107,7 @@ module video_out
 	//has been received.
 	always_ff @ (posedge p_clk or negedge p_resetn)
 	begin 
-		if(!p_resetn)
+		if((!p_resetn)||(!start))
 		begin 
 			fifo_counter <= 0;
 			pix_counter <= 0;
@@ -207,9 +207,10 @@ module video_out
 								read_counter <= 0;
 								block_offset <= (block_offset)?0:`BLOCK_SIZE;
 							end else // Reading
-								video_out_state <= readSequence;
+								video_out_state <= initReadSequence;
 						end
 					end
+
 				initialize:
 					begin
 						p_wb_STB_O <= 1'b0;
@@ -225,6 +226,7 @@ module video_out
 							block_offset <= 0;
 							start <= 1'b1;
 							video_out_state <= waitForGo;
+							$display("%d%d%d%d-%d%d%d%d\n",fifo[0],fifo[1],fifo[2],fifo[3],fifo[4],fifo[5],fifo[6],fifo[7]);
 						end else
 						begin
 							if (read_counter == `BLOCK_SIZE)
@@ -232,11 +234,11 @@ module video_out
 								read_counter <= 0;
 								block_offset <= `BLOCK_SIZE;
 							end
-							video_out_state <= readSequence;
+							video_out_state <= initReadSequence;
 						end
 					end
 
-				readSequence:
+				initReadSequence:
 					begin
 						p_wb_ADR_O <= address;
 						p_wb_SEL_O <= 4'hF;
@@ -259,10 +261,10 @@ module video_out
 						if (p_wb_ACK_I)
 						begin
 							//received acknoledgement
-							fifo[read_counter+block_offset] <= p_wb_DAT_I[7:0];
-							fifo[read_counter+block_offset+1] <= p_wb_DAT_I[15:8];
-							fifo[read_counter+block_offset+2] <= p_wb_DAT_I[23:16];
-							fifo[read_counter+block_offset+3] <= p_wb_DAT_I[31:24];
+							fifo[read_counter+block_offset-4] <= p_wb_DAT_I[7:0];
+							fifo[read_counter+block_offset-3] <= p_wb_DAT_I[15:8];
+							fifo[read_counter+block_offset-2] <= p_wb_DAT_I[23:16];
+							fifo[read_counter+block_offset-1] <= p_wb_DAT_I[31:24];
 							
 							if (read_counter == `BLOCK_SIZE)
 							begin
@@ -275,7 +277,13 @@ module video_out
 	
 							end else
 							begin
-								video_out_state <= readSequence;
+								p_wb_ADR_O <= address;
+								p_wb_SEL_O <= 4'hF;
+								p_wb_STB_O <= 1'b1;
+								p_wb_CYC_O <= 1'b1;
+								p_wb_WE_O <= 1'b0;
+								address <= address + 4;
+								read_counter <= read_counter + 4;
 							end
 						end
 					end
