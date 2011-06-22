@@ -49,7 +49,6 @@ char logo = 1;
 volatile unsigned long cnt=0;
 volatile int VideoInStatus=-1;
 unsigned long last_addr=0;
-unsigned long video_out_last_addr=0;
 
 void UART_IrqHandler() {
 	cnt ++;
@@ -112,7 +111,6 @@ int main(void)
 
 	int j;
 	volatile int OldVideoInStatus = -1;
-	video_out_last_addr = RAM_BASE + 0x1100000;
 	
 //        *((volatile unsigned long*) VIDEO_IN_REG) = 0x55555555;
 
