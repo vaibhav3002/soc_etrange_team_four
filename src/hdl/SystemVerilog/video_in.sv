@@ -42,12 +42,12 @@ module video_in
    input                p_wb_ERR_I,
    output  logic        p_wb_LOCK_O,
    input                p_wb_RTY_I,
-   output  logic [3:0] p_wb_SEL_O,
-   output  logic       p_wb_STB_O,
-   output  logic       p_wb_WE_O, 
+   output  logic [3:0]  p_wb_SEL_O,
+   output  logic        p_wb_STB_O,
+   output  logic        p_wb_WE_O, 
 
    // WB Signals for Slave
-   input   [31:0]             p_wb_reg_DAT_I,
+   input   [31:0]       p_wb_reg_DAT_I,
    output  logic [31:0] p_wb_reg_DAT_O,
    input   [31:0]       p_wb_reg_ADR_I,
    output  logic        p_wb_reg_ACK_O,
@@ -55,48 +55,48 @@ module video_in
    output logic         p_wb_reg_ERR_O,
    input                p_wb_reg_LOCK_I,
    output logic         p_wb_reg_RTY_O,
-   input   [3:0]             p_wb_reg_SEL_I,
+   input   [3:0]        p_wb_reg_SEL_I,
    input                p_wb_reg_STB_I,
    input                p_wb_reg_WE_I 
- 
+  
 
    );
 
    //-----------Internal signals -------------------
-   logic [7:0] 	       fifo[`VIDEO_IN_WINDOW_SIZE-1:0];
-   logic [7:0] 	       fifo_counter, write_counter, block_offset;	
-   logic [31:0]        address,start_address, module_register;
-   bit		       initiliazed;
-   bit		       go, go_ack; // Indicates that a block of pixels have been loaded into fifo and are available to be written on ram.
-   logic raise_irq;
-   bit 			new_image;
-   logic 	 	prev_frame_valid;
-   integer 		buffer_count;
+   logic [7:0] 		fifo[`VIDEO_IN_WINDOW_SIZE-1:0];
+   logic [7:0] 		fifo_counter, write_counter, block_offset;	
+   logic [31:0] 	address,start_address, module_register;
+   bit 				initiliazed;
+   bit 				go, go_ack; // Indicates that a block of pixels have been loaded into fifo and are available to be written on ram.
+   logic 			raise_irq;
+   bit 				new_image;
+   logic 		 	prev_frame_valid;
+   integer 			buffer_count;
 
 
-   typedef enum        { waitForRamAddress=0,waitForValidFrame, waitForBufferToBeFilled, configureWbSignalsForBlkWrite, waitForWbAcknowledgement} VideoIN_States;
+   typedef enum 	{ waitForRamAddress=0,waitForValidFrame, waitForBufferToBeFilled, configureWbSignalsForBlkWrite, waitForWbAcknowledgement} VideoIN_States;
    VideoIN_States video_in_state;
 
-// Module Instantiation
+   // Module Instantiation
 
    wb_soc_slave reg0(p_clk_100mhz, 
 		     p_resetn, 
-                     raise_irq,
-                     irq,
-                     module_register,
-                     initiliazed, 
-                     p_wb_reg_DAT_I,
+			 raise_irq,
+			 irq,
+			 module_register,
+			 initiliazed, 
+			 p_wb_reg_DAT_I,
 		     p_wb_reg_DAT_O,
 		     p_wb_reg_ADR_I,
 		     p_wb_reg_ACK_O,
 		     p_wb_reg_CYC_I,
 		     p_wb_reg_ERR_O,
-	             p_wb_reg_LOCK_I,
+			 p_wb_reg_LOCK_I,
 		     p_wb_reg_RTY_O,
 		     p_wb_reg_SEL_I,
 		     p_wb_reg_STB_I,
 		     p_wb_reg_WE_I	
-   	 );
+   		     );
 
 
    always_ff @ (posedge p_clk or negedge p_resetn)
@@ -108,32 +108,32 @@ module video_in
 	     buffer_count = 0;
 	  end else
 	    begin
-	    if(new_image)
-	    begin
-	       if(frame_valid)
+	       if(new_image)
 		 begin
-		    if(line_valid)
+		    if(frame_valid)
 		      begin
-			 fifo[fifo_counter] <= pixel_in;
-
-			 // activate the "go" signal if the block has been written to fifo
-			 if(fifo_counter)
+			 if(line_valid)
 			   begin
-			      if(!(fifo_counter % (`BLOCK_SIZE - 1)))
+			      fifo[fifo_counter] <= pixel_in;
+
+			      // activate the "go" signal if the block has been written to fifo
+			      if(fifo_counter)
 				begin
-				   go <= 1'b1;
-				   block_offset <= ((fifo_counter/(`BLOCK_SIZE - 1)) - 1)*8'd`BLOCK_SIZE;
-				   buffer_count++;
-				end
-			   end		
-			 
-			 //reset fifo counter when it reaches window size
-			 fifo_counter <= (fifo_counter == `VIDEO_IN_WINDOW_SIZE-1)?0:fifo_counter + 1;
-		      end
-		 end	
-		end
-	if(go_ack)
-		go <= 1'b0;
+				   if(!(fifo_counter % (`BLOCK_SIZE - 1)))
+				     begin
+					go <= 1'b1;
+					block_offset <= ((fifo_counter/(`BLOCK_SIZE - 1)) - 1)*8'd`BLOCK_SIZE;
+					buffer_count++;
+				     end
+				end		
+			      
+			      //reset fifo counter when it reaches window size
+			      fifo_counter <= (fifo_counter == `VIDEO_IN_WINDOW_SIZE-1)?0:fifo_counter + 1;
+			   end
+		      end	
+		 end
+	       if(go_ack)
+		 go <= 1'b0;
 	    end
      end
 
@@ -145,7 +145,7 @@ module video_in
 	     start_address <= 32'h41000000; // Fixed Starting Address 
 	     video_in_state <= waitForRamAddress;
 	     write_counter <= 8'h00;
-	    // start_loading <= 1'b0;
+	     // start_loading <= 1'b0;
 	     // Clean Wb Signals
 
 	     p_wb_STB_O  <= 1'b0;
@@ -160,32 +160,32 @@ module video_in
 	  end
 	else
 	  begin
-	   prev_frame_valid <= frame_valid;
-	   if(frame_valid && ~prev_frame_valid)
-	    begin
-	    address <= module_register; 
-	    start_address <= module_register;
-	    end
+	     prev_frame_valid <= frame_valid;
+	     if(frame_valid && ~prev_frame_valid)
+	       begin
+		  address <= module_register; 
+		  start_address <= module_register;
+	       end
 
 	     case (video_in_state)
-	 	
+	       
 
 	       waitForRamAddress:
-		if(initiliazed && !frame_valid)
-		begin
-		video_in_state <= waitForValidFrame;
-		start_address <= module_register;
-	        address <= module_register;
-		end
+		 if(initiliazed && !frame_valid)
+		   begin
+		      video_in_state <= waitForValidFrame;
+		      start_address <= module_register;
+	              address <= module_register;
+		   end
 
-	
-		waitForValidFrame:
-		if(frame_valid)	
-		begin
-		new_image <= 1'b1;
-		video_in_state <= waitForBufferToBeFilled;
-		end
- 
+	       
+	       waitForValidFrame:
+		 if(frame_valid)	
+		   begin
+		      new_image <= 1'b1;
+		      video_in_state <= waitForBufferToBeFilled;
+		   end
+	       
 	       waitForBufferToBeFilled: 
 		 begin
 		    // wait for the fifo counter to be equal to block size
@@ -224,13 +224,13 @@ module video_in
 		    if(p_wb_ACK_I)
 		      begin
 			 // Received Acknowledgement. 
-/*
-			 if(buffer_count == 16)
-			   start_loading <= 1;
-*/
-			// Request new address
-      if ((write_counter == `BLOCK_SIZE - 4) && (address - start_address)>= (32'h0004b000 - 32'h00000004)) 
-			raise_irq <= 1'b1;
+			 /*
+			  if(buffer_count == 16)
+			  start_loading <= 1;
+			  */
+			 // Request new address
+			 if ((write_counter == `BLOCK_SIZE - 4) && (address - start_address)>= (32'h0004b000 - 32'h00000004)) 
+			   raise_irq <= 1'b1;
 
 
 			 if(write_counter == `BLOCK_SIZE)	
@@ -266,8 +266,8 @@ module video_in
 		 end // waitForWbAcknowledgement
 
 	     endcase // case block
-		if(!go && go_ack)
-		  go_ack <= 1'b0;
+	     if(!go && go_ack)
+	       go_ack <= 1'b0;
 
 	  end // reset block
      end // always_ff
