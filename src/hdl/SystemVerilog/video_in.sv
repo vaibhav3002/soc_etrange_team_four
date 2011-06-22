@@ -74,7 +74,7 @@ module video_in
    integer 			buffer_count;
 
 
-   typedef enum 	{ waitForRamAddress=0,waitForValidFrame, waitForBufferToBeFilled, configureWbSignalsForBlkWrite, waitForWbAcknowledgement} VideoIN_States;
+   typedef enum 	{ waitForRamAddress=3'b0,waitForValidFrame, waitForBufferToBeFilled, configureWbSignalsForBlkWrite, waitForWbAcknowledgement} VideoIN_States;
    VideoIN_States video_in_state;
 
    // Module Instantiation
