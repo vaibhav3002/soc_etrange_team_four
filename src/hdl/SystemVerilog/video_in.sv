@@ -203,6 +203,7 @@ module video_in
 				configureWbSignalsForBlkWrite:
 					begin
 						// Read data from fifo buffer and write appropriate wb signals to start block write
+					
 						p_wb_DAT_O <= (fifo[block_offset + write_counter] | fifo[block_offset + write_counter + 8'd1] << 8 | fifo[block_offset + write_counter + 8'd2] << 16 | fifo[block_offset + write_counter + 8'd3] << 24);	 
 						p_wb_ADR_O <= address;
 						p_wb_SEL_O <= 4'hF;	
