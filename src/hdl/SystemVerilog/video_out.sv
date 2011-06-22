@@ -88,7 +88,8 @@ module video_out
              raise_irq,
              irq,
 			 module_register,
-			 initialized, 
+			 initialized,
+			 written,
 			 p_wb_reg_DAT_I,
 		     p_wb_reg_DAT_O,
 		     p_wb_reg_ADR_I,
@@ -179,13 +180,14 @@ module video_out
 		begin
 			case (video_out_state)
 				waitForRamAddress:
-					if (initialized)
+					if (initialized&&written)
 					begin
 						video_out_state <= initialize;
 						start_address <= module_register;
 						address <= module_register;
 						read_counter <= 0;
 						block_offset <= 0;
+						start <= 1'b0;
 					end
 
 				waitForGo:
@@ -196,7 +198,11 @@ module video_out
 						p_wb_WE_O <= 1'b0;
 						p_wb_ADR_O <= 32'hBadeC0de;
 						p_wb_SEL_O <= 4'hf;
-	
+
+						if (!written)
+						begin
+							video_out_state <= waitForRamAddress;
+						end else
 						if (!go && go_ack) //The other block received the go_ack signal
 							go_ack <= 1'b0;
 						else if (go && !go_ack) //No acknowlegement was send, and go is high -> The other block requires new data
@@ -226,7 +232,6 @@ module video_out
 							block_offset <= 0;
 							start <= 1'b1;
 							video_out_state <= waitForGo;
-							$display("%d%d%d%d-%d%d%d%d\n",fifo[0],fifo[1],fifo[2],fifo[3],fifo[4],fifo[5],fifo[6],fifo[7]);
 						end else
 						begin
 							if (read_counter == `BLOCK_SIZE)

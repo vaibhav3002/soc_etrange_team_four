@@ -4,7 +4,8 @@ module wb_soc_slave (
 		input  logic raise_irq,
 		output logic irq,
 		output logic [31:0] module_register,
-		output logic initiliazed,
+		output logic initialized,
+		output logic written,
 		//  WB signals
 		input  [31:0] p_wb_DAT_I,
 		output [31:0] p_wb_DAT_O,
@@ -34,12 +35,16 @@ module wb_soc_slave (
 	if (!p_resetn)
 	  begin
 	     cycle = 0;
-	     initiliazed <= 1'b0;
+	     initialized <= 1'b0;
+	  	 written <= 1'b0;
 	  end
 	else
 	  cycle++;
 	if(((!p_wb_STB_I)||(!p_wb_CYC_I)||(!p_wb_WE_I))&&(raise_irq))
-	  irq <= 1'b1;
+	begin
+		irq <= 1'b1;
+		written <= 1'b0;
+	end
 
 	if (p_wb_STB_I ) 
 	  begin
@@ -51,8 +56,9 @@ module wb_soc_slave (
 		       $display ("SLAVE recieved Write REQ 0x%08X @cycle %d",p_wb_DAT_I,cycle);
 		       //pragma translate_on
 		       module_register <= p_wb_DAT_I;
-		       initiliazed <= 1'b1;
+		       initialized <= 1'b1;
 		       irq <= 1'b0;		
+			   written <= 1'b1;
 		    end
 		  else
 		    begin
