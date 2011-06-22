@@ -99,14 +99,20 @@ module video_in
    		     );
 
 
-	always_ff @ (posedge p_clk or negedge p_resetn)
-    begin 
-		if(!p_resetn)
-		begin 
-			fifo_counter <= 0;
-			go <= 1'b0;
-			buffer_count = 0;
-		end else
+   logic [1:0] pclk;
+   always_ff @ (posedge p_clk_100mhz )
+	pclk <= { pclk[0], p_clk };
+
+   wire tick_p_clk = pclk[0] & !pclk[1];
+
+   always_ff @ (posedge p_clk_100mhz or negedge p_resetn)
+     begin 
+	if(!p_resetn)
+	  begin 
+	     fifo_counter <= 0;
+	     go <= 1'b0;
+	     buffer_count = 0;
+	  end else if (tick_p_clk)
 	    begin
 	    	if(new_image)
 			begin
