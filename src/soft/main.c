@@ -51,7 +51,7 @@ void UART_IrqHandler() {
 }
 
 void Videoout_IrqHandler() {
-	disable_irq(2);
+//	disable_irq(2);
 	*((volatile unsigned long*) VIDEO_OUT_REG) = last_addr;
 	printf("VIDEO_OUT IRQ ACK 0x%lx\n",last_addr);
 }

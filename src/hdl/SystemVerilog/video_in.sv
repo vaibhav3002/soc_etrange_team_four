@@ -66,7 +66,7 @@ module video_in
    logic [7:0] 		fifo[`VIDEO_IN_WINDOW_SIZE-1:0];
    logic [7:0] 		fifo_counter, write_counter, block_offset;	
    logic [31:0] 	address,start_address, module_register;
-   bit 				initiliazed;
+   bit 				initialized;
    bit 				go, go_ack; // Indicates that a block of pixels have been loaded into fifo and are available to be written on ram.
    logic 			raise_irq;
    bit 				new_image;
@@ -84,7 +84,8 @@ module video_in
 			 raise_irq,
 			 irq,
 			 module_register,
-			 initiliazed, 
+			 initialized, 
+			 written,
 			 p_wb_reg_DAT_I,
 		     p_wb_reg_DAT_O,
 		     p_wb_reg_ADR_I,
@@ -174,7 +175,7 @@ module video_in
 			case (video_in_state)
 	       
 	       		waitForRamAddress:
-					if(initiliazed && !frame_valid)
+					if(initialized && !frame_valid)
 				   begin
 				      video_in_state <= waitForValidFrame;
 				      start_address <= module_register;
