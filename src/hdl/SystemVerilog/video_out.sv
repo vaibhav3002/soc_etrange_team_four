@@ -113,10 +113,54 @@ module video_out
 			fifo_counter <= 0;
 			pix_counter <= 0;
 			line_counter <= 0;
+			frame_valid <= 0;
+			line_counter <= 0;
+			pixel_out <= 0;
+			go <= 0;
 		end else
 	    begin
 		    if(start)//The buffer has been initialized with pixels
 		    begin
+
+			if( line_counter < `IMAGE_HEIGHT && (pix_counter > `LINE_SYNC - 1))
+				begin
+						pixel_out <= fifo[fifo_counter];
+						if(!((fifo_counter +1)% (`BLOCK_SIZE)))
+						begin
+				 			//The module has reached the end of a block, it
+							//should now ask for a new one to be preloaded in
+							//the buffer
+							go <= 1'b1;
+						end
+						fifo_counter <= (fifo_counter == `VIDEO_OUT_WINDOW_SIZE-1)?0:fifo_counter + 1; //We increment fifo_counter modulo the window size
+				end else
+				
+						pixel_out <= 8'hbb;
+						line_valid <= (line_counter < `IMAGE_HEIGHT && pix_counter > `LINE_SYNC - 1) ? 1'b1 : 1'b0; 	
+						frame_valid <= (line_counter < `IMAGE_HEIGHT ) ? 1'b1 : 1'b0; 	
+						if (pix_counter == `IMAGE_WIDTH+`LINE_SYNC-1)
+						begin
+						line_counter <= line_counter + 1;
+						pix_counter <= 0;
+						end else 
+							pix_counter <= pix_counter + 1;
+						
+						if (pix_counter == `IMAGE_WIDTH+`LINE_SYNC-1)
+						begin
+						line_counter <= line_counter + 1;
+						pix_counter <= 0;
+						end else 
+							pix_counter <= pix_counter + 1;
+						
+						if (line_counter == `IMAGE_HEIGHT+`FRAME_SYNC)
+						begin
+						line_counter <= 0;
+						pix_counter <= 0;
+						end  
+			
+				if (go_ack)
+					go <= 1'b0;
+/*
 				if (line_counter<`IMAGE_HEIGHT)
 				begin
 					frame_valid <= 1'b1;
@@ -153,7 +197,9 @@ module video_out
 					pix_counter <= pix_counter+1;
 				if (go_ack)
 					go <= 1'b0;
+*/
 			end
+
 		end
 	end
 
@@ -270,11 +316,20 @@ module video_out
 							fifo[read_counter+block_offset-3] <= p_wb_DAT_I[15:8];
 							fifo[read_counter+block_offset-2] <= p_wb_DAT_I[23:16];
 							fifo[read_counter+block_offset-1] <= p_wb_DAT_I[31:24];
+
+					if ((address - start_address)== (32'h0004b000 - 32'h00000004))
+                                               raise_irq <= 1'b1;
 							
+							if(raise_irq)
+								raise_irq <= 0;
 							if (read_counter == `BLOCK_SIZE)
 							begin
 								//The buffer has been filled
-								
+
+//								if((address - start_address)>= 32'h0004b000)
+//									raise_irq <= 1'b1;
+
+
 								if (start)
 									video_out_state <= waitForGo;
 								else

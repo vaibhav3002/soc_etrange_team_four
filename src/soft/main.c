@@ -44,6 +44,7 @@ int fibo(int n);
 volatile unsigned long cnt=0;
 volatile int VideoInStatus=-1;
 unsigned long last_addr=0;
+unsigned long video_out_last_addr=0;
 
 void UART_IrqHandler() {
 	cnt ++;
@@ -52,7 +53,12 @@ void UART_IrqHandler() {
 
 void Videoout_IrqHandler() {
 //	disable_irq(2);
-	*((volatile unsigned long*) VIDEO_OUT_REG) = last_addr;
+	if(video_out_last_addr == RAM_BASE + 0x1100000)
+		video_out_last_addr = RAM_BASE + 0x1000000;
+	else
+		video_out_last_addr = RAM_BASE + 0x1100000;
+	
+	*((volatile unsigned long*) VIDEO_OUT_REG) = video_out_last_addr;
 	printf("VIDEO_OUT IRQ ACK 0x%lx\n",last_addr);
 }
 
@@ -84,6 +90,7 @@ int main(void)
 
 	int j;
 	volatile int OldVideoInStatus = -1;
+	video_out_last_addr = RAM_BASE + 0x1100000;
 	
 //        *((volatile unsigned long*) VIDEO_IN_REG) = 0x55555555;
 
