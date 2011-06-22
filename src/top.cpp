@@ -54,6 +54,7 @@
 
 //video_in_master_module
 #include "hdl/include/video_in.h"
+#include "hdl/include/video_out.h"
 
 //dummy read
 #include "master_dummy.h"
@@ -211,7 +212,46 @@ int _main(int argc, char *argv[])
     master_module.reg0.p_resetn(signal_resetn);
   */ 
     //Video_out Master generation and instanciation
-	
+
+
+
+   	video_out video_out_master_module("my_video_out", "video_out");
+    video_out_master_module.p_clk(signal25_clk); 
+    video_out_master_module.p_clk_100mhz(signal_clk);
+    video_out_master_module.p_resetn(signal_resetn);
+    video_out_master_module.line_valid(line_out_valid);
+    video_out_master_module.frame_valid(frame_out_valid);
+    video_out_master_module.pixel_in(pixel_out);
+    video_out_master_module.irq(signal_videoout_irq);
+    video_out_master_module.p_wb_DAT_O   (signal_wb_video_out_mastermodule.MWDAT );
+    video_out_master_module.p_wb_DAT_I   (signal_wb_video_out_mastermodule.MRDAT );
+    video_out_master_module.p_wb_ADR_O   (signal_wb_video_out_mastermodule.ADR );
+    video_out_master_module.p_wb_ACK_I   (signal_wb_video_out_mastermodule.ACK );
+    video_out_master_module.p_wb_CYC_O   (signal_wb_video_out_mastermodule.CYC );
+    video_out_master_module.p_wb_ERR_I   (signal_wb_video_out_mastermodule.ERR );
+    video_out_master_module.p_wb_LOCK_O  (signal_wb_video_out_mastermodule.LOCK);
+    video_out_master_module.p_wb_RTY_I   (signal_wb_video_out_mastermodule.RTY );
+    video_out_master_module.p_wb_SEL_O   (signal_wb_video_out_mastermodule.SEL );
+    video_out_master_module.p_wb_STB_O   (signal_wb_video_out_mastermodule.STB );
+    video_out_master_module.p_wb_WE_O    (signal_wb_video_out_mastermodule.WE  );
+    
+    video_out_master_module.p_wb_reg_DAT_I   (signal_wb_video_out_reg.MWDAT );
+    video_out_master_module.p_wb_reg_DAT_O   (signal_wb_video_out_reg.MRDAT );
+    video_out_master_module.p_wb_reg_ADR_I   (signal_wb_video_out_reg.ADR );
+    video_out_master_module.p_wb_reg_ACK_O   (signal_wb_video_out_reg.ACK );
+    video_out_master_module.p_wb_reg_CYC_I   (signal_wb_video_out_reg.CYC );
+    video_out_master_module.p_wb_reg_ERR_O   (signal_wb_video_out_reg.ERR );
+    video_out_master_module.p_wb_reg_LOCK_I  (signal_wb_video_out_reg.LOCK);
+    video_out_master_module.p_wb_reg_RTY_O   (signal_wb_video_out_reg.RTY );
+    video_out_master_module.p_wb_reg_SEL_I   (signal_wb_video_out_reg.SEL );
+    video_out_master_module.p_wb_reg_STB_I   (signal_wb_video_out_reg.STB );
+    video_out_master_module.p_wb_reg_WE_I    (signal_wb_video_out_reg.WE  );
+
+
+
+
+
+
    soclib::caba::Video_out_Master <wb_param>    video_out_master_module  ("video_out_master");
 	video_out_master_module.p_clk_100mhz(signal_clk );
 	video_out_master_module.p_clk(signal25_clk);
