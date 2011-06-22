@@ -221,7 +221,7 @@ int _main(int argc, char *argv[])
     video_out_master_module.p_resetn(signal_resetn);
     video_out_master_module.line_valid(line_out_valid);
     video_out_master_module.frame_valid(frame_out_valid);
-    video_out_master_module.pixel_in(pixel_out);
+    video_out_master_module.pixel_out(pixel_out);
     video_out_master_module.irq(signal_videoout_irq);
     video_out_master_module.p_wb_DAT_O   (signal_wb_video_out_mastermodule.MWDAT );
     video_out_master_module.p_wb_DAT_I   (signal_wb_video_out_mastermodule.MRDAT );
@@ -246,25 +246,6 @@ int _main(int argc, char *argv[])
     video_out_master_module.p_wb_reg_SEL_I   (signal_wb_video_out_reg.SEL );
     video_out_master_module.p_wb_reg_STB_I   (signal_wb_video_out_reg.STB );
     video_out_master_module.p_wb_reg_WE_I    (signal_wb_video_out_reg.WE  );
-
-
-
-
-
-
-   soclib::caba::Video_out_Master <wb_param>    video_out_master_module  ("video_out_master");
-	video_out_master_module.p_clk_100mhz(signal_clk );
-	video_out_master_module.p_clk(signal25_clk);
-	video_out_master_module.p_resetn(signal_resetn);
-	video_out_master_module.line_valid(line_out_valid);
-	video_out_master_module.frame_valid(frame_out_valid);
-	video_out_master_module.pixel_out(pixel_out);
-	video_out_master_module.p_wb(signal_wb_video_out_mastermodule);
-	video_out_master_module.reg0.p_clk(signal_clk);
-	video_out_master_module.reg0.p_resetn(signal_resetn);
-	video_out_master_module.reg0.p_wb(signal_wb_video_out_reg);
-	video_out_master_module.irq_out(signal_videoout_irq);
-
 
    //display instanciation	
    soclib::caba::Display display("display"); 
