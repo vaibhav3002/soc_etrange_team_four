@@ -165,7 +165,7 @@ module video_out
 		begin
 			address <= 32'h41000000; // Fixed Starting Address 
 			start_address <= 32'h41000000; // Fixed Starting Address 
-			video_in_state <= waitForRamAddress;
+			video_out_state <= waitForRamAddress;
 			write_counter <= 8'h00;
 			// start_loading <= 1'b0;
 			// Clean Wb Signals
@@ -177,7 +177,7 @@ module video_out
 			p_wb_ADR_O  <= 32'h00000000;
 			p_wb_DAT_O  <= 32'h00000000;
 			p_wb_SEL_O  <= 4'hF;
-			new_image <= 1'b0;
+			start <= 1'b0;
 
 		end else
 		begin

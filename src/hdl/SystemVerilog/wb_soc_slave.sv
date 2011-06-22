@@ -1,23 +1,23 @@
 module wb_soc_slave (
-                     input  p_clk,
-                     input  p_resetn,
-		     input  logic raise_irq,
-		     output logic irq,
-		     output logic [31:0] module_register,
-		     output logic initiliazed,
-                     //  WB signals
-                     input  [31:0] p_wb_DAT_I,
-                     output [31:0] p_wb_DAT_O,
-                     input  [31:0] p_wb_ADR_I,
-                     output p_wb_ACK_O,
-                     input  p_wb_CYC_I,
-                     output p_wb_ERR_O,
-                     input  p_wb_LOCK_I,
-                     output p_wb_RTY_O,
-                     input  [3:0]p_wb_SEL_I,
-                     input  p_wb_STB_I,
-                     input  p_wb_WE_I 
-                     );
+		input  p_clk,
+		input  p_resetn,
+		input  logic raise_irq,
+		output logic irq,
+		output logic [31:0] module_register,
+		output logic initiliazed,
+		//  WB signals
+		input  [31:0] p_wb_DAT_I,
+		output [31:0] p_wb_DAT_O,
+		input  [31:0] p_wb_ADR_I,
+		output p_wb_ACK_O,
+		input  p_wb_CYC_I,
+		output p_wb_ERR_O,
+		input  p_wb_LOCK_I,
+		output p_wb_RTY_O,
+		input  [3:0]p_wb_SEL_I,
+		input  p_wb_STB_I,
+		input  p_wb_WE_I 
+		);
 
    integer 		    cycle;
 
@@ -39,7 +39,7 @@ module wb_soc_slave (
 	else
 	  cycle++;
 	if(((!p_wb_STB_I)||(!p_wb_CYC_I)||(!p_wb_WE_I))&&(raise_irq))
-		irq <= 1'b1;
+	  irq <= 1'b1;
 
 	if (p_wb_STB_I ) 
 	  begin
