@@ -118,22 +118,39 @@ module video_out
 	    begin
 		    if(start)//The buffer has been initialized with pixels
 		    begin
-				if (line_counter<IMAGE_HEIGHT+FRAME_SYNC)
+				if (line_counter<`IMAGE_HEIGHT)
 				begin
 					frame_valid <= 1;
-					pixel_out <= fifo[fifo_counter];
-					if (fifo_counter)
-						begin
-						if(!fifo_counter % (`BLOCK_SIZE - 1))
-						begin
-				 			//The module has reached the end of a block, it
-							//should now ask for a new one to be preloaded in
-							//the buffer
-							go <= 1'b1;
+					if (pix_counter<`IMAGE_WIDTH)
+					begin
+						line_valid <= 1;
+						pixel_out <= fifo[fifo_counter];
+							if (fifo_counter)
+							begin
+							if(!fifo_counter % (`BLOCK_SIZE - 1))
+							begin
+					 			//The module has reached the end of a block, it
+								//should now ask for a new one to be preloaded in
+								//the buffer
+								go <= 1'b1;
+							end
 						end
-					end
 	
-					fifo_counter <= (fifo_conter == `VIDEO_OUT_WINDOW_SIZE-1)?0:fifo_counter + 1; //We increment fifo_counter modulo the window size
+						fifo_counter <= (fifo_conter == `VIDEO_OUT_WINDOW_SIZE-1)?0:fifo_counter + 1; //We increment fifo_counter modulo the window size
+					end else
+						if (pix_counter<`IMAGE_WIDTH+`LINE_SYNC)
+							line_valid <= 0;
+					end
+				end else
+						if (line_counter<`IMAGE_HEIGHT+`FRAME_SYNC)
+							frame_valid <= 0;
+				end
+				if (pix_counter == `IMAGE_WIDTH+`LINE_SYNC-1)
+				begin	
+					line_counter <= (line_counter == `IMAGE_HEIGHT+`FRAME_SYNC - 1)?0:line_counter +1;
+					pix_counter <= 0;
+				end else
+					pix_counter <= pix_counter+1;
 				end
 			end
 			if (go_ack)
