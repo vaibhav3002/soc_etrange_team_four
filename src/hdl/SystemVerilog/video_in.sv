@@ -74,7 +74,7 @@ module video_in
    integer 			buffer_count;
 
 
-   typedef enum 	{ waitForRamAddress=3'b0,waitForValidFrame, waitForBufferToBeFilled, configureWbSignalsForBlkWrite, waitForWbAcknowledgement} VideoIN_States;
+   typedef enum 	{ waitForRamAddress=0,waitForValidFrame, waitForBufferToBeFilled, configureWbSignalsForBlkWrite, waitForWbAcknowledgement} VideoIN_States;
    VideoIN_States video_in_state;
 
    // Module Instantiation
@@ -201,19 +201,22 @@ module video_in
 					end
 
 				configureWbSignalsForBlkWrite:
-					// Read data from fifo buffer and write appropriate wb signals to start block write
-					p_wb_DAT_O <= (fifo[block_offset + write_counter] | fifo[block_offset + write_counter + 8'd1] << 8 | fifo[block_offset + write_counter + 8'd2] << 16 | fifo[block_offset + write_counter + 8'd3] << 24);	 
-					p_wb_ADR_O <= address;
-					p_wb_SEL_O <= 4'hF;	
-					p_wb_STB_O <= 1'b1;
-					p_wb_CYC_O <= 1'b1;
-					p_wb_WE_O <= 1'b1;
-					address <= address + 4;
-					write_counter <= write_counter + 4;
-					// Change to state where we wait for acknowledgement
-					video_in_state <= waitForWbAcknowledgement;
+					begin
+						// Read data from fifo buffer and write appropriate wb signals to start block write
+						p_wb_DAT_O <= (fifo[block_offset + write_counter] | fifo[block_offset + write_counter + 8'd1] << 8 | fifo[block_offset + write_counter + 8'd2] << 16 | fifo[block_offset + write_counter + 8'd3] << 24);	 
+						p_wb_ADR_O <= address;
+						p_wb_SEL_O <= 4'hF;	
+						p_wb_STB_O <= 1'b1;
+						p_wb_CYC_O <= 1'b1;
+						p_wb_WE_O <= 1'b1;
+						address <= address + 4;
+						write_counter <= write_counter + 4;
+						// Change to state where we wait for acknowledgement
+						video_in_state <= waitForWbAcknowledgement;
+					end
 
 				waitForWbAcknowledgement:
+					begin
 					if (p_wb_ERR_I)
 					begin
 						// translate pragma off
