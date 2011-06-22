@@ -221,7 +221,7 @@ int _main(int argc, char *argv[])
     video_out_master_module.p_resetn(signal_resetn);
     video_out_master_module.line_valid(line_out_valid);
     video_out_master_module.frame_valid(frame_out_valid);
-    video_out_master_module.pixel_in(pixel_out);
+    video_out_master_module.pixel_out(pixel_out);
     video_out_master_module.irq(signal_videoout_irq);
     video_out_master_module.p_wb_DAT_O   (signal_wb_video_out_mastermodule.MWDAT );
     video_out_master_module.p_wb_DAT_I   (signal_wb_video_out_mastermodule.MRDAT );

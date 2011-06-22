@@ -71,7 +71,6 @@ module video_out
    logic [7:0] 	       fifo[`VIDEO_OUT_WINDOW_SIZE-1:0];
    logic [7:0] 	       fifo_counter, read_counter, block_offset;	
    logic [31:0]        address,start_address, module_register;
-   bit				   initialized;
    bit		           go, go_ack; // Indicates that a block of pixels have been loaded into fifo and are available
    logic 			   raise_irq;
    bit 				   start;
@@ -89,7 +88,7 @@ module video_out
              raise_irq,
              irq,
 			 module_register,
-			 initiliazed, 
+			 initialized, 
 			 p_wb_reg_DAT_I,
 		     p_wb_reg_DAT_O,
 		     p_wb_reg_ADR_I,
@@ -111,7 +110,6 @@ module video_out
 		if(!p_resetn)
 		begin 
 			fifo_counter <= 0;
-			go <= 1'b1;
 			pix_counter <= 0;
 			line_counter <= 0;
 		end else
@@ -125,23 +123,26 @@ module video_out
 					begin
 						line_valid <= 1;
 						pixel_out <= fifo[fifo_counter];
-						if (fifo_counter)
+						if(!((fifo_counter +1)% (`BLOCK_SIZE)))
 						begin
-							if(!fifo_counter % (`BLOCK_SIZE - 1))
-							begin
-					 			//The module has reached the end of a block, it
-								//should now ask for a new one to be preloaded in
-								//the buffer
-								go <= 1'b1;
-							end
+				 			//The module has reached the end of a block, it
+							//should now ask for a new one to be preloaded in
+							//the buffer
+							go <= 1'b1;
 						end
 	
 						fifo_counter <= (fifo_counter == `VIDEO_OUT_WINDOW_SIZE-1)?0:fifo_counter + 1; //We increment fifo_counter modulo the window size
 					end else if (pix_counter<`IMAGE_WIDTH+`LINE_SYNC)
 						line_valid <= 0;
 				end else if (line_counter<`IMAGE_HEIGHT+`FRAME_SYNC)
+				begin
 					frame_valid <= 0;
-				
+					if (frame_valid) //Falling edge
+						raise_irq <= 1'b1;
+					else
+						raise_irq <= 1'b0;
+					
+				end
 				
 				if (pix_counter == `IMAGE_WIDTH+`LINE_SYNC-1)
 				begin	
@@ -188,34 +189,51 @@ module video_out
 					end
 
 				waitForGo:
-					if (!go && go_ack) //The other block received the go_ack signal
-						go_ack <= 1'b0;
-					else if (go && !go_ack) //No acknowlegement was send, and go is high -> The other block requires new data
 					begin
-						if (read_counter == `BLOCK_SIZE - 1) //A whole block was read
+						p_wb_STB_O <= 1'b0;
+						p_wb_CYC_O <= 1'b0;
+						p_wb_LOCK_O <= 1'b0;
+						p_wb_WE_O <= 1'b0;
+						p_wb_ADR_O <= 32'hBadeC0de;
+						p_wb_SEL_O <= 4'hf;
+	
+						if (!go && go_ack) //The other block received the go_ack signal
+							go_ack <= 1'b0;
+						else if (go && !go_ack) //No acknowlegement was send, and go is high -> The other block requires new data
 						begin
-							go_ack <= 1'b1; //Acknowledge go
-							read_counter <= 0;
-							block_offset <= (block_offset)?0:`BLOCK_SIZE;
-						end else // Reading
-							video_out_state <= readSequence;
-					end
-
-				initialize:
-					if (`VIDEO_OUT_WINDOW_SIZE - 1 == read_counter + block_offset)
-					begin
-						read_counter <= 0;
-						block_offset <= 0;
-						start <= 1'b1;
-						video_out_state <= waitForGo;
-					end else
-					begin
-						if (read_counter == `BLOCK_SIZE - 1)
-						begin
-							read_counter <= 0;
-							block_offset <= `BLOCK_SIZE;
+							if (read_counter == `BLOCK_SIZE) //A whole block was read
+							begin
+								go_ack <= 1'b1; //Acknowledge go
+								read_counter <= 0;
+								block_offset <= (block_offset)?0:`BLOCK_SIZE;
+							end else // Reading
+								video_out_state <= readSequence;
 						end
-						video_out_state <= readSequence;
+					end
+				initialize:
+					begin
+						p_wb_STB_O <= 1'b0;
+						p_wb_CYC_O <= 1'b0;
+						p_wb_LOCK_O <= 1'b0;
+						p_wb_WE_O <= 1'b0;
+						p_wb_ADR_O <= 32'hBadeC0de;
+						p_wb_SEL_O <= 4'hf;
+	
+						if (`VIDEO_OUT_WINDOW_SIZE == read_counter + block_offset)
+						begin
+							read_counter <= 0;
+							block_offset <= 0;
+							start <= 1'b1;
+							video_out_state <= waitForGo;
+						end else
+						begin
+							if (read_counter == `BLOCK_SIZE)
+							begin
+								read_counter <= 0;
+								block_offset <= `BLOCK_SIZE;
+							end
+							video_out_state <= readSequence;
+						end
 					end
 
 				readSequence:
@@ -246,7 +264,7 @@ module video_out
 							fifo[read_counter+block_offset+2] <= p_wb_DAT_I[23:16];
 							fifo[read_counter+block_offset+3] <= p_wb_DAT_I[31:24];
 							
-							if (read_counter == `BLOCK_SIZE - 1)
+							if (read_counter == `BLOCK_SIZE)
 							begin
 								//The buffer has been filled
 								
@@ -255,15 +273,8 @@ module video_out
 								else
 									video_out_state <= initialize;
 	
-								p_wb_STB_O <= 1'b0;
-								p_wb_CYC_O <= 1'b0;
-								p_wb_LOCK_O <= 1'b0;
-								p_wb_WE_O <= 1'b0;
-								p_wb_ADR_O <= 32'hBadeC0de;
-								p_wb_SEL_O <= 4'hf;
 							end else
 							begin
-								p_wb_STB_O = 1'b0;
 								video_out_state <= readSequence;
 							end
 						end
