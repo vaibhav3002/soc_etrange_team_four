@@ -99,178 +99,173 @@ module video_in
    		     );
 
 
-   always_ff @ (posedge p_clk or negedge p_resetn)
-     begin 
-	if(!p_resetn)
-	  begin 
-	     fifo_counter <= 0;
-	     go <= 1'b0;
-	     buffer_count = 0;
-	  end else
+	always_ff @ (posedge p_clk or negedge p_resetn)
+    begin 
+		if(!p_resetn)
+		begin 
+			fifo_counter <= 0;
+			go <= 1'b0;
+			buffer_count = 0;
+		end else
 	    begin
-	       if(new_image)
-		 begin
-		    if(frame_valid)
-		      begin
-			 if(line_valid)
-			   begin
-			      fifo[fifo_counter] <= pixel_in;
-
-			      // activate the "go" signal if the block has been written to fifo
-			      if(fifo_counter)
+	    	if(new_image)
+			begin
+		   		if(frame_valid)
 				begin
-				   if(!(fifo_counter % (`BLOCK_SIZE - 1)))
-				     begin
-					go <= 1'b1;
-					block_offset <= ((fifo_counter/(`BLOCK_SIZE - 1)) - 1)*8'd`BLOCK_SIZE;
-					buffer_count++;
-				     end
-				end		
+			 		if(line_valid)
+			   		begin
+			      		fifo[fifo_counter] <= pixel_in;
+						// activate the "go" signal if the block has been written to fifo
+						if(fifo_counter)
+						begin
+							if(!(fifo_counter % (`BLOCK_SIZE - 1)))
+							begin
+								go <= 1'b1;
+								block_offset <= ((fifo_counter/(`BLOCK_SIZE - 1)) - 1)*8'd`BLOCK_SIZE;
+								buffer_count++;
+							end
+						end		
 			      
-			      //reset fifo counter when it reaches window size
-			      fifo_counter <= (fifo_counter == `VIDEO_IN_WINDOW_SIZE-1)?0:fifo_counter + 1;
-			   end
-		      end	
-		 end
-	       if(go_ack)
-		 go <= 1'b0;
+						//reset fifo counter when it reaches window size
+						fifo_counter <= (fifo_counter == `VIDEO_IN_WINDOW_SIZE-1)?0:fifo_counter + 1;
+					end
+				end	
+			end
+	        if(go_ack)
+		    	go <= 1'b0;
 	    end
      end
 
-   always_ff @( posedge p_clk_100mhz or negedge p_resetn)
-     begin
-	if(!p_resetn)	
-	  begin
-	     address <= 32'h41000000; // Fixed Starting Address 
-	     start_address <= 32'h41000000; // Fixed Starting Address 
-	     video_in_state <= waitForRamAddress;
-	     write_counter <= 8'h00;
-	     // start_loading <= 1'b0;
-	     // Clean Wb Signals
+	always_ff @( posedge p_clk_100mhz or negedge p_resetn)
+    begin
+		if(!p_resetn)	
+		begin
+			address <= 32'h41000000; // Fixed Starting Address 
+			start_address <= 32'h41000000; // Fixed Starting Address 
+			video_in_state <= waitForRamAddress;
+			write_counter <= 8'h00;
+			// start_loading <= 1'b0;
+			// Clean Wb Signals
 
-	     p_wb_STB_O  <= 1'b0;
-	     p_wb_CYC_O  <= 1'b0;
-	     p_wb_LOCK_O <= 1'b0;
-	     p_wb_WE_O   <= 1'b0;
-	     p_wb_ADR_O  <= 32'h00000000;
-	     p_wb_DAT_O  <= 32'h00000000;
-	     p_wb_SEL_O  <= 4'hF;
-	     new_image <= 1'b0;
+			p_wb_STB_O  <= 1'b0;
+			p_wb_CYC_O  <= 1'b0;
+			p_wb_LOCK_O <= 1'b0;
+			p_wb_WE_O   <= 1'b0;
+			p_wb_ADR_O  <= 32'h00000000;
+			p_wb_DAT_O  <= 32'h00000000;
+			p_wb_SEL_O  <= 4'hF;
+			new_image <= 1'b0;
 
-	  end
-	else
-	  begin
-	     prev_frame_valid <= frame_valid;
-	     if(frame_valid && ~prev_frame_valid)
-	       begin
-		  address <= module_register; 
-		  start_address <= module_register;
-	       end
+		end else
+		begin
+	    	prev_frame_valid <= frame_valid;
+			if(frame_valid && ~prev_frame_valid)
+	        begin
+		  		address <= module_register; 
+				start_address <= module_register;
+			end
 
-	     case (video_in_state)
+			case (video_in_state)
 	       
-
-	       waitForRamAddress:
-		 if(initiliazed && !frame_valid)
-		   begin
-		      video_in_state <= waitForValidFrame;
-		      start_address <= module_register;
-	              address <= module_register;
-		   end
+	       		waitForRamAddress:
+					if(initiliazed && !frame_valid)
+				   begin
+				      video_in_state <= waitForValidFrame;
+				      start_address <= module_register;
+		              address <= module_register;
+				   end
 
 	       
-	       waitForValidFrame:
-		 if(frame_valid)	
-		   begin
-		      new_image <= 1'b1;
-		      video_in_state <= waitForBufferToBeFilled;
-		   end
-	       
-	       waitForBufferToBeFilled: 
-		 begin
-		    // wait for the fifo counter to be equal to block size
+				waitForValidFrame:
+					if(frame_valid)	
+					begin
+						new_image <= 1'b1;
+						video_in_state <= waitForBufferToBeFilled;
+					end
 
-		    if(go)
-		      begin
-			 // Change to next state
-			 go_ack <= 1'b1; 
-			 video_in_state <= configureWbSignalsForBlkWrite;
-			 write_counter <= 8'h00;
-		      end
-		 end 
-	       configureWbSignalsForBlkWrite:
-		 begin
-		    // Read data from fifo buffer and write appropriate wb signals to start block write
-		    p_wb_DAT_O <= (fifo[block_offset + write_counter] | fifo[block_offset + write_counter + 8'd1] << 8 | fifo[block_offset + write_counter + 8'd2] << 16 | fifo[block_offset + write_counter + 8'd3] << 24);	 
-		    p_wb_ADR_O <= address;
-		    p_wb_SEL_O <= 4'hF;	
-		    p_wb_STB_O <= 1'b1;
-		    p_wb_CYC_O <= 1'b1;
-		    p_wb_WE_O <= 1'b1;
-		    address <= address + 4;
-		    write_counter <= write_counter + 4;
-		    // Change to state where we wait for acknowledgement
-		    video_in_state <= waitForWbAcknowledgement;
-		 end
-	       
-	       waitForWbAcknowledgement:
-		 begin
-		    if (p_wb_ERR_I)
-		      begin
-			 // translate pragma off
-			 $display(" Video-In: Error in WB transaction Cycle\n");
-			 // translate pragma on
-		      end
-		    if(p_wb_ACK_I)
-		      begin
-			 // Received Acknowledgement. 
-			 /*
-			  if(buffer_count == 16)
-			  start_loading <= 1;
-			  */
-			 // Request new address
-			 if ((write_counter == `BLOCK_SIZE - 4) && (address - start_address)>= (32'h0004b000 - 32'h00000004)) 
-			   raise_irq <= 1'b1;
+				waitForBufferToBeFilled: 
+					// wait for the fifo counter to be equal to block size
+
+				    if(go)
+					begin
+						// Change to next state
+						go_ack <= 1'b1; 
+						video_in_state <= configureWbSignalsForBlkWrite;
+						write_counter <= 8'h00;
+					end
+
+				configureWbSignalsForBlkWrite:
+					// Read data from fifo buffer and write appropriate wb signals to start block write
+					p_wb_DAT_O <= (fifo[block_offset + write_counter] | fifo[block_offset + write_counter + 8'd1] << 8 | fifo[block_offset + write_counter + 8'd2] << 16 | fifo[block_offset + write_counter + 8'd3] << 24);	 
+					p_wb_ADR_O <= address;
+					p_wb_SEL_O <= 4'hF;	
+					p_wb_STB_O <= 1'b1;
+					p_wb_CYC_O <= 1'b1;
+					p_wb_WE_O <= 1'b1;
+					address <= address + 4;
+					write_counter <= write_counter + 4;
+					// Change to state where we wait for acknowledgement
+					video_in_state <= waitForWbAcknowledgement;
+
+				waitForWbAcknowledgement:
+					if (p_wb_ERR_I)
+					begin
+						// translate pragma off
+						$display(" Video-In: Error in WB transaction Cycle\n");
+						// translate pragma on
+					end
+					if(p_wb_ACK_I)
+					begin
+					// Received Acknowledgement. 
+					/*
+					if(buffer_count == 16)
+					start_loading <= 1;
+					*/
+					// Request new address
+
+					if ((write_counter == `BLOCK_SIZE - 4) && (address - start_address)>= (32'h0004b000 - 32'h00000004)) 
+						raise_irq <= 1'b1;
 
 
-			 if(write_counter == `BLOCK_SIZE)	
-			   begin
-			      // Block has been written. 
+					if(write_counter == `BLOCK_SIZE)	
+					begin
+						// Block has been written. 
 
-			      // Check for address overflow or request for new start address once the image is complete 
-			      if ((address > `RAM_BASE + `RAM_SIZE -(`BLOCK_SIZE)) || (address - start_address)>= 32'h0004b000) 
-				begin
-				   raise_irq <= 1'b0;
-				end
-
-			      // Clean Wb Signals
-
-			      p_wb_STB_O  <= 1'b0;
-			      p_wb_CYC_O  <= 1'b0;
-			      p_wb_LOCK_O <= 1'b0;
-			      p_wb_WE_O   <= 1'b0;
-			      p_wb_ADR_O  <= 32'hBadeC0de;
-			      p_wb_DAT_O  <= 32'hDeadBeef;
-			      p_wb_SEL_O  <= 4'hf;
+						// Check for address overflow or request for new start address once the image is complete 
+						if ((address > `RAM_BASE + `RAM_SIZE -(`BLOCK_SIZE)) || (address - start_address)>= 32'h0004b000) 
+						begin
+							raise_irq <= 1'b0;
+						end
 
 
-			      video_in_state <= waitForBufferToBeFilled;	
+						// Clean Wb Signals
 
-			   end else
-			     begin
-				video_in_state <= configureWbSignalsForBlkWrite;
-			     end // write_counter == `BLOCK_SIZE	
+						p_wb_STB_O  <= 1'b0;
+						p_wb_CYC_O  <= 1'b0;
+						p_wb_LOCK_O <= 1'b0;
+						p_wb_WE_O   <= 1'b0;
+						p_wb_ADR_O  <= 32'hBadeC0de;
+						p_wb_DAT_O  <= 32'hDeadBeef;
+						p_wb_SEL_O  <= 4'hf;
 
-		      end // p_wb_ACK_I
-		    
-		 end // waitForWbAcknowledgement
 
-	     endcase // case block
-	     if(!go && go_ack)
-	       go_ack <= 1'b0;
+						video_in_state <= waitForBufferToBeFilled;	
 
-	  end // reset block
-     end // always_ff
+					end else
+					begin
+						video_in_state <= configureWbSignalsForBlkWrite;
+					end // write_counter == `BLOCK_SIZE	
+
+				end // p_wb_ACK_I
+
+			end // waitForWbAcknowledgement
+
+			endcase // case block
+			if(!go && go_ack)
+				go_ack <= 1'b0;
+
+		end // reset block
+	end // always_ff
 
 
 endmodule

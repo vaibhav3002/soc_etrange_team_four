@@ -69,9 +69,9 @@ module video_out
 
    //-----------Internal signals -------------------
    logic [7:0] 	       fifo[`VIDEO_OUT_WINDOW_SIZE-1:0];
-   logic [7:0] 	       fifo_counter, write_counter, block_offset;	
+   logic [7:0] 	       fifo_counter, read_counter, block_offset;	
    logic [31:0]        address,start_address, module_register;
-   bit		    	   initiliazed;
+   bit				   initiliazed;
    bit		           go, go_ack; // Indicates that a block of pixels have been loaded into fifo and are available
    logic 			   raise_irq;
    bit 				   start;
@@ -79,7 +79,7 @@ module video_out
    logic [9:0] 	   	   pix_counter; //Counts up to 1023, required: img width+hsync=640+160=800
    logic [9:0]		   line_counter;//Counts up to 1023, required: img height+vsync=480+40=520
 
-   typedef enum        { waitForRamAddress=0,waitForValidFrame, waitForBufferToBeFilled, configureWbSignalsForBlkWrite, waitForWbAcknowledgement} VideoOUT_States;
+   typedef enum        { waitForRamAddress=3'b0,initialize,waitForGo,readSequence,waitForAck } VideoOUT_States;
    VideoOUT_States video_out_state;
 
 // Module Instantiation
@@ -166,10 +166,8 @@ module video_out
 			address <= 32'h41000000; // Fixed Starting Address 
 			start_address <= 32'h41000000; // Fixed Starting Address 
 			video_out_state <= waitForRamAddress;
-			write_counter <= 8'h00;
-			// start_loading <= 1'b0;
+			read_counter <= 8'h00;
 			// Clean Wb Signals
-
 			p_wb_STB_O  <= 1'b0;
 			p_wb_CYC_O  <= 1'b0;
 			p_wb_LOCK_O <= 1'b0;
@@ -181,104 +179,56 @@ module video_out
 
 		end else
 		begin
-			prev_frame_valid <= frame_valid;
-			if(frame_valid && ~prev_frame_valid)
-			begin
-				address <= module_register; 
-				start_address <= module_register;
-			end
-
-			case (video_in_state)
+			case (video_out_state)
 				waitForRamAddress:
-					if(initiliazed && !frame_valid)
+					if (initialized)
 					begin
-						video_in_state <= waitForValidFrame;
+						video_out_state <= initialize;
 						start_address <= module_register;
 						address <= module_register;
 					end
 
-				waitForValidFrame:
-					if(frame_valid)	
-					begin
-						new_image <= 1'b1;
-						video_in_state <= waitForBufferToBeFilled;
-					end
-
-				waitForBufferToBeFilled: 
-				
-				// wait for the fifo counter to be equal to block size
-
-				if(go)
-				begin
-					// Change to next state
-					go_ack <= 1'b1; 
-					video_in_state <= configureWbSignalsForBlkWrite;
-					write_counter <= 8'h00;
-				end
-				
-				configureWbSignalsForBlkWrite:
-					// Read data from fifo buffer and write appropriate wb signals to start block write
-					p_wb_DAT_O <= (fifo[block_offset + write_counter] | fifo[block_offset + write_counter + 8'd1] << 8 | fifo[block_offset + write_counter + 8'd2] << 16 | fifo[block_offset + write_counter + 8'd3] << 24);	 
+				initialize:
+						
+				readSequence:
 					p_wb_ADR_O <= address;
-				    p_wb_SEL_O <= 4'hF;	
+					p_wb_SEL_O <= 4'hf;
 					p_wb_STB_O <= 1'b1;
 					p_wb_CYC_O <= 1'b1;
-					p_wb_WE_O <= 1'b1;
-					address <= address + 4;
-					write_counter <= write_counter + 4;
-					// Change to state where we wait for acknowledgement
-					video_in_state <= waitForWbAcknowledgement;
-	       
-	      		 waitForWbAcknowledgement:
-				 	if (p_wb_ERR_I)
-			     	begin
-						// translate pragma off
-						$display(" Video-In: Error in WB transaction Cycle\n");
-						// translate pragma on
-		      		end
-				    if(p_wb_ACK_I)
-			        begin
-						// Request new address
-					    if ((write_counter == `BLOCK_SIZE - 4) && (address - start_address)>= (32'h0004b000 - 32'h00000004)) 
-							raise_irq <= 1'b1;
+					p_wb_WE_O <= 1'b0;
 
-
-						if(write_counter == `BLOCK_SIZE)	
+				waitForAck:
+					if (p_wb_ERR_I)
+					begin
+						//translate pragma off
+						$display(" Video-Out: Error in WB transaction cycle\n");
+						//translate pragma on
+					end
+					if (p_wb_ACK_I)
+					begin
+						//received acknoledgement
+						if (read_counter == `BLOCK_SIZE)
 						begin
-							// Block has been written. 
+							//The buffer has been filled
+							
+							if (start)
+								video_out_state <= waitForGo;
+							else
+								video_out_state <= initialize;
 
-							// Check for address overflow or request for new start address once the image is complete 
-							if ((address > `RAM_BASE + `RAM_SIZE -(`BLOCK_SIZE)) || (address - start_address)>= 32'h0004b000) 
-							begin
-							   raise_irq <= 1'b0;
-							end
-
-							// Clean Wb Signals
-
-							p_wb_STB_O  <= 1'b0;
-							p_wb_CYC_O  <= 1'b0;
+							p_wb_STB_O <= 1'b0;
+							p_wb_CYC_O <= 1'b0;
 							p_wb_LOCK_O <= 1'b0;
-							p_wb_WE_O   <= 1'b0;
-							p_wb_ADR_O  <= 32'hBadeC0de;
-							p_wb_DAT_O  <= 32'hDeadBeef;
-							p_wb_SEL_O  <= 4'hf;
+							p_wb_WE_O <= 1'b0;
+							p_wb_ADDR_O <= 32'hBadeC0de;
+							p_wb_SEL_O <= 4'hf;
+						end
+					end
 
+				
 
-							video_in_state <= waitForBufferToBeFilled;	
-
-						end else
-			     		begin
-							video_in_state <= configureWbSignalsForBlkWrite;
-						end // write_counter == `BLOCK_SIZE	
-
-					end // p_wb_ACK_I
-		    
-				end // waitForWbAcknowledgement
-
-			endcase // case block
-			if(!go && go_ack)
-				go_ack <= 1'b0;
-	  	end // reset block
+			endcase
+		end
 	end // always_ff
 
 
