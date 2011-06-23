@@ -29,7 +29,7 @@
 namespace soclib { namespace caba {
 
 	tmpl(/**/)::Interpolator_out (sc_module_name name )
-		:sc_core::sc_module(name),p_resetn("p_resetn"), master0(p_clk_100mhz,p_wb), reg0("reg0"), irq_out("videoinirq")
+		:sc_core::sc_module(name),p_resetn("p_resetn"), master0(p_clk_100mhz,p_wb), reg0("reg0"), irq_out("interpolator_out_irq")
 
 	{
 		reg0.irq_out(irq_out);
@@ -182,7 +182,8 @@ namespace soclib { namespace caba {
 						
 						master0.wb_write_blk(mem,mask_pnt,buffer_pnt,INTERPOLATOR_OUT_BLOCK_SIZE);     //converting byte length to word length       
 						if (((buffer_count % ((IMAGE_X_DIMENSION/16)-1))==0)&&(buffer_count!=0)){
-						mem=mem+16+ 15*IMAGE_X_DIMENSION;	
+						mem=mem+16+ 15*IMAGE_X_DIMENSION;//once fill the first row of tilles we go to the second
+						buffer_count=0;	
 						}else{
 						mem=mem+16;
 						}

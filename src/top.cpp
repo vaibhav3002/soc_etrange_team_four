@@ -132,7 +132,6 @@ int _main(int argc, char *argv[])
    sc_signal<unsigned char>     signal_interpolator_pixel_out;
    sc_signal<bool>              signal_interpolator_pixel_valid;
    sc_signal<bool>              signal_interpolator_pixel_out_valid;
-   
    // interconnection signals
     soclib::caba::VciSignals<vci_param> signal_vci_tty("signal_vci_tty");
     soclib::caba::VciSignals<vci_param> signal_vci_rom("signal_vci_vcirom");

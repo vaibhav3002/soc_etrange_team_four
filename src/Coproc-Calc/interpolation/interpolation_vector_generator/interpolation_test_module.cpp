@@ -76,7 +76,8 @@ namespace soclib { namespace caba {
 			
 		     case pixel00:
 				
-				  dx=saved_dx+1;
+				 // dx=saved_dx+1;
+				  dx=0;
 				  dy=saved_dy+1;
 				  pixel_out=pixel_out+10;
 				  pixel_valid=true;

@@ -21,11 +21,11 @@ namespace soclib { namespace caba {
        
         private:
             enum state {calc_pixel_00,calc_pixel_01,calc_pixel_10,calc_pixel_11};
-           long long unsigned int accumulated_pixel_result;
 
             // Interpolation procedure 
             void interpolate();
             
+            uint64_t accumulated_result;
         protected:
             SC_HAS_PROCESS (interpolator);
         public:
