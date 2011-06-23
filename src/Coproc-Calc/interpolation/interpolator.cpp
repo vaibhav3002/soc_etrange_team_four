@@ -27,7 +27,7 @@ namespace soclib { namespace caba {
          {
             reset_done = true;
             pixel_out_valid=false;
-            accumulated_pixel_result=0;
+            accumulated_result=0;
          }
          else // clk event
          {
@@ -56,8 +56,8 @@ namespace soclib { namespace caba {
                   {
                      case calc_pixel_00:
 
-                        accumulated_pixel_result=(((~dx & 0xFF )+1)*((~dy & 0xFF )+1)*(pixel_in)) ;
-                        printf("accumulated result 00 is %x \n",accumulated_pixel_result );
+                        accumulated_result=(((~dx & 0xFF )+1)*((~dy & 0xFF )+1)* (pixel_in )) ;
+                        //printf("accumulated result 00 is %x \n",accumulated_result );
                         mystate=calc_pixel_01;
                         pixel_out_valid=false;
 
@@ -65,7 +65,7 @@ namespace soclib { namespace caba {
 
                      case calc_pixel_01:
 
-                        accumulated_pixel_result=accumulated_pixel_result+((((~dx & 0xFF)+1)*(dy)*pixel_in));
+                        accumulated_result=accumulated_result+((((~dx & 0xFF)+1)*(dy)* (pixel_in)));
                         mystate=calc_pixel_10;
                         pixel_out_valid=false;
 
@@ -73,7 +73,7 @@ namespace soclib { namespace caba {
 
                      case calc_pixel_10:
                         
-                        accumulated_pixel_result=accumulated_pixel_result+(((dx)*((~dy & 0xFF )+1)*pixel_in));
+                        accumulated_result=accumulated_result+((dx)*((~dy & 0xFF )+1)*(pixel_in));
                         mystate=calc_pixel_11;
                         pixel_out_valid=false;
                         
@@ -81,9 +81,9 @@ namespace soclib { namespace caba {
                      
                      case calc_pixel_11:
 
-                        accumulated_pixel_result=accumulated_pixel_result+ ((dx*dy*pixel_in));
-                        mystate=calc_pixel_00;
-                        pixel_out=accumulated_pixel_result>>16;
+                        accumulated_result=accumulated_result+ (dx*dy* pixel_in);
+			mystate=calc_pixel_00;
+                        pixel_out=accumulated_result>>16;
                         pixel_out_valid=true; 
 
                         break;
