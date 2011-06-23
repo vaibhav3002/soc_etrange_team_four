@@ -404,8 +404,8 @@ soclib::caba::testbuffermanagement test_buffer_management("test_buffer_managemen
     lm32.p_irq[0] (signal_tty_irq);
     lm32.p_irq[1] (signal_videoin_irq);
     lm32.p_irq[2] (signal_videoout_irq);
-   // lm32.p_irq[3] (signal_buffer_management_irq_out);
-    for (int i=3; i<32; i++)
+    lm32.p_irq[3] (signal_buffer_management_irq_out);
+    for (int i=4; i<32; i++)
         lm32.p_irq[i] (unconnected_irq);
 
     ////////////////////////////////////////////////////////////
@@ -457,14 +457,17 @@ soclib::caba::testbuffermanagement test_buffer_management("test_buffer_managemen
    
     sc_trace(TRACEFILE,signal_wb_interpolator_out, "signal_wb_interpol_out");
     sc_trace(TRACEFILE,signal_interpolator_pixel_out, "signal_interpolator_pixel_out");
-    sc_trace(TRACEFILE,signal_dx, "signal_dx");
-    sc_trace(TRACEFILE,signal_dy, "signal_dy");
-    sc_trace(TRACEFILE,signal_pixel_valid, "signal_pixel_valid_interpolate_in");
-    sc_trace(TRACEFILE,signal_test_pixel_out, "signal_pixel_in_interpolate");
     sc_trace(TRACEFILE,signal_interpolator_pixel_valid, "signal_pixel_out_interpolate_valid");
     sc_trace(TRACEFILE,signal_interpolator_pixel_out, "signal_pixel_out_interpolate");
-    sc_trace(TRACEFILE,signal_buffer_management_pixel_out_valid, "buffer_management pixel_out valid");
-    sc_trace(TRACEFILE,signal_buffer_management_pixel_out, "buffer_management pixel_out");
+    sc_trace(TRACEFILE,signal_buffer_management_dx_out, "buffer_management_dx_out");
+    sc_trace(TRACEFILE,signal_buffer_management_dy_out, "buffer_management_dy_out");
+    sc_trace(TRACEFILE,signal_buffer_management_dx_in, "buffer_management_dx_in");
+    sc_trace(TRACEFILE,signal_buffer_management_dy_in, "buffer_management_dy_in");
+     sc_trace(TRACEFILE,signal_buffer_management_x, "buffer_management_x_in");
+     sc_trace(TRACEFILE,signal_buffer_management_y, "buffer_management_y_in");
+     sc_trace(TRACEFILE,signal_buffer_management_pixel_out, "buffer_management_pixel_out");
+     sc_trace(TRACEFILE,signal_buffer_management_pixel_out_valid, "buffer_management_pixel_out_valid");
+     sc_trace(TRACEFILE,signal_buffer_management_pixel_in_valid, "buffer_management_pixel_in_valid");
     /*
      
     sc_trace (TRACEFILE, signal_wb_ram, "ram_wb" );
