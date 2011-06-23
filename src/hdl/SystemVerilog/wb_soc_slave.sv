@@ -53,7 +53,7 @@ module wb_soc_slave (
 		  if (p_wb_WE_I) 
 		    begin
 		       //pragma translate_off
-		       $display ("SLAVE recieved Write REQ 0x%08X @cycle %d",p_wb_DAT_I,cycle);
+		       $display ("SLAVE received Write REQ 0x%08X @cycle %d",p_wb_DAT_I,cycle);
 		       //pragma translate_on
 		       module_register <= p_wb_DAT_I;
 		       initialized <= 1'b1;
@@ -63,14 +63,14 @@ module wb_soc_slave (
 		  else
 		    begin
 		       //pragma translate_off
-		       $display ("SLAVE recieved Read request @cycle %d",cycle);
+		       $display ("SLAVE received Read request @cycle %d",cycle);
 		       //pragma translate_on
 		    end
                end
              else 
                begin
 		  //pragma translate_off
-		  $display ("SLAVE recieved invalid STROBE @ cycle %d",cycle);
+		  $display ("SLAVE received invalid STROBE @ cycle %d",cycle);
 		  //pragma translate_on
                end
 	  end

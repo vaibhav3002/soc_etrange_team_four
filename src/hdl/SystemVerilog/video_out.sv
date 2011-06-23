@@ -103,16 +103,17 @@ module video_out
 		     p_wb_reg_WE_I	
    	 );
 
+	assign p_wb_DAT_O = 32'h00000000;
+
 	//This block generates the proper video signals. It will start once the
 	//buffer has been first initialized, and won't stop until a reset signal
 	//has been received.
 	always_ff @ (posedge p_clk or negedge p_resetn)
 	begin 
-		if((!p_resetn)||(!start))
+		if((!p_resetn))
 		begin 
 			fifo_counter <= 0;
 			pix_counter <= 0;
-			line_counter <= 0;
 			frame_valid <= 0;
 			line_counter <= 0;
 			pixel_out <= 0;
@@ -199,7 +200,13 @@ module video_out
 					go <= 1'b0;
 */
 			end
-
+			else begin
+				fifo_counter <= 0;
+				pix_counter <= 0;
+				line_counter <= 0;
+				frame_valid <= 0;
+				go <= 0;
+			end	
 		end
 	end
 
@@ -218,7 +225,6 @@ module video_out
 			p_wb_LOCK_O <= 1'b0;
 			p_wb_WE_O   <= 1'b0;
 			p_wb_ADR_O  <= 32'h00000000;
-			p_wb_DAT_O  <= 32'h00000000;
 			p_wb_SEL_O  <= 4'hF;
 			start <= 1'b0;
 
@@ -251,7 +257,7 @@ module video_out
 						end else
 						if (!go && go_ack) //The other block received the go_ack signal
 							go_ack <= 1'b0;
-						else if (go && !go_ack) //No acknowlegement was send, and go is high -> The other block requires new data
+						else if (go && !go_ack) //No acknowledgement was send, and go is high -> The other block requires new data
 						begin
 							if (read_counter == `BLOCK_SIZE) //A whole block was read
 							begin
@@ -311,7 +317,7 @@ module video_out
 						end
 						if (p_wb_ACK_I)
 						begin
-							//received acknoledgement
+							//received acknowledgement
 							fifo[read_counter+block_offset-4] <= p_wb_DAT_I[7:0];
 							fifo[read_counter+block_offset-3] <= p_wb_DAT_I[15:8];
 							fifo[read_counter+block_offset-2] <= p_wb_DAT_I[23:16];
