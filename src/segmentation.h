@@ -62,3 +62,7 @@
 
 //video_out register adress
 #define VIDEO_OUT_REG 0xD0000000
+//interpolator_out_reg
+#define INTERPOLATOR_OUT_REG 0xE0000000
+//BUFFER MANAGEMENT OUT REG
+#define BUFFER_MANAGEMENT_REG 0xE0000001

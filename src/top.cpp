@@ -79,6 +79,11 @@
 //include interpolator_out module
 #include "interpolator_out.h"
 
+//include buffer management module
+#include "buffer_management.h"
+
+//include buffer management test module
+#include "buffer_management_vector_generator.h"
 // real SystemC main
 int _main(int argc, char *argv[])
 {
@@ -101,6 +106,8 @@ int _main(int argc, char *argv[])
     maptab.add(Segment("tty"  , TTY_BASE  , TTY_SIZE  , IntTab(2), false));
     maptab.add(Segment("Video_in_ram_target",VIDEO_IN_REG,1,IntTab(3),false));    
     maptab.add(Segment("Video_out_ram_source",VIDEO_OUT_REG,1,IntTab(4),false));    
+//    maptab.add(Segment("Interpolator out reg",INTERPOLATOR_OUT_REG,1,IntTab(5),false));    
+//    maptab.add(Segment("Buffer management reg",BUFFER_MANAGEMENT_REG,1,IntTab(6),false));    
   
     // Global signals
     sc_time     clk_periode(10, SC_NS); // clk period
@@ -132,6 +139,25 @@ int _main(int argc, char *argv[])
    sc_signal<unsigned char>     signal_interpolator_pixel_out;
    sc_signal<bool>              signal_interpolator_pixel_valid;
    sc_signal<bool>              signal_interpolator_pixel_out_valid;
+   
+   //buffer management signals
+   //inpt connections
+   sc_signal<bool>     signal_buffer_management_pixel_in_valid;
+   sc_signal<uint16_t>     signal_buffer_management_dx_in;
+   sc_signal<uint16_t>     signal_buffer_management_dy_in;
+   sc_signal<unsigned char>     signal_buffer_management_x;
+   sc_signal<unsigned char>     signal_buffer_management_y;
+   //output conncetions
+   sc_signal<unsigned char>     signal_buffer_management_pixel_out;
+   sc_signal<bool>     signal_buffer_management_tile_ready;
+   sc_signal<bool>     signal_buffer_management_pixel_out_valid;
+   sc_signal<unsigned char>     signal_buffer_management_dx_out;
+   sc_signal<unsigned char>     signal_buffer_management_dy_out;
+	
+   //buffer_management test module 
+   //output connections 
+    sc_signal<bool> signal_buffer_management_test_addr_valid;
+    
    // interconnection signals
     soclib::caba::VciSignals<vci_param> signal_vci_tty("signal_vci_tty");
     soclib::caba::VciSignals<vci_param> signal_vci_rom("signal_vci_vcirom");
@@ -144,11 +170,14 @@ int _main(int argc, char *argv[])
     soclib::caba::WbSignal<wb_param> signal_wb_tty("signal_wb_tty");
     soclib::caba::WbSignal<wb_param> signal_wb_mastermodule("master");      //Initialising Master wishbone
     soclib::caba::WbSignal<wb_param> signal_wb_video_out_mastermodule("video_out_master");      //Initialising Master wishbone
-    soclib::caba::WbSignal<wb_param> signal_wb_dummy("wb_dummy"); 
-    soclib::caba::WbSignal<wb_param> signal_wb_dummy_write("wb_dummy_write"); 
+  //  soclib::caba::WbSignal<wb_param> signal_wb_dummy("wb_dummy"); 
+  //  soclib::caba::WbSignal<wb_param> signal_wb_dummy_write("wb_dummy_write"); 
     soclib::caba::WbSignal<wb_param> signal_wb_video_in_reg("signal_wb_video_in_reg");
     soclib::caba::WbSignal<wb_param> signal_wb_video_out_reg("signal_wb_video_out_reg");
     soclib::caba::WbSignal<wb_param> signal_wb_interpolator_out("signal_wb_interpolator_out");
+    soclib::caba::WbSignal<wb_param> signal_wb_buffer_management("signal_wb_buffer_management_out");
+    soclib::caba::WbSignal<wb_param> signal_wb_buffer_management_reg("signal_wb_buffer_management_out_reg ");
+    
     soclib::caba::WbSignal<wb_param> signal_wb_interpolator_out_reg("signal_wb_video_out_reg");
     // irq from uart
     sc_signal<bool> signal_tty_irq("signal_tty_irq");
@@ -160,6 +189,8 @@ int _main(int argc, char *argv[])
     sc_signal<bool> signal_interpolator_out_irq("signal_videoout_irq");
     // unconnected irqs
     sc_signal<bool> unconnected_irq ("unconnected_irq");
+	//buffer management irq out
+   sc_signal<bool>     signal_buffer_management_irq_out;
 
     // Components
     // lm32 real cache configuration can be:
@@ -180,9 +211,9 @@ int _main(int argc, char *argv[])
     soclib::caba::VciRom<vci_param> rom("rom", IntTab(0), maptab, loader);
     soclib::caba::VciRam<vci_param> ram("ram", IntTab(1), maptab, loader);
     soclib::caba::VciMultiTty<vci_param> vcitty("vcitty",	IntTab(2), maptab, "tty.log", NULL);
-    //6 Masters: video_in, video_out, processor, dummy read, dummy write, interpolator_out
-    //6 slaves, ram, rom, tty, video_in_ram target register, video_out_source register,interpolator out
-    soclib::caba::WbInterco<wb_param> wbinterco("wbinterco",maptab, 6,6);
+    //5 Masters: video_in, video_out, processor, interpolator_out,buffer management
+    //7 slaves, ram, rom, tty, video_in_ram target register, video_out_source register,interpolator out,buffer management
+    soclib::caba::WbInterco<wb_param> wbinterco("wbinterco",maptab, 5,7);
 
     //Video Gen creation and instantiation
     
@@ -231,7 +262,8 @@ int _main(int argc, char *argv[])
 	display.line_valid(line_out_valid);
 	display.frame_valid(frame_out_valid);
 	display.pixel_in(pixel_out);
-	
+
+/*	
    //dummy read instantiation
 	soclib::caba::Master_dummy <wb_param>    master_dummy  ("master_dummy_read");
 	master_dummy.p_clk_100mhz(signal_clk);
@@ -243,7 +275,7 @@ int _main(int argc, char *argv[])
 	master_dummy_write.p_clk_100mhz(signal_clk);
 	master_dummy_write.p_resetn(signal_resetn);
 	master_dummy_write.p_wb(signal_wb_dummy_write);
-
+*/
 //interpolator module instatiation
 
    soclib::caba::testinterpolate testinterpolate("interpolator_vector"); 
@@ -260,10 +292,10 @@ int _main(int argc, char *argv[])
    soclib::caba::interpolator interpolator("interpolator"); 
 	interpolator.p_clk(signal_clk);
 	interpolator.p_resetn(signal_resetn);
-	interpolator.dx(signal_dx);
-	interpolator.dy(signal_dy);
-	interpolator.pixel_in(signal_test_pixel_out);
-	interpolator.pixel_valid(signal_pixel_valid);
+	interpolator.dx(signal_buffer_management_dx_out);
+	interpolator.dy(signal_buffer_management_dy_out);
+	interpolator.pixel_in(signal_buffer_management_pixel_out);
+	interpolator.pixel_valid(signal_buffer_management_pixel_out_valid);
 	interpolator.pixel_out_valid(signal_interpolator_pixel_valid);
 	interpolator.pixel_out(signal_interpolator_pixel_out);
 //interpolator out instanciation
@@ -278,7 +310,38 @@ int _main(int argc, char *argv[])
    interpolator_out.reg0.p_resetn(signal_resetn);
    interpolator_out.reg0.p_wb(signal_wb_interpolator_out_reg);
    interpolator_out.irq_out(signal_interpolator_out_irq);
-   //test register instantiation
+   
+//Buffer management instanciation
+ soclib::caba::Buffer_management<wb_param> buffer_management("buffer_management");
+	//inputs
+	buffer_management.p_clk_100mhz(signal_clk);
+	buffer_management.p_resetn(signal_resetn);
+	buffer_management.pixel_in_valid(signal_buffer_management_pixel_in_valid);
+	buffer_management.dx_in(signal_buffer_management_dx_in);
+	buffer_management.dy_in(signal_buffer_management_dy_in);
+	buffer_management.x(signal_buffer_management_x);
+	buffer_management.y(signal_buffer_management_y);
+	//outputs
+	buffer_management.pixel_out(signal_buffer_management_pixel_out);
+	buffer_management.tile_ready(signal_buffer_management_tile_ready);
+	buffer_management.pixel_out_valid(signal_buffer_management_pixel_out_valid);
+	buffer_management.dx_out(signal_buffer_management_dx_out);
+	buffer_management.dy_out(signal_buffer_management_dy_out);
+	buffer_management.irq_out(signal_buffer_management_irq_out);
+        buffer_management.p_wb(signal_wb_buffer_management);
+        buffer_management.reg0.p_clk(signal_clk);
+        buffer_management.reg0.p_resetn(signal_resetn);
+        buffer_management.reg0.p_wb(signal_wb_buffer_management_reg);
+//Buffer management vector generator
+soclib::caba::testbuffermanagement test_buffer_management("test_buffer_management");
+        test_buffer_management.p_resetn(signal_resetn);
+        test_buffer_management.p_clk_100mhz(signal_clk);
+	test_buffer_management.pixel_valid(signal_buffer_management_pixel_in_valid);
+	test_buffer_management.dx(signal_buffer_management_dx_in);
+	test_buffer_management.dy(signal_buffer_management_dy_in);
+	test_buffer_management.x(signal_buffer_management_x);
+	test_buffer_management.y(signal_buffer_management_y);
+//test register instantiation
  //  soclib::caba::WbSlaveModule <wb_param> test_slave ("test_slave");
  //   test_slave.p_clk(signal_clk);
  //   test_slave.p_wb(signal_wb_slave);
@@ -325,11 +388,11 @@ int _main(int argc, char *argv[])
     wbinterco.p_to_slave[3](signal_wb_video_in_reg);
     wbinterco.p_to_slave[4](signal_wb_video_out_reg);
     wbinterco.p_to_slave[5](signal_wb_interpolator_out_reg);
+    wbinterco.p_to_slave[6](signal_wb_buffer_management_reg);
     wbinterco.p_from_master[1](signal_wb_mastermodule);
     wbinterco.p_from_master[2](signal_wb_video_out_mastermodule);
-    wbinterco.p_from_master[3](signal_wb_dummy);
-    wbinterco.p_from_master[4](signal_wb_dummy_write);
-    wbinterco.p_from_master[5](signal_wb_interpolator_out);
+    wbinterco.p_from_master[3](signal_wb_interpolator_out);
+    wbinterco.p_from_master[4](signal_wb_buffer_management);
 
     // lm32
     lm32.p_clk(signal_clk);
@@ -341,8 +404,8 @@ int _main(int argc, char *argv[])
     lm32.p_irq[0] (signal_tty_irq);
     lm32.p_irq[1] (signal_videoin_irq);
     lm32.p_irq[2] (signal_videoout_irq);
-    lm32.p_irq[3] (signal_interpolator_out_irq);
-    for (int i=4; i<32; i++)
+   // lm32.p_irq[3] (signal_buffer_management_irq_out);
+    for (int i=3; i<32; i++)
         lm32.p_irq[i] (unconnected_irq);
 
     ////////////////////////////////////////////////////////////
@@ -400,6 +463,8 @@ int _main(int argc, char *argv[])
     sc_trace(TRACEFILE,signal_test_pixel_out, "signal_pixel_in_interpolate");
     sc_trace(TRACEFILE,signal_interpolator_pixel_valid, "signal_pixel_out_interpolate_valid");
     sc_trace(TRACEFILE,signal_interpolator_pixel_out, "signal_pixel_out_interpolate");
+    sc_trace(TRACEFILE,signal_buffer_management_pixel_out_valid, "buffer_management pixel_out valid");
+    sc_trace(TRACEFILE,signal_buffer_management_pixel_out, "buffer_management pixel_out");
     /*
      
     sc_trace (TRACEFILE, signal_wb_ram, "ram_wb" );
