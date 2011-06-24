@@ -39,6 +39,8 @@ sc_signal<mfixed> q1_c1;
 sc_signal<mfixed> q1_c2;
 sc_signal<mfixed> q2_c2;
 sc_signal<mfixed> q2_c1;
+sc_signal<unsigned short> o_x;
+sc_signal<short> o_dx;
 
 mfixed x2, y2, x3, y3;
 
@@ -57,22 +59,13 @@ int sc_main(int argc, char *argv[])
     mfixed x_exp;
 
     sc_signal<bool> clk;
+    sc_signal<bool> en;
     sc_signal<bool> reset_n;
-    sc_signal<mfixed> x_3;
+/*    sc_signal<mfixed> x_3;
     sc_signal<mfixed> x_2;
-    sc_signal<mfixed> x_1;
+    sc_signal<mfixed> x_1; */
     sc_signal<bool> x_valid;
-    sc_signal<bool> p0_valid;    
-    sc_signal<bool> q0_valid;
-    sc_signal<bool> q1_valid;
-    sc_signal<bool> q2_valid;
-    sc_signal<bool> q3_valid;
-    sc_signal<bool> r0_valid;
-    sc_signal<bool> r1_valid;
-    sc_signal<bool> r2_valid;
-    sc_signal<bool> s0_valid;
-    sc_signal<bool> s1_valid;
-    sc_signal<bool> load;
+    sc_signal<bool> start;
     sc_signal<bool> finished;
 
 
@@ -88,16 +81,10 @@ int sc_main(int argc, char *argv[])
     IncrCalc my_calc("coproc_incr");
     my_calc.clk(clk);
     my_calc.reset_n(reset_n);
-    my_calc.x_3(x_3);
-    my_calc.x_2(x_2);
-    my_calc.x_1(x_1);
-    my_calc.p0_valid(p0_valid);
-    my_calc.q0_valid(q0_valid);
-    my_calc.q1_valid(q1_valid);
-    my_calc.q2_valid(q2_valid);
-    my_calc.r0_valid(r0_valid);
-    my_calc.r1_valid(r1_valid);
-    my_calc.s0_valid(s0_valid);
+    //my_calc.x_3(x_3);
+    my_calc.en(en);
+/*    my_calc.x_2(x_2);
+      my_calc.x_1(x_1);*/
     my_calc.p0_in(p0);
     my_calc.q0_in(q0);
     my_calc.q1_in(q1);
@@ -108,7 +95,9 @@ int sc_main(int argc, char *argv[])
     my_calc.r2_in(r2);
     my_calc.s0_in(s0);
     my_calc.s1_in(s1);
-    my_calc.load(load);
+    my_calc.start(start);
+    my_calc.dx(o_dx);
+    my_calc.x(o_x);
     my_calc.o_finished(finished);
 
     my_calc.o_valid(x_valid);
@@ -136,6 +125,23 @@ int sc_main(int argc, char *argv[])
     y2 = fx_mul(y,y);
     y3 = fx_mul(y2,y);
 
+    cout << "not enabled !! " << endl;
+    en = 0;
+    cout << " -------------- " << endl;
+    cout << x_exp << " " << mfixed(o_dx,o_x) << endl;
+    next_cycle(clk);
+    cout << " -------------- " << endl;
+    cout << x_exp << " " << mfixed(o_dx,o_x) << endl;
+    next_cycle(clk);
+    cout << " -------------- " << endl;
+    cout << x_exp << " " << mfixed(o_dx,o_x) << endl;
+    next_cycle(clk);
+    cout << " -------------- " << endl;
+    cout << x_exp << " " << mfixed(o_dx,o_x) << endl;
+    next_cycle(clk);
+	     
+    en = 1;
+
     //for each tile
     for(j=0; j<30; j++) //30 vertically
 	for(i=0; i<40; i++) //40 horizontally
@@ -144,31 +150,14 @@ int sc_main(int argc, char *argv[])
 	    y = fx_mul(mfixed(TILE_HEIGHT),mfixed(j));
 	    cout << "x : " << x << " y: " << y << endl;
 	    calc_coeffs(i, j);
-	    p0_valid = 1;
-	    q0_valid = 1;
-	    q1_valid = 1;
-	    q2_valid = 1;
-	    q3_valid = 1;
-	    r0_valid = 1;
-	    r1_valid = 1;
-	    r2_valid = 1;
-	    s0_valid = 1;
-	    s1_valid = 1;
-	    load = 1;
+
+	    start = 1;
 	    next_cycle(clk);
-	    p0_valid = 0;
-	    q0_valid = 0;
-	    q1_valid = 0;
-	    q2_valid = 0;
-	    q3_valid = 0;
-	    r0_valid = 0;
-	    r1_valid = 0;
-	    r2_valid = 0;
-	    s0_valid = 0;
-	    s1_valid = 0;
-	    load = 0;
+	    en = 1;
+	    start = 0;
 	    x_exp = mfixed(0);
 	    next_cycle(clk);
+
 	    while(x_valid && !finished)
 	    {
 	      //x_exp = a30 * pow(x,3) + a21 * pow(x,2) * y + a12 * x * pow(y,2) + a03 * pow(y,3) + a20 * pow(x,2) + a11 * x * y + a02 * pow(y,2) + a10 * x + a01 * y + a00;
@@ -176,8 +165,8 @@ int sc_main(int argc, char *argv[])
 		cout << "x : " << x << " y: " << y << endl;
 		next_cycle(clk);
 		cout << " -------------- " << endl;
-		cout << x_exp << " " << x_3 << endl;
-		if((to_float(x_3) - to_float(x_exp))>0.03*to_float(x_3))
+		cout << x_exp << " " << mfixed(o_dx,o_x) << endl;
+		if((to_float(mfixed(o_dx,o_x)) - to_float(x_exp))>0.03*to_float(mfixed(o_dx,o_x)))
 		    cout << "ERROR" << endl;
 		x = fx_add(x,mfixed(1));
 		if (x == (fx_add(mfixed(TILE_WIDTH),(fx_mul(mfixed(16),mfixed(i))))))
@@ -185,6 +174,8 @@ int sc_main(int argc, char *argv[])
 		    x = fx_mul(mfixed(16),mfixed(i));
 		    y = fx_add(y,mfixed(1));
 		}
+
+		cout << "x " << o_x << "dx " << o_dx << endl;
 
 		x2 = fx_mul(x,x);
 		x3 = fx_mul(x2,x);

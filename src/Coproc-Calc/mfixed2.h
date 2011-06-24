@@ -39,7 +39,7 @@ class mfixed {
     //friend mfixed operator + (const mfixed& rhs);
     friend mfixed operator + (const mfixed&    u, const mfixed&    v);
     
-    
-
+    friend unsigned short getH(mfixed A);
+    friend short getL(mfixed A);
 
 };

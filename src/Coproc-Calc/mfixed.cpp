@@ -94,6 +94,16 @@ mfixed fx_add (mfixed A, mfixed B)
     return A+B;
 }
 
+unsigned short getH (mfixed A)
+{
+    return A.h;
+}
+
+short getL (mfixed A)
+{
+    return A.l;
+}
+
 float to_float(mfixed A)
 {
     float fl;

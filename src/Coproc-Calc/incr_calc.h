@@ -19,7 +19,7 @@ namespace soclib { namespace caba {
 	    /*private line and column counter*/
 	    int lin;
 	    int col;
-	    int tile;
+	    //int tile;
 
 	    int state;
 	    /* 0 : WAIT
@@ -35,14 +35,9 @@ namespace soclib { namespace caba {
 
                 sc_in_clk           clk;
                 sc_in<bool>         reset_n;
-		sc_in<bool>         p0_valid;
-		sc_in<bool>         q0_valid;
-		sc_in<bool>         q1_valid;
-		sc_in<bool>         q2_valid;
-		sc_in<bool>         r0_valid;
-		sc_in<bool>         r1_valid;
-		sc_in<bool>         s0_valid;
-		sc_in<bool>         load;
+
+		sc_in<bool>         start;
+		sc_in<bool>         en;
 		sc_in<mfixed>          p0_in;		
 		sc_in<mfixed>          q0_in;
 		sc_in<mfixed>          q1_in;
@@ -91,9 +86,12 @@ namespace soclib { namespace caba {
 		sc_out<bool> o_valid;
 		sc_out<bool> o_finished;
 		
-                sc_out<mfixed>   x_3;
+                /*sc_out<mfixed>   x_3;
                 sc_out<mfixed>   x_2;
-                sc_out<mfixed>   x_1;
+                sc_out<mfixed>   x_1;*/
+
+		sc_out<unsigned short> x;
+		sc_out<short> dx;
 
 		IncrCalc(sc_module_name insname);
 
