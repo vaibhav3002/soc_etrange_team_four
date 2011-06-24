@@ -23,6 +23,7 @@ namespace soclib { namespace caba {
 		    lin = 0;
 		    col = 0;
 		    state = 0;
+		    tile = 0;
 
 		    /*p0 = c[2];
 		    
@@ -44,7 +45,7 @@ namespace soclib { namespace caba {
 		    o_valid = 0;
 		    o_finished = 0;
 		    //wait_cyc = 1;
-		    x_3 = 0;
+		    x_3 = mfixed(0);
 
 		    
 		    // ne changent pas !!
@@ -67,42 +68,49 @@ namespace soclib { namespace caba {
 			o_valid = 0;
 			o_finished = 0;
 			if(load && ((q0_valid & q1_valid & q2_valid & r0_valid & r1_valid & s0_valid & p0_valid)))
-			    {
-				state = 1;
-				p0 = p0_in;
-				q0 = q0_in;
-				q1 = q1_in;
-				q2 = q2_in;
-				q3 = q3_in;
-				r0 = r0_in;
-				r1 = r1_in;
-				r2 = r2_in;
-				s0 = s0_in;
-				s1 = s1_in;
-			    }
+			{
+			    state = 1;
+			    p0 = p0_in;
+ 			    q0 = q0_in;
+ 			    q1 = q1_in;
+ 			    q2 = q2_in;
+ 			    q3 = q3_in;
+ 			    r0 = r0_in;
+ 			    r1 = r1_in;
+ 			    r2 = r2_in;
+ 			    s0 = s0_in;
+ 			    s1 = s1_in;
+			}
+			x_3 = p3;
+			x_2 = p2;
+			x_1 = p1;
 			wait();
 			break;
 		    }
-			case 1: {
+		    case 1: {
+			if(!load)
+			{
 			    o_valid = 1;
 			    x_3 = p3;
 			    x_2 = p2;
 			    x_1 = p1;
+
+			    cout << "Coproc " << lin << " " << col << endl;
 
 			    if(col == 0)
 			    {
 				p3 = q3;
 				p2 = r2;
 				p1 = s1;
-
+ 
 				q3 = q3 + q2;
-				q2 = q2 + q1;
-				q1 = q1 + q0;
-
-				r2 = r2 + r1;
-				r1 = r1 + r0;
-
-				s1 = s1 + s0;
+				//q2 = q2 + q1;
+				//q1 = q1 + q0;
+ 
+				//r2 = r2 + r1;
+				//r1 = r1 + r0;
+ 
+				//s1 = s1 + s0; 
 			    }
 			    else
 			    {
@@ -110,14 +118,14 @@ namespace soclib { namespace caba {
 				p2 = p2 + p1;
 				p1 = p1 + p0;
 			    }
-			    if(col == 1)
+			    /*if(col == 1)
 			    {
 				cout << "COPROC : r2 : " << r2 << endl;
 				cout << "COPROC : r1 : " << r1 << endl;
 				cout << "COPROC : q3 : " << q3 << endl;
 				cout << "COPROC : q2 : " << q2 << endl;
 				cout << "COPROC : q1 : " << q1 << endl;
-			    }
+				}*/
 			    col++;
 			    if (col == TILE_WIDTH)
 			    {
@@ -125,20 +133,26 @@ namespace soclib { namespace caba {
 				cout << "COPROC : New line " << endl;
 				lin++;
 				if(lin == TILE_HEIGHT)
-				    state = 2;
+				{
+				    tile++;
+				    if(tile==NO_TILES)
+					state=2;
+				    else state = 0;
+				}
 			    }
-			    wait();
-			    break;
 			}
-			case 2: {
-			    o_finished = 1;
-			    state = 0;
-			    x_3 = 0;
-			    x_2 = 0;
-			    x_1 = 0;
-			    wait();
-			    break;
-			}break;
+			wait();
+			break;
+		    }
+		    case 2: {
+			o_finished = 1;
+			state = 0;
+			x_3 = mfixed(0);
+			x_2 = mfixed(0);
+			x_1 = mfixed(0);
+			wait();
+			break;
+		    }break;
 		    }
 		}
 	    }
