@@ -9,7 +9,10 @@ namespace soclib { namespace caba {
     {
         public:
 
-            sc_core::sc_in<unsigned char> pixel_in ;
+            sc_core::sc_in<unsigned char> pixel_0 ;
+            sc_core::sc_in<unsigned char> pixel_1 ;
+            sc_core::sc_in<unsigned char> pixel_2 ;
+            sc_core::sc_in<unsigned char> pixel_3 ;
             sc_core::sc_in<FRACTIONAL_PART_BIT_SIZE>dx;
             sc_core::sc_in<FRACTIONAL_PART_BIT_SIZE>dy;
             sc_core::sc_out<unsigned char>pixel_out;

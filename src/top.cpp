@@ -22,7 +22,7 @@
  *
  */
 
-#define DO_TRACES 1  
+//#define DO_TRACES 1  
 
 // C/C++ std libs
 #include <iostream>
@@ -148,7 +148,10 @@ int _main(int argc, char *argv[])
    sc_signal<unsigned char>     signal_buffer_management_x;
    sc_signal<unsigned char>     signal_buffer_management_y;
    //output conncetions
-   sc_signal<unsigned char>     signal_buffer_management_pixel_out;
+   sc_signal<unsigned char>     signal_buffer_management_pixel_out_0;
+   sc_signal<unsigned char>     signal_buffer_management_pixel_out_1;
+   sc_signal<unsigned char>     signal_buffer_management_pixel_out_2;
+   sc_signal<unsigned char>     signal_buffer_management_pixel_out_3;
    sc_signal<bool>     signal_buffer_management_tile_ready;
    sc_signal<bool>     signal_buffer_management_pixel_out_valid;
    sc_signal<unsigned char>     signal_buffer_management_dx_out;
@@ -294,7 +297,10 @@ int _main(int argc, char *argv[])
 	interpolator.p_resetn(signal_resetn);
 	interpolator.dx(signal_buffer_management_dx_out);
 	interpolator.dy(signal_buffer_management_dy_out);
-	interpolator.pixel_in(signal_buffer_management_pixel_out);
+	interpolator.pixel_0(signal_buffer_management_pixel_out_0);
+	interpolator.pixel_1(signal_buffer_management_pixel_out_1);
+	interpolator.pixel_2(signal_buffer_management_pixel_out_2);
+	interpolator.pixel_3(signal_buffer_management_pixel_out_3);
 	interpolator.pixel_valid(signal_buffer_management_pixel_out_valid);
 	interpolator.pixel_out_valid(signal_interpolator_pixel_valid);
 	interpolator.pixel_out(signal_interpolator_pixel_out);
@@ -322,7 +328,10 @@ int _main(int argc, char *argv[])
 	buffer_management.x(signal_buffer_management_x);
 	buffer_management.y(signal_buffer_management_y);
 	//outputs
-	buffer_management.pixel_out(signal_buffer_management_pixel_out);
+	buffer_management.pixel_out_0(signal_buffer_management_pixel_out_0);
+	buffer_management.pixel_out_1(signal_buffer_management_pixel_out_1);
+	buffer_management.pixel_out_2(signal_buffer_management_pixel_out_2);
+	buffer_management.pixel_out_3(signal_buffer_management_pixel_out_3);
 	buffer_management.tile_ready(signal_buffer_management_tile_ready);
 	buffer_management.pixel_out_valid(signal_buffer_management_pixel_out_valid);
 	buffer_management.dx_out(signal_buffer_management_dx_out);
