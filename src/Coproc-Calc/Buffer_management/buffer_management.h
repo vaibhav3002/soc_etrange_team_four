@@ -42,12 +42,15 @@ namespace soclib { namespace caba {
             sc_core::sc_in<unsigned char> x;
             sc_core::sc_in<unsigned char> y;
             //buffer_management_outputs
-	    sc_core::sc_out<unsigned char> pixel_out;
+	    sc_core::sc_out<unsigned char> pixel_out_0;
+	    sc_core::sc_out<unsigned char> pixel_out_1;
+	    sc_core::sc_out<unsigned char> pixel_out_2;
+	    sc_core::sc_out<unsigned char> pixel_out_3;
 	    sc_core::sc_out<bool>tile_ready;
+//	    sc_core::sc_out<bool>go_incremental;
 	    sc_core::sc_out<bool>pixel_out_valid;
 	    sc_core::sc_out<unsigned char>dx_out;
 	    sc_core::sc_out<unsigned char>dy_out;
-	    
             soclib::caba::WbMaster<wb_param> p_wb;
 	    sc_core::sc_out<bool> irq_out;
 	    WbSlaveRegIrqModule<wb_param> reg0;
@@ -60,6 +63,8 @@ namespace soclib { namespace caba {
             uint32_t data[COPRO_BUFFER_SIZE];
             bool load_block;
             bool start_reading;
+	    bool internal_go;
+	    bool internal_go_ack;
             uint32_t * buffer_pnt;
             uint32_t writes_count;
             uint32_t reads_count;
@@ -69,6 +74,7 @@ namespace soclib { namespace caba {
 	    void     wait_cycles (uint32_t delay);
             WbMasterModuleTuille<wb_param> master1;
 	    enum state {lookup_00,lookup_01,lookup_10,lookup_11}; 
+	    bool load_in_progress;
         protected:
             SC_HAS_PROCESS(Buffer_management);
 

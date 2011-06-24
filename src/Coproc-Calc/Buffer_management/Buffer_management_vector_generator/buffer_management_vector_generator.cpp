@@ -44,7 +44,6 @@ namespace soclib { namespace caba {
          {
             reset_done = true;
             pixel_valid=false; 
-	    mystate=pixel00;
 	}
          else // clk event
          {
@@ -60,52 +59,11 @@ namespace soclib { namespace caba {
          		wait(p_clk_100mhz.posedge_event());                                                     //next clock
                continue;
             }
-
-         
-	switch(mystate){
-		
-		     case single_pixel:
-				  dx=0xFFFF;
-				  dy=0xFFFF;
-				  x=14;
-				  y=14;
-				  pixel_valid=true;
-				  mystate=pixel00;
-		     break;
-			
-		     case pixel00:
-				
-				  dx=0xFFFF;
-				  dy=0xFFFF;
-				  saved_x=saved_x+1;
-				  saved_y=saved_y+1;
-				  x=saved_x;
-				  y=saved_y;
-				  pixel_valid=true;
-				  mystate=pixel01;
-				  saved_x= saved_x==15? 0:saved_x;
-				  saved_y= saved_y==15? 0:saved_y;
- 		     break;
-			
-		     case pixel01:
-				  pixel_valid=false;
-				  mystate=pixel10;
-		     break;		 
-
-		     case pixel10:
-				  pixel_valid=false;
-				  mystate=pixel11;
-		     break;
-			
-		     case pixel11:
-				  pixel_valid=false;	
-				  mystate=pixel00;
-		     break;
-			
-		     default:
-					//debug here
-							;
-			} 
+	    dx=0x0;
+	    dy=0x0;
+	    x=10;
+	    y=10;
+	    pixel_valid=true;
 
 	}
 

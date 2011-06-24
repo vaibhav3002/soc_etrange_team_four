@@ -88,7 +88,7 @@ namespace soclib { namespace caba {
 		    initial_image_position=mem;
 		    reset_config=false;
 		    //initial_write=true;
-		    printf("COPRO_BUFFER IS READING FROM MEM ADDRESS 0x%x\n",mem);
+//		    printf("COPRO_BUFFER IS READING FROM MEM ADDRESS 0x%x\n",mem);
 		}
 	    } else {
 
@@ -98,7 +98,7 @@ namespace soclib { namespace caba {
         //       std::cout<<"wrote a block"<<std::endl;
                writes_count++;                                              //Once we have loaded data from ram we increase counter
                writes_count=writes_count % COPRO_BUFFER_MODULO;
-               printf("COPRO_BUFFER WROTE TILE N %d\n",writes_count); 
+              // printf("COPRO_BUFFER WROTE TILE N %d\n",writes_count); 
                buffer_pnt=&data[writes_count*COPRO_BUFFER_BLOCK_SIZE];         //next buffer block address
                if(writes_count==1){
                start_reading=true;
@@ -152,20 +152,115 @@ namespace soclib { namespace caba {
 	  pixel_out_valid=false;
 	  lookupstate=lookup_00;
 	  //  reset_done = true;
-
+	  load_in_progress = false;
 
 	}
 	else // clk event
 	{
-	  // check if the reset has been done
-	  if (!reset_true)
-	  {
-	  }
 
 	  // std::cout<<"video out buffer out running<<std"<<std::endl;             
 	  //write application here
 	  if (start_reading)
 	 {
+               if ((writes_count!=reads_count) ||load_in_progress ){
+		load_in_progress = true;
+		if(pixel_in_valid)
+		{
+			    pixel_out_valid=true;
+			if(x + 16*y < 256)		
+			{
+			    registered_index=((x+16*y)-((x+16*y)%4))/4;
+			    registered_index_8=(x+16*y) % 4;
+
+		// For the pixel_0
+			    index=((x+16*y)-((x+16*y)%4))/4;
+			    index_8=(x+16*y) % 4;
+			   //getting 8 bits value out of an 32 bits register 
+			    pixel_out_0 = (uint8_t) ((data[reads_count*COPRO_BUFFER_BLOCK_SIZE+index] & ( 0xFF<<8*index_8 ))>>8*index_8)  ;        
+			    dx_out = ((0xFF00 & dx_in)>>8) ;
+			    dy_out = ((0xFF00 & dy_in)>>8) ;
+	
+		// For the pixel_1
+
+	
+			    index += COPRO_BUFFER_ROW_SIZE;//point to pixel_01
+			    if(index<64)
+			    {
+				pixel_out_1 = (uint8_t) ((data[reads_count*COPRO_BUFFER_BLOCK_SIZE+index] & ( 0xFF<<8*index_8 ))>>8*index_8);
+			    }else 
+			    {
+				pixel_out_1 =128;
+			    }
+
+			    // For the pixel_2
+
+		  if  ((registered_index_8==3) && (registered_index % 4 ==3 ))
+		{
+			 pixel_out_2 = 128;
+		}else
+		{
+		 	if (registered_index_8==3)
+			{
+			    index=registered_index+1;
+			    index_8=0;
+
+			}else
+			{
+			    index=registered_index;
+			    index_8=registered_index_8+1;
+
+			}	
+
+			pixel_out_2=(uint8_t) ((data[reads_count*COPRO_BUFFER_BLOCK_SIZE+index] & ( 0xFF<<8*index_8 ))>>8*index_8);
+		}
+			
+			// For the pixel 3 
+			if(registered_index_8==3)
+			
+			{
+			
+			index=registered_index+COPRO_BUFFER_ROW_SIZE +1;
+			index_8=0;	
+			
+			}else 
+			{
+			
+			index=registered_index+COPRO_BUFFER_ROW_SIZE;
+			index_8=registered_index_8+1;
+
+			}
+
+			if (index<64)
+			{
+
+			    pixel_out_3 = (uint8_t) ((data[reads_count*COPRO_BUFFER_BLOCK_SIZE+index] & ( 0xFF<<8*index_8 ))>>8*index_8);
+
+			}else 
+			{
+
+			    pixel_out_3 = 128;
+
+			}
+
+
+			} else {
+				dx_out = 0;
+				dy_out = 0;
+				pixel_out_0 = 0;
+				pixel_out_1 = 0;
+				pixel_out_2 = 0;
+				pixel_out_3 = 0;
+			}
+		pixels_created++;
+			
+
+		}else
+		{
+		    pixel_out_valid=false;	
+
+		}
+
+#if 0
 	    switch (lookupstate)
 	    {
 	      case lookup_00:
@@ -297,16 +392,27 @@ namespace soclib { namespace caba {
 		break;
 		default: 
 			;//debug purposes
-	    }}else 
+	    }
+#endif
+
+//	  go_incremental = true;
+
+} else 
+	{
+//	  go_incremental = false;
+	}
+
+}else {
 	  pixel_out_valid=false;
-	  
+	}	  
 	  if (pixels_created==4*TILE_SIZE)
 	{
+	load_in_progress = false;
 	pixels_created=0;
 	reads_count++;
 	reads_count=reads_count % COPRO_BUFFER_MODULO;	
 	this->reg0.slave_raiseIrq();
-        printf("COPRO_BUFFER LOOKED UP TILE N %d\n",reads_count); 
+       // printf("COPRO_BUFFER LOOKED UP TILE N %d\n",reads_count); 
 	}
 
 	}
