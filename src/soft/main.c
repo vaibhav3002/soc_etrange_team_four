@@ -35,11 +35,15 @@
 #define N 10
 //#define WB_TARGET 0xA1000000
 
+#define LOGO_W 80
+#define LOGO_H 80
+#define LOGO_OFFSET 0x3CEA6
+
+extern volatile unsigned long _binary___logo_telecom_pgm_start; 
 
 extern char inbyte(void);
 
 
-int fibo(int n);
 
 volatile unsigned long cnt=0;
 volatile int VideoInStatus=-1;
@@ -52,14 +56,14 @@ void UART_IrqHandler() {
 
 void Videoout_IrqHandler() {
 	disable_irq(2);
+
 	*((volatile unsigned long*) VIDEO_OUT_REG) = last_addr;
 	printf("VIDEO_OUT IRQ ACK 0x%lx\n",last_addr);
 }
 
 void Videoin_IrqHandler() {
-	if (VideoInStatus>=0) {
-		enable_irq(2);
-	}
+	int i,j,OldStatus;
+	OldStatus=VideoInStatus;
 	//Received Irq, answering
 	if (VideoInStatus<=0) {
 		*((volatile unsigned long*) VIDEO_IN_REG) = RAM_BASE+0x1000000;
@@ -73,7 +77,29 @@ void Videoin_IrqHandler() {
 		last_addr = RAM_BASE + 0x1000000;
 		printf("VIDEO_IN IRQ ACK 0x%x\n",RAM_BASE+0x1100000);
 	}
+	if (OldStatus>=0) {
+//		unsigned long temp1,temp2;
+		for (i=0; i<LOGO_H; i++) {
+			memcpy((void*) (last_addr+i*(640)),(void*) (&_binary___logo_telecom_pgm_start)+i*(LOGO_W),LOGO_W);
+/*			for (j=0; j<LOGO_W/4; j++) {
+				temp1 =*((&_binary___logo_telecom_pgm_start)+j+i*(LOGO_W/4));
+				temp2 =((temp1&0xFF)<<24) | ((temp1&0xFF00) <<8) | ((temp1 & 0xFF0000) >> 8) | ((temp1 & 0xFF000000) >> 24);
+				*((volatile unsigned long*) last_addr+i*(640/4)+j)=temp2;
+			}*/
+		}
+		
+	}
+
+	if (VideoInStatus>=0) {
+		enable_irq(2);
+	}
+
 }
+
+void Coproc_IrqHandler() {
+	
+}
+
 
 int main(void)
 {
@@ -98,6 +124,9 @@ int main(void)
 	//Videoout interrupt
 	RegisterIrqEntry(2,Videoout_IrqHandler);
 	disable_irq(2);
+	//Coproc interrupt
+	RegisterIrqEntry(3,Coproc_IrqHandler);
+	disable_irq(3);
 	//Enable global interrupts
 	unsigned long mask = 1;
 	asm volatile("wcsr IE,%0" ::"r"(mask));

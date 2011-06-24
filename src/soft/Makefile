@@ -16,7 +16,7 @@ OBJS  =  main.o lm32_sys.o etrange.o mfixed.o logo_telecom.o
 all:$(SOFT_IMAGE)
 
 logo_telecom.o: logo_telecom.pgm
-	lm32-elf-objcopy -I binary -O elf32-big -B lm32 $< $@
+	lm32-elf-objcopy -I binary -O elf32-lm32 -B lm32 --rename-section .data=.rodata,alloc,load,readonly,data,contents --reverse-bytes=4 ./logo_telecom.pgm ./logo_telecom.o
 
 $(SOFT_IMAGE):$(OBJS)
 	$(CC) $(CFLAGS) $(CPPFLAGS) $(LDFLAGS) $(TARGET_ARCH) -o $@ $^
