@@ -43,7 +43,7 @@ extern volatile unsigned long _binary___logo_telecom_pgm_start;
 
 extern char inbyte(void);
 
-
+char logo = 1;
 
 volatile unsigned long cnt=0;
 volatile int VideoInStatus=-1;
@@ -77,7 +77,7 @@ void Videoin_IrqHandler() {
 		last_addr = RAM_BASE + 0x1000000;
 		printf("VIDEO_IN IRQ ACK 0x%x\n",RAM_BASE+0x1100000);
 	}
-	if (OldStatus>=0) {
+	if ((OldStatus>=0)&&(logo==1)) {
 //		unsigned long temp1,temp2;
 		for (i=0; i<LOGO_H; i++) {
 			memcpy((void*) (last_addr+i*(640)),(void*) (&_binary___logo_telecom_pgm_start)+i*(LOGO_W),LOGO_W);
