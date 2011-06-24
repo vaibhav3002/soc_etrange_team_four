@@ -81,10 +81,9 @@ namespace soclib { namespace caba {
                continue;
             }
 	    if (reset_config) {
-		    if (Address_Register_Written==true)
-		{
-		    //mem=reg0.reg.read(); read mem address register at this point this should be uncomented once register set has been defined 
-		    mem=0x41000000;//to be removed after testing
+		    if (reg0.Written==true)
+		{   //read_ mem address
+		    mem=reg0.reg.read();  
 		    initial_image_position=mem;
 		    reset_config=false;
 		    //initial_write=true;
