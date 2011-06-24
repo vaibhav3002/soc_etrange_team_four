@@ -1,0 +1,15 @@
+# -*- python -*-
+
+Module('caba:buffer_management_test_module',
+        classname = 'soclib::caba::testbuffermanagement',
+        tmpl_parameters = [
+        ],
+        header_files = ['buffer_management_vector_generator.h',],
+        implementation_files = ['buffer_management_vector_generator.cpp',],
+        ports = [
+        ],
+        uses = [
+        ],
+        #debug = True ,
+      )
+

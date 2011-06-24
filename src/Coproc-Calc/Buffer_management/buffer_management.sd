@@ -1,0 +1,21 @@
+# -*- python -*-
+
+Module('caba:buffer_management',
+        classname = 'soclib::caba::Buffer_management',
+        tmpl_parameters = [
+            parameter.Module('wb_param',  default = 'caba:wb_param'),
+        ],
+        header_files = ['buffer_management.h',],
+        implementation_files = ['buffer_management.cpp',],
+        ports = [
+            Port('caba:bit_in',     'p_resetn', auto = 'resetn'),
+            Port('caba:wb_master',  'p_wb'),
+        ],
+        uses = [
+        Uses('caba:wishbone'),
+        Uses('caba:wb_master_module_tuille'),
+        Uses('caba:wb_slave_reg_irq')
+        ],
+        #debug = True ,
+      )
+
