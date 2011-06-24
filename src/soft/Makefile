@@ -9,11 +9,14 @@ CPPFLAGS     = -I.
 
 SOFT_IMAGE = soft.elf
 
-OBJS  =  main.o lm32_sys.o etrange.o mfixed.o
+OBJS  =  main.o lm32_sys.o etrange.o mfixed.o logo_telecom.o
 
 .PHONY: all clean
 
 all:$(SOFT_IMAGE)
+
+logo_telecom.o: logo_telecom.pgm
+	lm32-elf-objcopy -I binary -O elf32-big -B lm32 $< $@
 
 $(SOFT_IMAGE):$(OBJS)
 	$(CC) $(CFLAGS) $(CPPFLAGS) $(LDFLAGS) $(TARGET_ARCH) -o $@ $^
