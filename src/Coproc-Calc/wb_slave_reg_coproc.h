@@ -39,31 +39,31 @@ namespace soclib { namespace caba {
 	    case 0:
 		return (reg_p0.read());
 		break;
-	    case 1:
+	    case 4:
 		return (reg_s0.read());
 		break;
-	    case 2:
+	    case 8:
 		return (reg_s1.read());
 		break;
-	    case 3:
+	    case 12:
 		return (reg_r0.read());
 		break;
-	    case 4:
+	    case 16:
 		return (reg_r1.read());
 		break;
-	    case 5:
+	    case 18:
 		return (reg_r2.read());
 		break;
-	    case 6:
+	    case 22:
 		return (reg_q0.read());
 		break;
-	    case 7:
+	    case 26:
 		return (reg_q1.read());
 		break;
-	    case 8:
+	    case 30:
 		return (reg_q2.read());
 		break;
-	    case 9:
+	    case 34:
 		return (reg_q3.read());
 		break;
 	    }	
@@ -87,31 +87,31 @@ namespace soclib { namespace caba {
 	    case 0:
 		reg_p0 = DATA;
 		break;
-	    case 1:
+	    case 4:
 		reg_s0 = DATA;
 		break;
-	    case 2:
+	    case 8:
 		reg_s1 = DATA;
 		break;
-	    case 3:
+	    case 12:
 		reg_r0 = DATA;
 		break;
-	    case 4:
+	    case 16:
 		reg_r1 = DATA;
 		break;
-	    case 5:
+	    case 20:
 		reg_r2 = DATA;
 		break;
-	    case 6:
+	    case 24:
 		reg_q0 = DATA;
 		break;
-	    case 7:
+	    case 26:
 		reg_q1 = DATA;
 		break;
-	    case 8:
+	    case 28:
 		reg_q2 = DATA;
 		break;
-	    case 9:
+	    case 32:
 		reg_q3 = DATA;
 		break;
 	    }
