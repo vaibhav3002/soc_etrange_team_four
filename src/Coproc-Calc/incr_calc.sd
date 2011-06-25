@@ -2,11 +2,9 @@
 
 Module('caba:incr_calc',
         classname = 'soclib::caba::IncrCalc',
-        tmpl_parameters = [
-            parameter.Module('wb_param',  default = 'caba:wb_param'),
-        ],
-        header_files = ['incr_calc.h',],
-        implementation_files = ['incr_calc.cpp',],
+        tmpl_parameters = [],
+        header_files = ['incr_calc.h','mfixed2.h'],
+        implementation_files = ['incr_calc.cpp','mfixed.cpp'],
         ports = [
         ],
         uses = [

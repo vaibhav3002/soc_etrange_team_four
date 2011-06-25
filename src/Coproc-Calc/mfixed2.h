@@ -1,3 +1,5 @@
+#ifndef __MFIXED2__
+#define __MFIXED2__
 #include "systemc.h"
 
 class mfixed {
@@ -43,3 +45,4 @@ class mfixed {
     friend short getL(mfixed A);
 
 };
+#endif

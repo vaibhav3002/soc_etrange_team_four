@@ -4,7 +4,7 @@
 #define IMAGE_WIDTH 640
 #define NO_TILES 1200
 
-#include "systemc.h"
+//#include "systemc.h"
 #include "mfixed2.h"
 
 using namespace sc_core;
