@@ -28,6 +28,7 @@
 
 
 #include <stdio.h>
+#include <string.h>
 #include "lm32_sys.h"
 #include "../segmentation.h"
 #include "etrange.h"
@@ -35,8 +36,8 @@
 #define N 10
 //#define WB_TARGET 0xA1000000
 
-#define LOGO_W 80
-#define LOGO_H 80
+#define LOGO_W 60
+#define LOGO_H 60
 #define LOGO_OFFSET 0x3CEA6
 
 extern volatile unsigned long _binary___logo_telecom_pgm_start; 
@@ -133,6 +134,7 @@ int main(void)
 	
 	while (cnt<5) {
 		if ((OldVideoInStatus==-1)&&(VideoInStatus==0)) {
+			for (j=0;j<1000;j++) {}
 			Videoout_IrqHandler();
 			OldVideoInStatus=0;
 		}

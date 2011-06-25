@@ -87,7 +87,7 @@ namespace soclib { namespace caba {
 
 
 
-	    if (!reg0.Written) {
+	    if ((!reg0.Written)) {
 		continue;
 	    }
 
