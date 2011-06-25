@@ -18,5 +18,5 @@ inline mfixed fx_add (mfixed A, mfixed B)
 }
 
 mfixed nmfixed(short a) {
-	return (mfixed) a;
+	return (mfixed) (a<<16);
 }
