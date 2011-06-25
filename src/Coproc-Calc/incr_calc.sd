@@ -1,0 +1,16 @@
+# -*- python -*-
+
+Module('caba:incr_calc',
+        classname = 'soclib::caba::IncrCalc',
+        tmpl_parameters = [
+            parameter.Module('wb_param',  default = 'caba:wb_param'),
+        ],
+        header_files = ['incr_calc.h',],
+        implementation_files = ['incr_calc.cpp',],
+        ports = [
+        ],
+        uses = [
+        ],
+#        debug = True ,
+      )
+
