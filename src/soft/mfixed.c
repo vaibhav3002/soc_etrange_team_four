@@ -17,4 +17,6 @@ inline mfixed fx_add (mfixed A, mfixed B)
     return (mfixed)(A.all + B.all);
 }
 
-
+mfixed nmfixed(short a) {
+	return (mfixed) a;
+}

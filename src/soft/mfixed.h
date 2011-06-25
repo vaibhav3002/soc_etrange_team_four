@@ -29,4 +29,6 @@ typedef union {
 //	// fixed point addition
 //	inline mfixed fx_add (mfixed A, mfixed B);
 
+mfixed nmfixed(short a);
+
 #endif
