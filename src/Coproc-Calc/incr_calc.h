@@ -1,7 +1,11 @@
 #define TILE_HEIGHT 16
 #define TILE_WIDTH 16
+#define IMAGE_HEIGHT 480
+#define IMAGE_WIDTH 640
+#define NO_TILES 1200
 
-#include <systemc>
+#include "systemc.h"
+#include "mfixed2.h"
 
 using namespace sc_core;
 using namespace std;
@@ -15,6 +19,7 @@ namespace soclib { namespace caba {
 	    /*private line and column counter*/
 	    int lin;
 	    int col;
+	    //int tile;
 
 	    int state;
 	    /* 0 : WAIT
@@ -30,65 +35,63 @@ namespace soclib { namespace caba {
 
                 sc_in_clk           clk;
                 sc_in<bool>         reset_n;
-		sc_in<bool>         p0_valid;
-		sc_in<bool>         q0_valid;
-		sc_in<bool>         q1_valid;
-		sc_in<bool>         q2_valid;
-		sc_in<bool>         r0_valid;
-		sc_in<bool>         r1_valid;
-		sc_in<bool>         s0_valid;
-		sc_in<bool>         load;
-		sc_in<int>          p0_in;		
-		sc_in<int>          q0_in;
-		sc_in<int>          q1_in;
-		sc_in<int>          q2_in;
-		sc_in<int>          q3_in;
-		sc_in<int>          r0_in;
-		sc_in<int>          r1_in;
-		sc_in<int>          r2_in;
-		sc_in<int>          s0_in;
-		sc_in<int>          s1_in;
+
+		sc_in<bool>         start;
+		sc_in<bool>         en;
+		sc_in<mfixed>          p0_in;		
+		sc_in<mfixed>          q0_in;
+		sc_in<mfixed>          q1_in;
+		sc_in<mfixed>          q2_in;
+		sc_in<mfixed>          q3_in;
+		sc_in<mfixed>          r0_in;
+		sc_in<mfixed>          r1_in;
+		sc_in<mfixed>          r2_in;
+		sc_in<mfixed>          s0_in;
+		sc_in<mfixed>          s1_in;
 		
 		sc_signal<bool> wait_cyc; //wait one cycle for signal to be valid
 		
 		/* registres */
 
-		int q0;  //constante	
-		sc_signal<int> q1;
+		mfixed q0;  //constante	
+		sc_signal<mfixed> q1;
 
-		sc_signal<int> q2;
+		sc_signal<mfixed> q2;
 
-		sc_signal<int> q3;
-
-
-		int r0;  //constante
-		sc_signal<int> r1;
-		sc_signal<int> r2;
+		sc_signal<mfixed> q3;
 
 
-		int s0; //constante
-		sc_signal<int> s1;
+		mfixed r0;  //constante
+		sc_signal<mfixed> r1;
+		sc_signal<mfixed> r2;
 
-		int p0; //constante
 
-		sc_signal<int> p1;
+		mfixed s0; //constante
+		sc_signal<mfixed> s1;
 
-		sc_signal<int> p1_l;
+		mfixed p0; //constante
 
-		sc_signal<int> p2;
+		sc_signal<mfixed> p1;
 
-		sc_signal<int> p2_l;
+		sc_signal<mfixed> p1_l;
 
-		sc_signal<int> p3;
+		sc_signal<mfixed> p2;
 
-		sc_signal<int> p3_l;
+		sc_signal<mfixed> p2_l;
+
+		sc_signal<mfixed> p3;
+
+		sc_signal<mfixed> p3_l;
 			
 		sc_out<bool> o_valid;
 		sc_out<bool> o_finished;
 		
-                sc_out<int>   x_3;
-                sc_out<int>   x_2;
-                sc_out<int>   x_1;
+                /*sc_out<mfixed>   x_3;
+                sc_out<mfixed>   x_2;
+                sc_out<mfixed>   x_1;*/
+
+		sc_out<unsigned short> x;
+		sc_out<short> dx;
 
 		IncrCalc(sc_module_name insname);
 

@@ -23,6 +23,7 @@ namespace soclib { namespace caba {
 		    lin = 0;
 		    col = 0;
 		    state = 0;
+		    //tile = 0;
 
 		    /*p0 = c[2];
 		    
@@ -43,8 +44,8 @@ namespace soclib { namespace caba {
 		    //s1_i = a[9] << 2 + a[9] << 1 + a[8] << 1; //a30*6 + a20*2
 		    o_valid = 0;
 		    o_finished = 0;
-		    //wait_cyc = 1;
-		    x_3 = 0;
+
+		    //x_3 = mfixed(0);
 
 		    
 		    // ne changent pas !!
@@ -59,14 +60,16 @@ namespace soclib { namespace caba {
 		//else if(q0_valid & q1_valid & q2_valid & r0_valid & r1_valid & s0_valid)
 		else
 		{
-		    switch(state)
+		    if(en)
 		    {
-		    case 0 : {
-			lin = 0;
-			col = 0;
-			o_valid = 0;
-			o_finished = 0;
-			if(load && ((q0_valid & q1_valid & q2_valid & r0_valid & r1_valid & s0_valid & p0_valid)))
+			switch(state)
+			{
+			case 0 : {
+			    lin = 0;
+			    col = 0;
+			    o_valid = 0;
+			    o_finished = 0;
+			    if(start)
 			    {
 				state = 1;
 				p0 = p0_in;
@@ -80,184 +83,202 @@ namespace soclib { namespace caba {
 				s0 = s0_in;
 				s1 = s1_in;
 			    }
-			wait();
-			break;
-		    }
-			case 1: {
-			    o_valid = 1;
-			    x_3 = p3;
-			    x_2 = p2;
-			    x_1 = p1;
-
-			    if(col == 0)
-			    {
-				p3 = q3;
-				p2 = r2;
-				p1 = s1;
-
-				q3 = q3 + q2;
-				q2 = q2 + q1;
-				q1 = q1 + q0;
-
-				r2 = r2 + r1;
-				r1 = r1 + r0;
-
-				s1 = s1 + s0;
-			    }
-			    else
-			    {
-				p3 = p3 + p2;
-				p2 = p2 + p1;
-				p1 = p1 + p0;
-			    }
-			    if(col == 1)
-			    {
-				cout << "COPROC : r2 : " << r2 << endl;
-				cout << "COPROC : r1 : " << r1 << endl;
-				cout << "COPROC : q3 : " << q3 << endl;
-				cout << "COPROC : q2 : " << q2 << endl;
-				cout << "COPROC : q1 : " << q1 << endl;
-			    }
-			    col++;
-			    if (col == TILE_WIDTH)
-			    {
-				col = 0;
-				cout << "COPROC : New line " << endl;
-				lin++;
-				if(lin == TILE_HEIGHT)
-				    state = 2;
-			    }
-			    wait();
+			    //x_3 = p3;
+			    x = getH(p3);
+			    dx = getL(p3);
+			    //x_2 = p2;
+			    //x_1 = p1;
 			    break;
 			}
-			case 2: {
-			    o_finished = 1;
-			    state = 0;
-			    x_3 = 0;
-			    x_2 = 0;
-			    x_1 = 0;
-			    wait();
+			case 1: {
+			    if(!start)
+			    {
+				o_valid = 1;
+				//x_3 = p3;
+				x = getH(p3);
+				dx = getL(p3);
+				//x_2 = p2;
+				//x_1 = p1;
+
+				cout << "Coproc " << lin << " " << col << endl;
+
+				if(col == 0)
+				{
+				    p3 = q3;
+				    p2 = r2;
+				    p1 = s1;
+ 
+				    q3 = q3 + q2;
+				    //q2 = q2 + q1;
+				    //q1 = q1 + q0;
+ 
+				    //r2 = r2 + r1;
+				    //r1 = r1 + r0;
+ 
+				    //s1 = s1 + s0; 
+				}
+				else
+				{
+				    p3 = p3 + p2;
+				    p2 = p2 + p1;
+				    p1 = p1 + p0;
+				}
+				/*if(col == 1)
+				  {
+				  cout << "COPROC : r2 : " << r2 << endl;
+				  cout << "COPROC : r1 : " << r1 << endl;
+				  cout << "COPROC : q3 : " << q3 << endl;
+				  cout << "COPROC : q2 : " << q2 << endl;
+				  cout << "COPROC : q1 : " << q1 << endl;
+				  }*/
+				col++;
+				if (col == TILE_WIDTH)
+				{
+				    col = 0;
+				    cout << "COPROC : New line " << endl;
+				    lin++;
+				    if(lin == TILE_HEIGHT)
+				    {
+					//tile++;
+					//if(tile==NO_TILES)
+					state=2; //go to wait state
+					//else state = 0;
+				    }
+				}
+			    }
+			
 			    break;
-			}break;
+			}
+		    case 2: {
+			o_finished = 1;
+			state = 0;
+			o_valid = 0;
+			//x_3 = mfixed(0);
+			//x_2 = mfixed(0);
+			//x_1 = mfixed(0);
+			break;
+		    }break;
+			}
 		    }
+		    wait();
 		}
 	    }
 	}
     }
 }
-	    /*
-			if (col < TILE_WIDTH)
-			{
-			    if(col!=0)
-			    {
-				p3_l = p3_l;
-				p2_l = p2_l;
-				p1_l = p1_l;
-			    }
-
-			    col++;
-			p3 = p3 + p2;
-			p2 = p2 + p1;
-			p1 = p1 + p0;
-			x_3 = p3;
-			x_2 = p2;
-			x_1 = p1;
-
-
-
-
-		    if(wait_cyc.read())
-		    {
-			valid = 0;
-			if(lin < TILE_HEIGHT)
-			    wait_cyc = 0;
-		    }
-		    else
-		    {
-			valid = 1;
-
-			/* save col 0 for next line, done at col 1 because then the output contains the previous value */
 /*
-			if(col == 16 && lin == 0)
-			{
-			    cout << "Saving coeffs ----- " << endl;
-			    p3_l = p3;
-			    p2_l = p2;
-			    p1_l = p1;	
-			}
+  if (col < TILE_WIDTH)
+  {
+  if(col!=0)
+  {
+  p3_l = p3_l;
+  p2_l = p2_l;
+  p1_l = p1_l;
+  }
 
-			/* next column *//*
-			if (col < TILE_WIDTH)
-			{
-			    if(col!=0)
-			    {
-				p3_l = p3_l;
-				p2_l = p2_l;
-				p1_l = p1_l;
-			    }
+  col++;
+  p3 = p3 + p2;
+  p2 = p2 + p1;
+  p1 = p1 + p0;
+  x_3 = p3;
+  x_2 = p2;
+  x_1 = p1;
 
-			    col++;
 
-			    /*
-			      p3_i = p3_o + p2_o;
-			      p2_i = p2_o + p1_o;
-			      p1_i = p1_o + p0;
-		    
-			      q2_i = q2_o;
-			      q1_i = q1_o;
-			
-			      r1_i = r1_o;
-			    */
+
+
+  if(wait_cyc.read())
+  {
+  valid = 0;
+  if(lin < TILE_HEIGHT)
+  wait_cyc = 0;
+  }
+  else
+  {
+  valid = 1;
+
+  /* save col 0 for next line, done at col 1 because then the output contains the previous value */
 /*
-			    p3 = p3 + p2;
-			    p2 = p2 + p1;
-			    p1 = p1 + p0;
-		    
-			    q2 = q2;
-			    q1 = q1;
-			
-			    r1 = r1;
+  if(col == 16 && lin == 0)
+  {
+  cout << "Saving coeffs ----- " << endl;
+  p3_l = p3;
+  p2_l = p2;
+  p1_l = p1;	
+  }
 
-			}
-			else
-			{	
+  /* next column *//*
+     if (col < TILE_WIDTH)
+     {
+     if(col!=0)
+     {
+     p3_l = p3_l;
+     p2_l = p2_l;
+     p1_l = p1_l;
+     }
+
+     col++;
+
+     /*
+     p3_i = p3_o + p2_o;
+     p2_i = p2_o + p1_o;
+     p1_i = p1_o + p0;
+		    
+     q2_i = q2_o;
+     q1_i = q1_o;
+			
+     r1_i = r1_o;
+		   */
+/*
+  p3 = p3 + p2;
+  p2 = p2 + p1;
+  p1 = p1 + p0;
+		    
+  q2 = q2;
+  q1 = q1;
+			
+  r1 = r1;
+
+  }
+  else
+  {	
 			    
-			    cout << "p3l " << p3_l << endl;
-			    cout << "p2l " << p2_l << endl;
-			    cout << "p1l " << p1_l << endl;
+  cout << "p3l " << p3_l << endl;
+  cout << "p2l " << p2_l << endl;
+  cout << "p1l " << p1_l << endl;
 			
-			    cout << "q0 " << q0 << endl;
-			    cout << "q1 " << q1 << endl;
-			    cout << "q2 " << q2 << endl;
+  cout << "q0 " << q0 << endl;
+  cout << "q1 " << q1 << endl;
+  cout << "q2 " << q2 << endl;
 
-			    cout << "r0 " << r0 << endl;
-			    cout << "r1 " << r1 << endl;
+  cout << "r0 " << r0 << endl;
+  cout << "r1 " << r1 << endl;
 
-			    cout << "s0 " << s0 << endl;
+  cout << "s0 " << s0 << endl;
 			    
 		
-			    col = 0;
-			    valid = 0;
+  col = 0;
+  valid = 0;
 
-			    lin++;
+  lin++;
 
-			    p3 = p3_l + q2;
+  p3 = p3_l + q2;
 
-			    q2 = q2 + q1;
-			    q1 = q1 + q0;
+  q2 = q2 + q1;
+  q1 = q1 + q0;
 
-			    p2 = p2_l + r1;
-			    r1 = r1 + r0;
-			    p1 = p1_l + s0;
-			    wait_cyc = 1;
-			}
+  p2 = p2_l + r1;
+  r1 = r1 + r0;
+  p1 = p1_l + s0;
+  wait_cyc = 1;
+  }
    		    
-			x_3 = p3;
-			x_2 = p2;
-			x_1 = p1;
+  x_3 = p3;
+  x_2 = p2;
+  x_1 = p1;
 
-			cout << col << " " << lin << endl;
-		    }
-		    wait();
-		    }*/
+  cout << col << " " << lin << endl;
+  }
+  wait();
+  }*/
 

@@ -24,7 +24,10 @@ todo = Platform('caba', 'top.cpp',
         Uses('caba:interpolator_test_module'),
         Uses('caba:buffer_management'),
         Uses('caba:buffer_management_test_module'),
-        Uses('caba:interpolator_out')
+        Uses('caba:interpolator_out'),
+        Uses('caba:interpolator_out'),
+        Uses('caba:incr_calc'),
+	
 	],
         cell_size = 4,
         plen_size = 8,
