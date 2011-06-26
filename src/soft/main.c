@@ -45,6 +45,11 @@ int fibo(int n);
 volatile unsigned long cnt=0;
 volatile int VideoInStatus=-1;
 unsigned long last_addr=0;
+  	int i = 0;
+	int j = 0;
+	int x = 0;
+	int y = 0;
+
 
 void UART_IrqHandler() {
 	cnt ++;
@@ -76,10 +81,28 @@ void Videoin_IrqHandler() {
 	}
 }
 
-int main(void)
+void Coproc_IrqHandler() {
+
+  i++;
+  if(i == 40)
+    {
+      j++;
+      i = 0;
+      if(j == 30)
+	{
+	  i=0;
+	  j=0;
+	}
+    }
+  x = 16 * i;
+  y = 16 * j;
+  etrange_polyinit(&s1, &r1, &r2, &q1, &q2, &q3, nmfixed(x), nmfixed(y));
+    
+}
+
+void main()
 {
 
-	int j;
 	volatile int OldVideoInStatus = -1;
 	//a[10] = {0, 0, 0, 0, 0, 0, 0, 1, 0, 0}; 
 	etrange_initialize(&p0, &s0, &r0, &q0, &r2_c1, &r2_c2, &q2_c1, &q2_c2); 
