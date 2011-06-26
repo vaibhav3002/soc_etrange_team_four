@@ -1,0 +1,38 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%			      Video Out module					%
+%					-----------						%
+% Author: Thibault Porteboeuf						%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{VideoOut module}
+
+\begin{figure}[H]
+\center
+\includegraphics[width=7cm]{figs/Video_out.pdf}
+\caption{VideoOut module's interface}
+\label{VideoOut_interface}
+\end{figure}
+
+The VideoOut module is somewhat similar to the VideoIn module. They both include a one register slave module presented in figure \ref{reg_slave_interface}, a wishbone master interface, and video signals.
+
+The main difference being that VideoOut generates the video signals as an output, whereas VideoIn handles the video signals as an input.
+
+The different ports are detailed in figure \ref{VideoOut_interface}.
+
+The module's behavior is described in the figure \ref{VideoOut_behavior}, and is as follows:
+\begin{enumerate}
+\item VideoOut remains Idle until an address to read to has been written to its slave interface
+\item When this first configuration has been set, VideoOut starts preloading its internal buffer
+\item VideoOut starts generating the video signals and poping pixels from the internal buffer
+\item Each time the buffer is half empty, a read request is send over the wishbone bus by VideoOut's master interface, in order to retreive more data
+\item This process continues until the end of the frame, which pauses the module. It then raises an Irq in order to get the next address to read to, and start over.
+\end{enumerate}
+
+
+\begin{figure}[h]
+\center
+\includegraphics[width=11cm]{figs/video_out_sm.pdf}
+\caption{VideoOut's behavior}
+\label{VideoOut_behavior}
+\end{figure}
+
