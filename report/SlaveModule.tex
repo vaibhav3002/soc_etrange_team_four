@@ -4,8 +4,10 @@
 % Author: Thibault Porteboeuf						%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\section{Generic Slave Module}
+\section{The Slave Module}
 
+\paragraph{Generic slave module}
+~\\~
 As several modules in our design require a slave interface to let the LM32 post to them configuration values, we decided to implement a generic slave interface, that can be easily re-used in every module.
 
 This generic slave modules includes a state machine that handles simple read and write requests, as presented in figure \ref{state_machine_slave}.
@@ -19,4 +21,15 @@ This generic slave modules includes a state machine that handles simple read and
 
 When accessing the \emph{Read} or \emph{Write} states, the module automatically calls the \texttt{slave\_read()} and \texttt{slave\_write()} methods respectively.
 
-These methods can be overloaded in any inheriting slave interface, and thus allows a great variety of behaviors and features to rely on one single wishbone slave interface.
+These methods can be overloaded in any inheriting slave interface, thus allowing a great variety of behaviors and features to rely on one single wishbone slave source code.
+
+\paragraph{Slave module with configuration registers}
+~\\~
+As we previously stated, the LM32 will configure the peripherals by writing configuration values to each slave interface.
+These configuration values will be stored in internal configuration registers.
+
+Therefore, we created slave modules that inherit the previously defined generic slave.
+In addition to the generic slave module's internal components, these inheriting slave modules comprise one registers or more.
+They have overloaded \texttt{slave\_read()} and \texttt{slave\_write()} which allows to transfer a write request's content to the register, as well as the register's content as an answer to a read request.
+
+The following sections will describe the video stream modules, and how they put these slave interfaces to good use.
