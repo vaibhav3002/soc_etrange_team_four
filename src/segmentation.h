@@ -49,10 +49,13 @@
 #define	RAM_SIZE    0x02000000 // 32M
 #define	TTY_BASE    0xA0000000
 #define	TTY_SIZE    0x00000100
-#define  WBS_BASE    0xB0000000
-#define  WBS_SIZE    0X00100000
+
 #define  WBM_BASE    0xB1000000
 #define  WBM_SIZE    0X00000010
+
+//Coprocessor base and size
+#define  COPROC_BASE    0xF0000000
+#define  COPROC_SIZE    0X00000128
 
 //defining data write mem
 #define WB_TARGET    0xB0000000
