@@ -1,5 +1,5 @@
-#ifndef __SLAVE_REG_WB__
-#define __SLAVE_REG_WB__
+#ifndef __SLAVE_REG_COPROC_WB__
+#define __SLAVE_REG_COPROC_WB__
 
 #include <systemc>
 #include "wb_slave_module.h"
@@ -7,10 +7,10 @@
 namespace soclib { namespace caba {
 
     template<typename wb_param>
-        class WbSlaveRegModule : public WbSlaveModule<wb_param>
+        class WbSlaveRegModuleCoproc : public WbSlaveModule<wb_param>
     {
 	public:
-	    WbSlaveRegModule ( sc_module_name name ) : WbSlaveModule<wb_param>::WbSlaveModule(name) 
+	    WbSlaveRegModuleCoproc ( sc_module_name name ) : WbSlaveModule<wb_param>::WbSlaveModule(name) 
 		{
 		    written = 0;
 		    read = 0;
@@ -73,7 +73,7 @@ namespace soclib { namespace caba {
 		loaded = 1;
 		read = 0;
 	    }
-	    
+	   return 0;    
 	};
 	
 	uint32_t slave_write(uint32_t ADDR, uint32_t DATA) {

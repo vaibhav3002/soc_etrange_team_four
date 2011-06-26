@@ -84,6 +84,9 @@
 
 //include buffer management test module
 #include "buffer_management_vector_generator.h"
+
+//include incr_calc
+#include "incr_calc.h"
 // real SystemC main
 int _main(int argc, char *argv[])
 {
@@ -350,6 +353,12 @@ soclib::caba::testbuffermanagement test_buffer_management("test_buffer_managemen
 	test_buffer_management.dy(signal_buffer_management_dy_in);
 	test_buffer_management.x(signal_buffer_management_x);
 	test_buffer_management.y(signal_buffer_management_y);
+
+//Incr calc module instanciation
+
+soclib::caba::IncrCalc <wb_param>    incrcalc  ("incrcalc");
+
+
 //test register instantiation
  //  soclib::caba::WbSlaveModule <wb_param> test_slave ("test_slave");
  //   test_slave.p_clk(signal_clk);

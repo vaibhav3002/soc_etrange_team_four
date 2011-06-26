@@ -1,7 +1,7 @@
 # -*- python -*-
 
 Module('caba:wb_slave_reg_coproc',
-        classname = 'soclib::caba::WbSlave',
+        classname = 'soclib::caba::WbSlaveRegModuleCoproc',
         tmpl_parameters = [
             parameter.Module('wb_param',  default = 'caba:wb_param'),
         ],
