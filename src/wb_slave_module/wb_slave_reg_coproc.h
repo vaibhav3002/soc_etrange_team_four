@@ -15,7 +15,7 @@ namespace soclib { namespace caba {
 		    written = 0;
 		}
 
-	sc_signal<uint32_t> reg_p0; //Internal register that must be accessible from the outside world
+	//Internal registers that must be accessible from the outside world
 	sc_signal<uint32_t> reg_s0;
 	sc_signal<uint32_t> reg_s1;
 	sc_signal<uint32_t> reg_r0;
@@ -35,33 +35,30 @@ namespace soclib { namespace caba {
 	    switch(ADDR)
 	    {
 	    case 0:
-		return (reg_p0.read());
-		break;
-	    case 1:
 		return (reg_s0.read());
 		break;
-	    case 2:
+	    case 4:
 		return (reg_s1.read());
 		break;
-	    case 3:
+	    case 8:
 		return (reg_r0.read());
 		break;
-	    case 4:
+	    case 12:
 		return (reg_r1.read());
 		break;
-	    case 5:
+	    case 16:
 		return (reg_r2.read());
 		break;
-	    case 6:
+	    case 20:
 		return (reg_q0.read());
 		break;
-	    case 7:
+	    case 24:
 		return (reg_q1.read());
 		break;
-	    case 8:
+	    case 28:
 		return (reg_q2.read());
 		break;
-	    case 9:
+	    case 32:
 		return (reg_q3.read());
 		break;
 	    }		
@@ -73,33 +70,30 @@ namespace soclib { namespace caba {
 	    switch(ADDR)
 	    {
 	    case 0:
-		reg_p0 = DATA;
-		break;
-	    case 1:
 		reg_s0 = DATA;
 		break;
-	    case 2:
+	    case 4:
 		reg_s1 = DATA;
 		break;
-	    case 3:
+	    case 8:
 		reg_r0 = DATA;
 		break;
-	    case 4:
+	    case 12:
 		reg_r1 = DATA;
 		break;
-	    case 5:
+	    case 16:
 		reg_r2 = DATA;
 		break;
-	    case 6:
+	    case 20:
 		reg_q0 = DATA;
 		break;
-	    case 7:
+	    case 24:
 		reg_q1 = DATA;
 		break;
-	    case 8:
+	    case 28:
 		reg_q2 = DATA;
 		break;
-	    case 9:
+	    case 32:
 		reg_q3 = DATA;
 		break;
 	    }

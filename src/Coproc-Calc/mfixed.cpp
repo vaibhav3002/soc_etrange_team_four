@@ -12,6 +12,12 @@ mfixed::mfixed(int a)
     h = 0;
 }
 
+mfixed::mfixed(uint32_t a)
+{
+    l = (int)(a);// && 0xFFFF0000));
+    h = (short)((int)(a * (1<<16)));
+}
+
  mfixed::mfixed (int a, int b) 
 {
     l = a;

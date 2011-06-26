@@ -38,6 +38,7 @@
 
 extern char inbyte(void);
 
+mfixed a[10] = {(mfixed) 0,(mfixed) 0, (mfixed) 0,(mfixed) 0,(mfixed) 0,(mfixed) 0,(mfixed) 0,(mfixed) (1<<16),(mfixed) 0,(mfixed) 0};
 
 int fibo(int n);
 
@@ -80,8 +81,8 @@ int main(void)
 
 	int j;
 	volatile int OldVideoInStatus = -1;
-
-
+	//a[10] = {0, 0, 0, 0, 0, 0, 0, 1, 0, 0}; 
+	etrange_initialize(&p0, &s0, &r0, &q0, &r2_c1, &r2_c2, &q2_c1, &q2_c2); 
 	//Test interrupt UART
 	RegisterIrqEntry(0,UART_IrqHandler);
 	//Videoin interrupt

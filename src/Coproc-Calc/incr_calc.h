@@ -39,7 +39,7 @@ namespace soclib { namespace caba {
 
             sc_in<bool>         start;
             sc_in<bool>         en;
-            sc_in<mfixed>          p0_in;		
+            /*sc_in<mfixed>          p0_in;		
             sc_in<mfixed>          q0_in;
             sc_in<mfixed>          q1_in;
             sc_in<mfixed>          q2_in;
@@ -48,7 +48,7 @@ namespace soclib { namespace caba {
             sc_in<mfixed>          r1_in;
             sc_in<mfixed>          r2_in;
             sc_in<mfixed>          s0_in;
-            sc_in<mfixed>          s1_in;
+            sc_in<mfixed>          s1_in;*/
 
             sc_signal<bool> wait_cyc; //wait one cycle for signal to be valid
 

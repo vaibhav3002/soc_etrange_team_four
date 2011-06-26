@@ -15,6 +15,8 @@ class mfixed {
     
     mfixed(int);
 
+    mfixed(uint32_t);
+
     mfixed(double);
 
 

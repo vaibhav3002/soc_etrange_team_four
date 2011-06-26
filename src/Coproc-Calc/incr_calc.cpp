@@ -48,16 +48,16 @@ namespace soclib { namespace caba {
                               if(start)
                               {
                                  state = 1;
-                                 p0 = p0_in;
-                                 q0 = q0_in;
-                                 q1 = q1_in;
-                                 q2 = q2_in;
-                                 q3 = q3_in;
-                                 r0 = r0_in;
-                                 r1 = r1_in;
-                                 r2 = r2_in;
-                                 s0 = s0_in;
-                                 s1 = s1_in;
+                                 p0 = (mfixed)reg.slave_read(0);
+                                 q0 = (mfixed)reg.slave_read(24);
+                                 q1 = (mfixed)reg.slave_read(28);
+                                 q2 = (mfixed)reg.slave_read(32);
+                                 q3 = (mfixed)reg.slave_read(36);
+                                 r0 = (mfixed)reg.slave_read(12);
+                                 r1 = (mfixed)reg.slave_read(16);
+                                 r2 = (mfixed)reg.slave_read(20);
+                                 s0 = (mfixed)reg.slave_read(4);
+                                 s1 = (mfixed)reg.slave_read(8);
                               }
                               x = getH(p3);
                               dx = getL(p3);

@@ -30,7 +30,7 @@ namespace soclib { namespace caba {
 	int read;
 	sc_signal<bool> ready;
 	sc_signal<bool> loaded;
-	protected:
+	
 
 
 	uint32_t slave_read(uint32_t ADDR) {
@@ -51,19 +51,19 @@ namespace soclib { namespace caba {
 	    case 16:
 		return (reg_r1.read());
 		break;
-	    case 18:
+	    case 20:
 		return (reg_r2.read());
 		break;
-	    case 22:
+	    case 24:
 		return (reg_q0.read());
 		break;
-	    case 26:
+	    case 28:
 		return (reg_q1.read());
 		break;
-	    case 30:
+	    case 32:
 		return (reg_q2.read());
 		break;
-	    case 34:
+	    case 36:
 		return (reg_q3.read());
 		break;
 	    }	

@@ -2,20 +2,21 @@
 
 #include "mfixed.h"
 
-void etrange_initialize(mfixed* s0, mfixed* r0, mfixed* q0, mfixed* p0, mfixed* r2_c1, mfixed* r2_c2, mfixed* q2_c1, mfixed* q2_c2) {
+void etrange_initialize(mfixed* p0, mfixed* s0, mfixed* r0, mfixed* q0, mfixed* r2_c1, mfixed* r2_c2, mfixed* q2_c1, mfixed* q2_c2) {
 
-    *s0 = fx_mul(nmfixed(2),(a[1]));
-    *r0 = fx_mul(nmfixed(2),(a[2]));
-    *q0 = fx_mul(nmfixed(6),(a[4]));
+  *p0 = fx_mul(nmfixed(6),a[0]);
+  *s0 = fx_mul(nmfixed(2),(a[1]));
+  *r0 = fx_mul(nmfixed(2),(a[2]));
+  *q0 = fx_mul(nmfixed(6),(a[4]));
     
-    *r2_c1 = fx_add(fx_mul(nmfixed(3),a[0]),fx_mul(nmfixed(2),a[4]));
+  *r2_c1 = fx_add(fx_mul(nmfixed(3),a[0]),fx_mul(nmfixed(2),a[4]));
        
-    *r2_c2 = fx_add(a[1],a[5]);
+  *r2_c2 = fx_add(a[1],a[5]);
 
        
-    *q2_c1 = fx_add(a[2],a[5]);
+  *q2_c1 = fx_add(a[2],a[5]);
       
-    *q2_c2 = fx_add(fx_mul(nmfixed(3),a[3]),fx_mul(nmfixed(2),a[6]));
+  *q2_c2 = fx_add(fx_mul(nmfixed(3),a[3]),fx_mul(nmfixed(2),a[6]));
 
 }
 
