@@ -13,7 +13,8 @@
 \label{VideoOut_interface}
 \end{figure}
 
-The VideoOut module is somewhat similar to the VideoIn module. They both include a one register slave module presented in figure \ref{reg_slave_interface}, a wishbone master interface, and video signals.
+The VideoOut module is somewhat similar to the VideoIn module, as presented in figure \ref{VideoOut_struct}. They both include a one register slave module presented in figure \ref{reg_slave_interface}, a wishbone master interface, and video signals.
+
 
 The main difference being that VideoOut generates the video signals as an output, whereas VideoIn handles the video signals as an input.
 
@@ -28,6 +29,14 @@ The module's behavior is described in the figure \ref{VideoOut_behavior}, and is
 \item This process continues until the end of the frame, which pauses the module. It then raises an Irq in order to get the next address to read to, and start over.
 \end{enumerate}
 
+\vfill
+\begin{figure}[h]
+\center
+\includegraphics[width=11cm]{figs/Video_Out_blocks.pdf}
+\caption{VideoOut's inner structure}
+\label{VideoOut_struct}
+\end{figure}
+\vfill
 
 \begin{figure}[h]
 \center
