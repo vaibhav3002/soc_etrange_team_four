@@ -4,10 +4,10 @@
 % Author: Thibault Porteboeuf						%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\section{The Slave Module}
+\section{The Wishbone Slave Module}
 
-\paragraph{Generic slave module}
-~\\~
+\subsection{Generic slave module}
+
 \begin{figure}[H]
 \center
 \includegraphics[width=7cm]{figs/slave_symbol.pdf}
@@ -30,8 +30,8 @@ When accessing the \emph{Read} or \emph{Write} states, the module automatically 
 
 These methods can be overloaded in any inheriting slave interface, thus allowing a great variety of behaviors and features to rely on one single wishbone slave source code.
 
-\paragraph{Slave module with configuration registers}
-~\\~
+\subsection{Slave module with configuration registers}
+\label{wb_reg_slave}
 
 \begin{figure}[H]
 \center
