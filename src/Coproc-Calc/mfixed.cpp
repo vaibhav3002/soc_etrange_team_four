@@ -1,3 +1,17 @@
+/************************************************************
+ *
+ *      File : mfixed.cpp
+ *      Author: A. Schindler
+ *      Credits: T. Graba
+ *      Telecom ParisTECH
+ *
+ *      Adapted the mfixed type to C++ to be used with
+ *      SystemC
+ *      
+ *
+ ************************************************************/
+
+
 #include "mfixed2.h"
 
 mfixed::mfixed () 
@@ -14,7 +28,7 @@ mfixed::mfixed(int a)
 
 mfixed::mfixed(uint32_t a)
 {
-    l = (int)(a);// && 0xFFFF0000));
+    l = (int)(a);
     h = (short)((int)(a * (1<<16)));
 }
 
@@ -26,9 +40,8 @@ mfixed::mfixed(uint32_t a)
 
  mfixed::mfixed (double a) 
 {
-    l = (int)(a);// && 0xFFFF0000));
+    l = (int)(a);
     h = (short)((int)(a * (1<<16)));
-    //printf ("A   0x%x 0x%x\n", h, l);
 }
 
 
@@ -42,7 +55,6 @@ mfixed& mfixed::operator = (const mfixed& rhs)  {
     return *this;
 }
 
-//inline mfixed mfixed::operator + (const mfixed& rhs) {
 mfixed operator + (const mfixed&    u, const mfixed&    v)
 {
     mfixed temp;
@@ -67,29 +79,10 @@ mfixed fx_mul  (mfixed A, mfixed B)
 	       (A.h*B.h) * (1 << 16));
 	
 
-    //temp.l = (A.l * B.h ) >> 16 + (A.h * B.l ) >> 16 + (A.l*B.l);
     temp.h =  (A.l * B.h )    +
 	(A.h * B.l )    +
 	((A.h*B.h) >> 16);
 
-//5; /*(short)((int)(((( ((A.l*B.l)<< 16) +
-    /*(A.l * B.h )    +
-            (A.h * B.l )    +
-				    ((A.h*B.h) >> 16)))) * (1<<16)));
-
-
-/*(short)((int)((( ((A.l*B.l) << 16) +
-			      (A.l * B.h )    +
-			      (A.h * B.l )    +
-			      ((A.h*B.h) >> 16)))) * (1<<16));
-*/
-    //cout << "mul" << temp << endl;
-
-    /*return (mfixed)( ((A.l*B.l) << 16) +
-		     (A.l * B.h )    +
-		     (A.h * B.l )    +
-		     ((A.h*B.h) >> 16)
-		     );*/
 
     return temp;
 }

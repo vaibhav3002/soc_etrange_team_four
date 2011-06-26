@@ -53,10 +53,8 @@ namespace soclib { namespace caba {
             soclib::caba::WbMaster<wb_param> p_wb;
 	    sc_core::sc_out<bool> irq_out;
 	    WbSlaveRegIrqModule<wb_param> reg0;
-            sc_core::sc_in<bool> tile_done_x;
-            sc_core::sc_in<bool> tile_done_y;
-            sc_core::sc_in<bool> pixel_in_valid_x;
-            sc_core::sc_in<bool> pixel_in_valid_y;
+            sc_core::sc_in<bool> tile_done;
+            sc_core::sc_in<bool> pixel_in_valid;
         private:
             
           //  sc_signal<bool> start_loading;

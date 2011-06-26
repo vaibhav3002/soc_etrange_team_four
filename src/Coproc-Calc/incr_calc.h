@@ -1,3 +1,14 @@
+/************************************************************
+ *
+ *      File : incr_calc.h
+ *      Author: A. Schindler
+ *      Credits: T. Graba
+ *      Telecom ParisTECH
+ *
+ *      Incremental calculation module
+ *
+ ************************************************************/
+
 #ifndef INCR_CALC
 #define INCR_CALC
 
@@ -13,94 +24,122 @@ using namespace std;
 
 namespace soclib { namespace caba {
 
-   template<typename wb_param>
+    template<typename wb_param>
       class IncrCalc : sc_core::sc_module {
 
-         private:
-            /*private line and column counter*/
-            int lin;
-            int col;
-            //int tile;
+    private:
+      /*private line and column counter for x and y */
+      /* should be the same values, but need separate counters since the
+	 processes run in parallel */
+      int lin_x;
+      int col_x;
 
-            int state;
-            /* 0 : WAIT
-               1 : Calculate
-               2 : Finished
-            */
+      int lin_y;
+      int col_y;
 
-            /*methods*/
-            void calc();
+      int state_x;
+      int state_y;
+      /* 0 : WAIT
+	 1 : Calculate
+	 2 : Finished
+      */
 
-         public:
-            // IO PORTS
+      /*methods*/
+      void calc_x();
+      void calc_y();
 
-            sc_in_clk           clk;
-            sc_in<bool>         reset_n;
+    public:
+      // IO PORTS
 
-            sc_in<bool>         start;
-            sc_in<bool>         en;
-            /*sc_in<mfixed>          p0_in;		
-            sc_in<mfixed>          q0_in;
-            sc_in<mfixed>          q1_in;
-            sc_in<mfixed>          q2_in;
-            sc_in<mfixed>          q3_in;
-            sc_in<mfixed>          r0_in;
-            sc_in<mfixed>          r1_in;
-            sc_in<mfixed>          r2_in;
-            sc_in<mfixed>          s0_in;
-            sc_in<mfixed>          s1_in;*/
+      sc_in_clk           clk;
+      sc_in<bool>         reset_n;
 
-            sc_signal<bool> wait_cyc; //wait one cycle for signal to be valid
+      sc_in<bool>         start;
+      sc_in<bool>         en;
 
-            /* registres */
+      /* registres */
 
-            mfixed q0;  //constante	
-            sc_signal<mfixed> q1;
+      WbSlaveRegModuleCoproc<wb_param> reg;
 
-            sc_signal<mfixed> q2;
+      /* outputs */
 
-            sc_signal<mfixed> q3;
+      sc_out<bool> o_valid;
+      sc_out<bool> o_finished;
 
-            WbSlaveRegModuleCoproc<wb_param> reg;
-            mfixed r0;  //constante
-            sc_signal<mfixed> r1;
-            sc_signal<mfixed> r2;
+      sc_out<unsigned char> x;
+      sc_out<unsigned short> dx;
+      sc_out<unsigned char> y;
+      sc_out<unsigned short> dy;
+
+      /* internal registers for the x coefficients  */
+
+      mfixed r0_x;  //constante
+      sc_signal<mfixed> r1_x;
+      sc_signal<mfixed> r2_x;
 
 
-            mfixed s0; //constante
-            sc_signal<mfixed> s1;
+      mfixed s0_x; //constante
+      sc_signal<mfixed> s1_x;
 
-            mfixed p0; //constante
+      mfixed p0_x; //constante
 
-            sc_signal<mfixed> p1;
+      sc_signal<mfixed> p1_x;
 
-            sc_signal<mfixed> p1_l;
+      sc_signal<mfixed> p1_l_x;
 
-            sc_signal<mfixed> p2;
+      sc_signal<mfixed> p2_x;
 
-            sc_signal<mfixed> p2_l;
+      sc_signal<mfixed> p2_l_x;
 
-            sc_signal<mfixed> p3;
+      sc_signal<mfixed> p3_x;
 
-            sc_signal<mfixed> p3_l;
+      sc_signal<mfixed> p3_l_x;
 
-            sc_out<bool> o_valid;
-            sc_out<bool> o_finished;
+      mfixed q0_x;  //constante	
+      sc_signal<mfixed> q1_x;
 
-            /*sc_out<mfixed>   x_3;
-              sc_out<mfixed>   x_2;
-              sc_out<mfixed>   x_1;*/
+      sc_signal<mfixed> q2_x;
 
-            sc_out<unsigned char> x;
-            sc_out<unsigned short> dx;
+      sc_signal<mfixed> q3_x;
 
-            IncrCalc(sc_module_name insname);
+         /* internal registers for the y coefficients  */
 
-         protected:
-            SC_HAS_PROCESS(IncrCalc);
+      mfixed r0_y;  //constante
+      sc_signal<mfixed> r1_y;
+      sc_signal<mfixed> r2_y;
 
-      };
-}
+
+      mfixed s0_y; //constante
+      sc_signal<mfixed> s1_y;
+
+      mfixed p0_y; //constante
+
+      sc_signal<mfixed> p1_y;
+
+      sc_signal<mfixed> p1_l_y;
+
+      sc_signal<mfixed> p2_y;
+
+      sc_signal<mfixed> p2_l_y;
+
+      sc_signal<mfixed> p3_y;
+
+      sc_signal<mfixed> p3_l_y;
+
+      mfixed q0_y;  //constante	
+      sc_signal<mfixed> q1_y;
+
+      sc_signal<mfixed> q2_y;
+
+      sc_signal<mfixed> q3_y;
+
+      IncrCalc(sc_module_name insname);
+
+    protected:
+      SC_HAS_PROCESS(IncrCalc);
+
+    };
+  }
 }
 
 #endif
