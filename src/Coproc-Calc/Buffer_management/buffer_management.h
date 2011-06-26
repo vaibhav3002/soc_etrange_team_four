@@ -36,9 +36,8 @@ namespace soclib { namespace caba {
 	    bool Address_Register_Written;
             sc_core::sc_in<bool> p_clk_100mhz;
             sc_core::sc_in<bool> p_resetn;
-            sc_core::sc_in<bool> pixel_in_valid;
-            sc_core::sc_in<uint16_t> dx_in;
-            sc_core::sc_in<uint16_t> dy_in;
+            sc_core::sc_in<unsigned short> dx_in;
+            sc_core::sc_in<unsigned short> dy_in;
             sc_core::sc_in<unsigned char> x;
             sc_core::sc_in<unsigned char> y;
             //buffer_management_outputs
@@ -54,6 +53,10 @@ namespace soclib { namespace caba {
             soclib::caba::WbMaster<wb_param> p_wb;
 	    sc_core::sc_out<bool> irq_out;
 	    WbSlaveRegIrqModule<wb_param> reg0;
+            sc_core::sc_in<bool> tile_done_x;
+            sc_core::sc_in<bool> tile_done_y;
+            sc_core::sc_in<bool> pixel_in_valid_x;
+            sc_core::sc_in<bool> pixel_in_valid_y;
         private:
             
           //  sc_signal<bool> start_loading;

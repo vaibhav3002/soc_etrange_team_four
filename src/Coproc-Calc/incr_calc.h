@@ -91,8 +91,8 @@ namespace soclib { namespace caba {
               sc_out<mfixed>   x_2;
               sc_out<mfixed>   x_1;*/
 
-            sc_out<unsigned short> x;
-            sc_out<short> dx;
+            sc_out<unsigned char> x;
+            sc_out<unsigned short> dx;
 
             IncrCalc(sc_module_name insname);
 

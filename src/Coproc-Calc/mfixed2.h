@@ -4,7 +4,7 @@
 
 class mfixed {
   private:
-    unsigned short h;
+    unsigned char h;
     short l;
   public:
 

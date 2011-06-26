@@ -163,7 +163,7 @@ namespace soclib { namespace caba {
 	 {
                if ((writes_count!=reads_count) ||load_in_progress ){
 		load_in_progress = true;
-		if(pixel_in_valid)
+		if(pixel_in_valid_x && pixel_in_valid_y)
 		{
 			    pixel_out_valid=true;
 			if(x + 16*y < 256)		

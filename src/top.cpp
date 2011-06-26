@@ -102,15 +102,17 @@ int _main(int argc, char *argv[])
     typedef soclib::caba::WbParams<32,32> wb_param;
 
     // Mapping table
-    soclib::common::MappingTable maptab(32, IntTab(8), IntTab(8), 0x80000000);
+    soclib::common::MappingTable maptab(32, IntTab(9), IntTab(9), 0x80000000);
 
     maptab.add(Segment("rom" , ROM_BASE , ROM_SIZE , IntTab(0), true));
     maptab.add(Segment("ram" , RAM_BASE , RAM_SIZE , IntTab(1), true));
     maptab.add(Segment("tty"  , TTY_BASE  , TTY_SIZE  , IntTab(2), false));
     maptab.add(Segment("Video_in_ram_target",VIDEO_IN_REG,1,IntTab(3),false));    
     maptab.add(Segment("Video_out_ram_source",VIDEO_OUT_REG,1,IntTab(4),false));    
-//    maptab.add(Segment("Interpolator out reg",INTERPOLATOR_OUT_REG,1,IntTab(5),false));    
-//    maptab.add(Segment("Buffer management reg",BUFFER_MANAGEMENT_REG,1,IntTab(6),false));    
+    maptab.add(Segment("Interpolator out reg",INTERPOLATOR_OUT_REG,1,IntTab(5),false));    
+    maptab.add(Segment("Buffer management reg",BUFFER_MANAGEMENT_REG,1,IntTab(6),false));    
+    maptab.add(Segment("incremental reg",COPROC_BASE,COPROC_SIZE,IntTab(7),false));    
+    maptab.add(Segment("incrementalregy",COPROC_BASE_Y,COPROC_SIZE,IntTab(8),false));    
   
     // Global signals
     sc_time     clk_periode(10, SC_NS); // clk period
@@ -145,9 +147,10 @@ int _main(int argc, char *argv[])
    
    //buffer management signals
    //inpt connections
-   sc_signal<bool>     signal_buffer_management_pixel_in_valid;
-   sc_signal<uint16_t>     signal_buffer_management_dx_in;
-   sc_signal<uint16_t>     signal_buffer_management_dy_in;
+   sc_signal<bool>     signal_buffer_management_pixel_in_x_valid;
+   sc_signal<bool>     signal_buffer_management_pixel_in_y_valid;
+   sc_signal<unsigned short>     signal_buffer_management_dx_in;
+   sc_signal<unsigned short>     signal_buffer_management_dy_in;
    sc_signal<unsigned char>     signal_buffer_management_x;
    sc_signal<unsigned char>     signal_buffer_management_y;
    //output conncetions
@@ -156,6 +159,9 @@ int _main(int argc, char *argv[])
    sc_signal<unsigned char>     signal_buffer_management_pixel_out_2;
    sc_signal<unsigned char>     signal_buffer_management_pixel_out_3;
    sc_signal<bool>     signal_buffer_management_tile_ready;
+   sc_signal<bool>     signal_buffer_management_tile_done_x;
+   sc_signal<bool>     signal_buffer_management_tile_done_y;
+   sc_signal<bool>     signal_buffer_management_go_incremental;
    sc_signal<bool>     signal_buffer_management_pixel_out_valid;
    sc_signal<unsigned char>     signal_buffer_management_dx_out;
    sc_signal<unsigned char>     signal_buffer_management_dy_out;
@@ -183,6 +189,8 @@ int _main(int argc, char *argv[])
     soclib::caba::WbSignal<wb_param> signal_wb_interpolator_out("signal_wb_interpolator_out");
     soclib::caba::WbSignal<wb_param> signal_wb_buffer_management("signal_wb_buffer_management_out");
     soclib::caba::WbSignal<wb_param> signal_wb_buffer_management_reg("signal_wb_buffer_management_out_reg ");
+    soclib::caba::WbSignal<wb_param> signal_wb_incremental_reg("signal_wb_incremental_x_reg");
+    soclib::caba::WbSignal<wb_param> signal_wb_incremental_y_reg("signal_wb_incremental_y_reg");
     
     soclib::caba::WbSignal<wb_param> signal_wb_interpolator_out_reg("signal_wb_video_out_reg");
     // irq from uart
@@ -219,7 +227,7 @@ int _main(int argc, char *argv[])
     soclib::caba::VciMultiTty<vci_param> vcitty("vcitty",	IntTab(2), maptab, "tty.log", NULL);
     //5 Masters: video_in, video_out, processor, interpolator_out,buffer management
     //7 slaves, ram, rom, tty, video_in_ram target register, video_out_source register,interpolator out,buffer management
-    soclib::caba::WbInterco<wb_param> wbinterco("wbinterco",maptab, 5,7);
+    soclib::caba::WbInterco<wb_param> wbinterco("wbinterco",maptab, 5,9);
 
     //Video Gen creation and instantiation
     
@@ -325,7 +333,8 @@ int _main(int argc, char *argv[])
 	//inputs
 	buffer_management.p_clk_100mhz(signal_clk);
 	buffer_management.p_resetn(signal_resetn);
-	buffer_management.pixel_in_valid(signal_buffer_management_pixel_in_valid);
+	buffer_management.pixel_in_valid_x(signal_buffer_management_pixel_in_x_valid);
+	buffer_management.pixel_in_valid_y(signal_buffer_management_pixel_in_y_valid);
 	buffer_management.dx_in(signal_buffer_management_dx_in);
 	buffer_management.dy_in(signal_buffer_management_dy_in);
 	buffer_management.x(signal_buffer_management_x);
@@ -336,6 +345,8 @@ int _main(int argc, char *argv[])
 	buffer_management.pixel_out_2(signal_buffer_management_pixel_out_2);
 	buffer_management.pixel_out_3(signal_buffer_management_pixel_out_3);
 	buffer_management.tile_ready(signal_buffer_management_tile_ready);
+	buffer_management.tile_done_x(signal_buffer_management_tile_done_x);
+	buffer_management.tile_done_y(signal_buffer_management_tile_done_y);
 	buffer_management.pixel_out_valid(signal_buffer_management_pixel_out_valid);
 	buffer_management.dx_out(signal_buffer_management_dx_out);
 	buffer_management.dy_out(signal_buffer_management_dy_out);
@@ -345,6 +356,7 @@ int _main(int argc, char *argv[])
         buffer_management.reg0.p_resetn(signal_resetn);
         buffer_management.reg0.p_wb(signal_wb_buffer_management_reg);
 //Buffer management vector generator
+#if 0
 soclib::caba::testbuffermanagement test_buffer_management("test_buffer_management");
         test_buffer_management.p_resetn(signal_resetn);
         test_buffer_management.p_clk_100mhz(signal_clk);
@@ -353,10 +365,34 @@ soclib::caba::testbuffermanagement test_buffer_management("test_buffer_managemen
 	test_buffer_management.dy(signal_buffer_management_dy_in);
 	test_buffer_management.x(signal_buffer_management_x);
 	test_buffer_management.y(signal_buffer_management_y);
-
+#endif
 //Incr calc module instanciation
 
-soclib::caba::IncrCalc <wb_param>    incrcalc  ("incrcalc");
+soclib::caba::IncrCalc <wb_param>    incrcalc_x  ("incrcalc_x");
+incrcalc_x.clk(signal_clk);
+incrcalc_x.reset_n(signal_resetn);
+incrcalc_x.start(signal_buffer_management_tile_ready);
+incrcalc_x.en(signal_buffer_management_go_incremental);
+incrcalc_x.o_valid(signal_buffer_management_pixel_in_x_valid);
+incrcalc_x.o_finished(signal_buffer_management_tile_done_x);
+incrcalc_x.x(signal_buffer_management_x);
+incrcalc_x.dx(signal_buffer_management_dx_in);
+incrcalc_x.reg.p_wb(signal_wb_incremental_reg);
+incrcalc_x.reg.p_clk(signal_clk);
+incrcalc_x.reg.p_resetn(signal_resetn);
+
+soclib::caba::IncrCalc <wb_param>    incrcalc_y  ("incrcalc_y");
+incrcalc_y.clk(signal_clk);
+incrcalc_y.reset_n(signal_resetn);
+incrcalc_y.start(signal_buffer_management_tile_ready);
+incrcalc_y.en(signal_buffer_management_go_incremental);
+incrcalc_y.o_valid(signal_buffer_management_pixel_in_y_valid);
+incrcalc_y.o_finished(signal_buffer_management_tile_done_y);
+incrcalc_y.x(signal_buffer_management_y);
+incrcalc_y.dx(signal_buffer_management_dy_in);
+incrcalc_y.reg.p_wb(signal_wb_incremental_y_reg);
+incrcalc_y.reg.p_clk(signal_clk);
+incrcalc_y.reg.p_resetn(signal_resetn);
 
 
 //test register instantiation
@@ -407,6 +443,8 @@ soclib::caba::IncrCalc <wb_param>    incrcalc  ("incrcalc");
     wbinterco.p_to_slave[4](signal_wb_video_out_reg);
     wbinterco.p_to_slave[5](signal_wb_interpolator_out_reg);
     wbinterco.p_to_slave[6](signal_wb_buffer_management_reg);
+    wbinterco.p_to_slave[7](signal_wb_incremental_reg);
+    wbinterco.p_to_slave[8](signal_wb_incremental_y_reg);
     wbinterco.p_from_master[1](signal_wb_mastermodule);
     wbinterco.p_from_master[2](signal_wb_video_out_mastermodule);
     wbinterco.p_from_master[3](signal_wb_interpolator_out);

@@ -57,6 +57,8 @@
 #define  COPROC_BASE    0xF0000000
 #define  COPROC_SIZE    0X00000128
 
+#define  COPROC_BASE_Y    0xF0000132
+
 //defining data write mem
 #define WB_TARGET    0xB0000000
 
