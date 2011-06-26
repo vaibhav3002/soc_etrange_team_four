@@ -8,6 +8,8 @@ Module('caba:incr_calc',
         ports = [
         ],
         uses = [
+        Uses('caba:wb_slave_module'),
+        Uses('caba:wb_slave_reg_coproc'),
         ],
 #        debug = True ,
       )

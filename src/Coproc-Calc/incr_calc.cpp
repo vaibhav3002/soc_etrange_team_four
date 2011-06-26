@@ -1,17 +1,19 @@
 #include <cstdio>
 #include "incr_calc.h"
 
+#define tmpl(x) template<typename wb_param> x IncrCalc<wb_param>
+
 namespace soclib { namespace caba {
 
 	// le constructeur 
-	IncrCalc::IncrCalc(sc_core::sc_module_name insname):
+	tmpl(/**/)::IncrCalc(sc_core::sc_module_name insname):
 	    sc_core::sc_module(insname)
 	{
 	    SC_THREAD(calc);
 	    sensitive << clk.pos();
 	}
 
-	void IncrCalc::calc()
+	tmpl(void)::calc()
 	{
 	    while(1)
 	    {

@@ -18,7 +18,7 @@
 
 #include <iostream>
 #include <systemc>
-#include "wb_slave.h"
+#include <wb_slave.h>
 
 
 namespace soclib { namespace caba {

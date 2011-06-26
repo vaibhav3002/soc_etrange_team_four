@@ -4,14 +4,16 @@
 #define IMAGE_WIDTH 640
 #define NO_TILES 1200
 
-//#include "systemc.h"
+#include <systemc.h>
 #include "mfixed2.h"
+#include "wb_slave_reg_coproc.h"
 
 using namespace sc_core;
 using namespace std;
 
 namespace soclib { namespace caba {
 
+    template<typename wb_param>
     class IncrCalc
         :sc_module {
 
@@ -60,7 +62,7 @@ namespace soclib { namespace caba {
 
 		sc_signal<mfixed> q3;
 
-
+      WbSlaveRegModule <wb_param> reg;
 		mfixed r0;  //constante
 		sc_signal<mfixed> r1;
 		sc_signal<mfixed> r2;
