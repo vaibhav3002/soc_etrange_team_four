@@ -30,9 +30,13 @@ They also have a slave interface, for they are the LM32's slaves. The LM32 reall
 This slave interface the video stream modules have allows the LM32 to access and configure them via the bus, using \emph{configuration registers}.
 These configuration registers and their implementation will be described later in this document.
 
+As we explained, the LM32 initiates the requests that will configure all the peripherals. However, one could also notice the interrupt lines connected from the video stream modules to the LM32. The video processing modules will use these lines in order to notify the LM32 when a operation was completed successfully, and let it know that the video processing module now requires new instructions.
+
+This process will be described later in details.
+
 \begin{figure}[h]
 	\center
-	\includegraphics[width=15cm]{figs/overall_arch.pdf}
+	\includegraphics[width=11cm]{figs/overall_arch.pdf}
 
 	\caption{Overall Architecture}
 	\label{archi}
