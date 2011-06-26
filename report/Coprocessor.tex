@@ -35,3 +35,29 @@ To test the operation of the incremental calculation module, we have written a d
 
 The configuration is transmitted to the module using a wishbone slave including multiple registers.
 The coefficient slave has 20 internal registers to buffer the values calculated by the LM32 (10 for the x and 10 for the y coordinates) until they are accessed by the incremental calculation module. The size of the registers is 640 bits, since data is stored in 32 bits. The data format is uint32\_t due to inheritance from the wishbone slave module, which are, however, interpreted as mfixed values once they are loaded by the incremental calculation module. The module uses two internal registers: If 20 coefficients have been written, the ready signal is set high. This indicates the coprocessor that it can load these and start its calculations. In any case, all 20 coefficients must be set in a burst, i.e. writing to one register will set the ready signal down automatically until all 20 coefficients have been written. Nevertheless, no effort has been made to verify that 20 different registers have been written to and the responsibility lies with the LM32. Similarly, the internal loaded register indicates if 20 reads have been performed. The objective is to inform the LM32 if the coefficients have been loaded by the coprocessor and can thus be overwritten by new ones.
+
+\subsection{Interpolator}
+This module consists of a single thread (\texttt{interpolate}) which is responsible for the bilinear interpolation of the fictional pixel. 
+
+On the rising edge of the system clock, and when the input pixels(\texttt{pixel\_0, pixel\_1, pixel\_2, pixel\_3, dx, dy}) are declared as valid (\texttt{pixel\_in\_valid}), the interpolated value is outputted (\texttt{pixel\_out}) along with a signal that defines it's value as valid (\texttt{pixel\_out\_valid}). 
+This operation is performed at the rate of 100MHz.  
+
+
+An alternative implementation that was considered and tested was that of a module that accumulates partial results of the interpolation and creates an outputs pixel at the rate of 25MHz. This architecture is quite convenient since it only requires one inputed pixel at each rising edge of the clock. This fact could lead to a less costly and compact design of the coprocessor.  
+
+\subsection{Interpolator output module}
+The interpolator out module consists of two threads. 
+
+The \texttt{process\_write\_buffer()} thread is responsible of acquiring pixels inputed by the interpolator and storing them in to the local buffer. Pixels inputed to the module ( pixel\_in) are stored if the corresponding valid signal is true (\texttt{pixel\_valid}). The \texttt{process\_load\_buffer\_to\_ram()} thread is responsible of storing the locally stored pixels into the RAM. This is done in a tile by tile fashion. The ram memory address in which the image should be saved is stored in a register attached to the wishbone bus and therefore controlled by the processor. 
+
+The \texttt{process\_load\_buffer\_to\_ram} module consults the contents of this register once it has finished sending a complete image.
+
+\subsection{Buffer management}
+
+The \texttt{buffer\_management} module is responsible of loading the local co-processor buffer in a tile by tile fashion and performing the pixel-address to pixel value transformation. The size of the buffer is equal to 2 tiles. At each instant, one part of the buffer is used as a look-up table while the other part is used as storage place for the pre-fetching of the next tile. 
+
+The process \texttt{load\_buffer\_from\_ram} pre-fetches tiles  to be "looked-up"..The address of the tile to be pref etched is stored in a register attached to the wishbone bus, therefore the processor (LM32) controls the contents of this register. Once the next tile to be "looked-up" has been fetched, this thread consults the contents of the register and waits till the current  lookup procedure has finished. 
+
+The  \texttt{process\_lookup\_pixel\_intensity}  processor performs the lookup function. Once a tile has been looked up an interrupt is raised notifying therefore the processor. The processor should respond to this interrupt by providing the address of the next tile to be pref etched. 
+
+The \texttt{process\_lookup\_pixel\_intensity} process is not allowed to lookup the next tile, unless that tile has been loaded. In this case the incremental calculation module is halted by setting the \texttt{go\_incremental} signal to false.  
