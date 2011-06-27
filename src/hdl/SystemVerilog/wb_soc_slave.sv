@@ -1,3 +1,21 @@
+/*
+ * =============================================================================
+ *
+ *       Filename:  wb_soc_slave.sv
+ *
+ *    Description:  Generic Slave Register - Type WB slave
+ *                  This module provides a generic slave capability with 
+ *                  registers and interrupt handling
+ *
+ *         Author:  Vaibhav Singh vsingh@telecom-paristech.fr
+ *         Credits: Tarik Graba 
+ *         Note:    Part of the source code is taken from wb_slave_module.sv
+ *		    used in hello world co-simulation example
+ *        Company:  Telecom Paris TECH
+ *
+ * =============================================================================
+ */
+
 module wb_soc_slave (
 		input  p_clk,
 		input  p_resetn,
@@ -56,7 +74,7 @@ module wb_soc_slave (
 		       $display ("SLAVE received Write REQ 0x%08X @cycle %d",p_wb_DAT_I,cycle);
 		       //pragma translate_on
 		       module_register <= p_wb_DAT_I;
-		       initialized <= 1'b1;
+		       initialized <= 1'b1; // this signifies the top module that the first write has occured
 		       irq <= 1'b0;		
 			   written <= 1'b1;
 		    end

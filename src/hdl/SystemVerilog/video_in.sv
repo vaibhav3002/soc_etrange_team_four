@@ -186,7 +186,7 @@ module video_in
 				waitForValidFrame:
 					if(frame_valid)	
 					begin
-						new_image <= 1'b1;
+						new_image <= 1'b1; // Signals the other block to start loading pixels in fifo
 						video_in_state <= waitForBufferToBeFilled;
 					end
 

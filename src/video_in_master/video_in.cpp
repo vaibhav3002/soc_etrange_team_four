@@ -7,8 +7,8 @@
  *                  This module takes the pixels from video generator and stores 
  * 					on to ram.
  *
- *         Author:  Vaibhav Singh
- *         			Theodoros Theodoropoulos
+ *         Author:  Theodoros Theodoropoulos
+ *         			Vaibhav Singh
  *					Thibault Porteboeuf
  *        Company:  Telecom Paris TECH
  *

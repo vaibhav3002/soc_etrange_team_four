@@ -3,11 +3,11 @@
  *
  *       Filename:  wb_master_module.sv
  *
- *    Description:  generic wb module
+ *    Description:  generic wb master module (non-synthesizable)
  *
  *         Author:  Vaibhav Singh, vsingh@telecom-paristech.fr
  *        Company:  Telecom Paris TECH
- *
+ *	  Note:	    This module can be used in a Wishbone master test bench
  * =============================================================================
  */
 
