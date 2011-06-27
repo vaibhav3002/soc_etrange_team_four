@@ -50,8 +50,38 @@ The functionality of the module can be enabled/disabled via the \texttt{enable} 
 
 The module outputs both the x- and y-coordinates by the means of two processes running in parallel (\texttt{$calc_x$} and \texttt{$calc_y$}). In the slave module, the y-coordinates are stored with an address offset of 40, and two separate sets of internal registers are allocated. Therefore, no conflicts can occur.
 
-To test the operation of the incremental calculation module, we have written a dedicated test-bench in SystemC which uses a formula to calculate the output x-coordinate directly for a given x and y output coordinates and coefficients. We initialised the Coprocessor thanks to a function which calculated the coefficients to be used by the incremental calculation module. This already allowed us to verify the functionality of the formulas using the mfixed type, which is going to be used by the LM32 for its coefficient calculations as well. It was sufficient to test the x-coordinate only since both the x and y coordinate follow the same principle. In particular, we used it to verify that the error between expected and observed value was not greater than 3\%; a value we judged acceptable. Errors are introduced due to the incremental calculation formula itself as well as the truncation in the mfixed format.
-
+To test the operation of the incremental calculation module, we have written a dedicated test-bench in SystemC which uses a formula to calculate the output x-coordinate directly for a given x and y output coordinates and coefficients.
+We initialised the Coprocessor thanks to a function which calculated the coefficients to be used by the incremental calculation module. 
+This already allowed us to verify the functionality of the formulas using the mfixed type, which is going to be used by the LM32 for its coefficient calculations as well.
+It was sufficient to test the x-coordinate only since both the x and y coordinate follow the same principle. To being with, we verified the functionality for 'simple transformations', i.e. those based on digit coordinates only. No errors were found for this configuration. In the following, we tested more complex transformations, up to an order of 3. In particular, we checked the coefficients given on the SEN website (given in table \ref{coeff}). For these, we verified that the error between expected and observed value was not greater than 3\%; a value we judged acceptable. We found this value by changing the comparison value and saving the value which returns no errors. Errors are introduced due to the incremental calculation formula itself as well as the truncation in the mfixed format. Similar results were obtained for similar transformations of the same order.
+\begin{figure}[H]
+\center
+\begin{tabular}{lcr}
+&	&	\\
+$a_{30}$ &=& $2^{-15}$ \\
+$a_{21}$ &=& $0$ \\
+$a_{12}$ &=& $2^{-15}$ \\
+$a_{03}$ &=& $0$ \\
+$a_{20}$ &=& $-3\times2^{-8}$ \\
+$a_{11}$ &=& $-2^{-7}$ \\
+$a_{02}$ &=& $-2^{-8}$ \\
+$a_{10}$ &=& $2$ \\
+$a_{01}$ &=& $1$ \\
+$a_{00}$ &=& $0$ \\
+$b_{30}$ &=& $0$ \\
+$b_{21}$ &=& $2^{-15}$ \\
+$b_{12}$ &=& $0$ \\
+$b_{03}$ &=& $2^{-15}$ \\
+$b_{20}$ &=& $-2^{-8}$ \\
+$b_{11}$ &=& $-2^{-7}$ \\
+$b_{02}$ &=& $-3\times 2^{-8}$ \\
+$b_{10}$ &=& $1$ \\
+$b_{01}$ &=& $2$ \\
+$b_{00}$ &=& $0$ \\
+\end{tabular}
+\caption{Test bench initialization coefficients}
+\label{coeff}
+\end{figure}
 \subsubsection{Module's configuration: multiple register slave}
 
 
