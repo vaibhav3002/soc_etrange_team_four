@@ -13,7 +13,7 @@ This section regroups all the information detailed in the previous chapters. It 
 
 \begin{enumerate}
 
-\item At the start of the system, video generator takes images stored on the disk and starts sending it to \texttt{video\_in} pixel by pixel. The objective of \texttt{video\_in} is to store these pixels on to the ram with the start address specified by LM32. However, at this point \texttt{video\_in} does not have a start address, so it remains Idle until the LM32 performs a write request to videoin's embedded slave.
+\item At the start of the system, video generator takes images stored on the disk and starts sending it to \texttt{video\_in} pixel by pixel. The objective of \texttt{video\_in} is to store these pixels on to the ram with the start address specified by LM32. However, at this point \texttt{video\_in} does not have a start address, so it remains Idle until the LM32 performs a write request to \texttt{video\_in}'s embedded slave.
 
 \item After the start address has been written, \texttt{video\_in} waits for a raising edge event of the \texttt{frame\_valid} signal. This will trigger an update of \texttt{video\_in}'s configuration, and will start the video stream transfer.
 
