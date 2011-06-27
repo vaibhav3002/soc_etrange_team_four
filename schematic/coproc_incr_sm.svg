@@ -9,8 +9,8 @@
    xmlns="http://www.w3.org/2000/svg"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   width="921.29626"
-   height="554.29327"
+   width="820.57458"
+   height="545.11804"
    id="svg2"
    version="1.1"
    inkscape:version="0.48.1 r9760"
@@ -137,9 +137,9 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="0.9899495"
-     inkscape:cx="352.82128"
-     inkscape:cy="256.46053"
+     inkscape:zoom="0.49497475"
+     inkscape:cx="637.31458"
+     inkscape:cy="13.887431"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
@@ -170,7 +170,7 @@
      inkscape:label="Calque 1"
      inkscape:groupmode="layer"
      id="layer1"
-     transform="translate(43.6413,20.043425)">
+     transform="translate(-57.08037,20.043425)">
     <path
        sodipodi:type="arc"
        style="fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:3;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
@@ -261,33 +261,6 @@
          y="418.76022"
          style="font-size:32px">Calculate</tspan></text>
     <path
-       sodipodi:type="arc"
-       style="fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:3;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
-       id="path2985-4-2"
-       sodipodi:cx="294.28571"
-       sodipodi:cy="63.076469"
-       sodipodi:rx="112.85714"
-       sodipodi:ry="45.714283"
-       d="m 407.14285,63.076469 c 0,25.247302 -50.52787,45.714281 -112.85714,45.714281 -62.32928,0 -112.85714,-20.466979 -112.85714,-45.714281 0,-25.247301 50.52786,-45.714283 112.85714,-45.714283 62.32927,0 112.85714,20.466982 112.85714,45.714283 z"
-       transform="translate(-223.5788,383.54092)" />
-    <text
-       xml:space="preserve"
-       style="font-size:40px;font-style:normal;font-weight:normal;text-align:center;line-height:125%;letter-spacing:0px;word-spacing:0px;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
-       x="71.552345"
-       y="434.47455"
-       id="text3755-2-6"
-       sodipodi:linespacing="125%"><tspan
-         sodipodi:role="line"
-         x="76.646095"
-         y="434.47455"
-         id="tspan3024-2"
-         style="font-size:32px">Output </tspan><tspan
-         sodipodi:role="line"
-         x="71.552345"
-         y="474.47455"
-         style="font-size:32px"
-         id="tspan3132">the result</tspan></text>
-    <path
        style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-end:url(#Arrow2Lend-8-9-3)"
        d="m 269.28571,138.5227 c 82.14286,0.71429 101.78137,11.49165 141.87673,43.715"
        id="path3138"
@@ -303,15 +276,8 @@
        sodipodi:nodetypes="cc" />
     <path
        style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-end:url(#Arrow2Lend-8-9-3)"
-       d="m 635.73005,480.24188 c -43.57143,74.28571 -318.76576,75.95939 -480.90862,20.2451"
+       d="M 635.73005,480.24188 C 597.87291,597.38473 147.46171,627.21864 156.84174,187.33969"
        id="path4330"
-       inkscape:connector-curvature="0"
-       transform="translate(16.421196,-30.47674)"
-       sodipodi:nodetypes="cc" />
-    <path
-       style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-end:url(#Arrow2Lend-8-9-3)"
-       d="m 56.568543,431.92442 c 0,-89.50237 11.616758,-151.52288 48.992407,-250.51783"
-       id="path4524"
        inkscape:connector-curvature="0"
        transform="translate(16.421196,-30.47674)"
        sodipodi:nodetypes="cc" />
@@ -342,14 +308,14 @@
     <text
        xml:space="preserve"
        style="font-size:40px;font-style:normal;font-weight:normal;text-align:center;line-height:125%;letter-spacing:0px;word-spacing:0px;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
-       x="410.49841"
-       y="530.00476"
+       x="275.64304"
+       y="516.36768"
        id="text4681-7-4-6"
        sodipodi:linespacing="125%"><tspan
          sodipodi:role="line"
          id="tspan4683-4-4-8"
-         x="410.49841"
-         y="530.00476"
+         x="275.64304"
+         y="516.36768"
          style="font-size:18px;text-align:center;text-anchor:middle">tile_finished</tspan></text>
     <path
        style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-start:none;marker-end:url(#Arrow2Lend-8-9)"

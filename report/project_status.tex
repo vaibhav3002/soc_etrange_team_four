@@ -16,6 +16,8 @@ Co-Processor has buffer management, incremental and interpolator in SystemC. All
 \subsection{LM32}
 LM32 has implemented interrupt handlers for VideoIn and VideoOut. It also has Coefficient initialization functions for the coprocessor. Code which remains involves writing of the coefficients on Co-Processor's slave registers.
 
+We also added another feature in the LM32. It is able to integrate a logo in a frame before outputting the address to VideoOut. This way, the logo will be displayed on every frame, as shown on the cover's picture.
+
 \subsection{Conclusion}
 Integration and testing of Co-processor in SystemC and then it eventual conversion in System Verilog remains. At start, 3 out of 4 members started with video in and video out code in systemC just to get the feel of the system. In hindsight, we would have liked to start the code of Co-Processor from the day one, which would have granted us with sufficient time to finish the development.
 
