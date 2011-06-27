@@ -13,6 +13,7 @@
 \documentclass[a4paper,10pt]{article}
 \usepackage[latin1]{inputenc}
 \usepackage[T1]{fontenc}
+\usepackage{lmodern}
 \usepackage{graphicx}
 \usepackage{stmaryrd}
 %\usepackage{fullpage}
@@ -32,8 +33,17 @@ Theodoropoulos \and Adrian Schindler}
 \date{June 2011}
 \maketitle
 
+\vfill
+\begin{center}
+\includegraphics[width=11cm]{figs/wallace.pdf}
+\end{center}
+\vfill
+
+\newpage
+
 \tableofcontents
 
+\newpage
 \section{Introduction} 
 
 This report presents the current state of our project "Etrange". This project is part of the System on Chip course at Telecom Paristech.
@@ -47,15 +57,15 @@ Finally, we will conclude by describing the project's status.
 
 \paragraph{The "Etrange" project}
 ~\\~
-The purpose of this project is to create a video processing system on chip, starting from a simulation written in systemC, comprising a LM32 microprocessor, memory, and c++ classes that handle reading a png image and converting it to video signals, and reading video signals and displaying the result on a graphic user interface.
+The purpose of this project is to create a video processing system on chip, starting from a simulation written in systemC, comprising a LM32 microprocessor, memory, and c++ classes, one that handle reading png images and converting them to video signals, and the other one that reads video signals and displays the result on a graphic user interface.
 
-The first task of thi project is to write systemC modules, one that will handle the input video signal and pass the information to the other modules, another that will read information and generate video signals, and finally, a systemC module applying ponlynomial transformations on the stream.
+The first task of this project is to write systemC modules, one that will handle the input video signal and pass the information to the other modules, another that will read information and generate video signals, and finally, a systemC module applying polynomial transformations on the stream.
 
 The project aims at combining this modules into a real time video processing system, capable of applying polynomial transformations on the fly.
 
-Last but not least, the project aims at producing the different modules in Verilog, in order for them to be synthetizable. The behavior of these translated modules has to be tested using co-simulation.
+Last but not least, the project aims at producing the different modules in Verilog, in order for them to be synthesizable. The behavior of these translated modules has to be tested using co-simulation.
 
-An additionnal objective is that the modules must be as flexible as possible. The more flexible each module is, and the easier it can be used in other systems and adapted to other needs.
+An additional objective is that the modules must be as flexible as possible. The more flexible each module is, and the easier it can be used in other systems and adapted to other needs.
 
 \include{Architecture}
 \include{SlaveModule}

@@ -10,8 +10,6 @@ makebib=no
 
 $(TARGET).pdf : $(TEX) $(FIGS)
 	@pdflatex $(TARGET).tex
-	@evince $(TARGET).pdf
-
 ifeq ($(makebib),yes)
 	@bibtex   $(TARGET).aux
 endif

@@ -46,7 +46,7 @@ As we previously stated, the LM32 will configure the peripherals by writing conf
 These configuration values will be stored in internal configuration registers.
 
 Therefore, we created slave modules that inherit the previously defined generic slave.
-In addition to the generic slave module's internal components, these inheriting slave modules comprise one registers or more.
-They have overloaded \texttt{slave\_read()} and \texttt{slave\_write()} which allows to transfer a write request's content to the register, as well as the register's content as an answer to a read request.
+In addition to the generic slave module's internal components, these inheriting slave modules comprise one register or more.
+They have overloaded \texttt{slave\_read()} and \texttt{slave\_write()} methods which allows to transfer a write request's content to the register, as well as the register's content as an answer to a read request.
 
 The following sections will describe the video stream modules, and how they put these slave interfaces to good use.

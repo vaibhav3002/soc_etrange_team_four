@@ -3,41 +3,64 @@
 %					-----------						%
 %													%
 % Author: Theodoros Theodoropoulos&Adrian Schindler	%
-% 		  Thibault Porteboeuf (schematics)			%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \section{Mode of operation}
 
+This section regroups all the information detailed in the previous chapters. It summarizes the system on chip's overall mode of operation, and gives some performance details.
+
+\subsection{Summarized mode of operation}
+
 \begin{enumerate}
 
-\item At the start of the system, video generator takes images stored on the disk and starts sending it to video\_in pixel by pixel. The objective of video\_in is to store these pixels on to the ram with the start address specified by LM32. However, at this point video\_in does not have a start address, so it remains Idle until the LM32 performs a write request to videoin's embedded slave.
+\item At the start of the system, video generator takes images stored on the disk and starts sending it to \texttt{video\_in} pixel by pixel. The objective of \texttt{video\_in} is to store these pixels on to the ram with the start address specified by LM32. However, at this point \texttt{video\_in} does not have a start address, so it remains Idle until the LM32 performs a write request to videoin's embedded slave.
 
-\item After the start address has been written, video\_in waits for a raising edge event of the frame\_valid signal. This will trigger an update of video\_in's configuration, and will start the video stream transfer.
+\item After the start address has been written, \texttt{video\_in} waits for a raising edge event of the \texttt{frame\_valid} signal. This will trigger an update of \texttt{video\_in}'s configuration, and will start the video stream transfer.
 
-\item There are two blocks in video\_in. The first one samples the 25Mhz clock (Pixel\_in - interfaced with video\_gen) in order to be synchronized with video\_gen. The second one runs at 100Mhz and is responsible for bus transfers. Once the Pixel-in is given the start signal (which is set only after the first time LM32 has written the destination address), it takes pixels from video\_gen and stores them on to buffer in real time.
-Note:- The buffer used here is an array of registers with widow size as 64 bytes. Block size is the number of pixels bytes that will be stored on to the ram as a part of block write. It is 32.
+\item There are two blocks in \texttt{video\_in}. The first one samples the 25Mhz clock (\texttt{Pixel\_in} - interfaced with \texttt{video\_gen}) in order to be synchronized with \texttt{video\_gen}. The second one runs at 100Mhz and is responsible for bus transfers. Once the \texttt{Pixel-in} is given the start signal (which is set only after the first time LM32 has written the destination address), it takes pixels from \texttt{video\_gen} and stores them on to buffer in real time.
+Note:- The buffer used here is an array of registers with widow size as 64 bytes. Block size is the number of pixels bytes that will be stored on to the ram as a part of block write. It is here equal to 32.
 
-\item The Pixel\_in block signals the Ram\_out block once it has stored one block of pixels on to the buffer by using the internal go signal. The Ram\_out block will then do a block write of the buffer over the wishbone bus to the ram, and acknowledges the Pixel\_in block using the go\_ack signal
+\item The \texttt{Pixel\_in} block signals the \texttt{Ram\_out} block once it has stored one block of pixels on to the buffer by using the internal \texttt{go} signal. The \texttt{Ram\_out} block will then do a block write of the buffer over the wishbone bus to the ram, and acknowledges the \texttt{Pixel\_in} block using the \texttt{go\_ack} signal
 
-\item At the end of the image, the video in module requires a new destination address. Thus, it raises an interrupt on the LM32, which will reply by writing the new configuration to the internal slave. Here again, the configuration is updated at the raising edge of frame valid, so the new address must be transmitted to video\_in between the end of the old frame, and the beginning of the new frame. If this timing is not respected, the old configuration will be used and the older image overwritten. Since the SOC only stores two images, the LM32 sends two different address alternatively.
+\item At the end of the image, the \texttt{video\_in} module requires a new destination address. Thus, it raises an interrupt on the LM32, which will reply by writing the new configuration to the internal slave. Here again, the configuration is updated at the raising edge of frame valid, so the new address must be transmitted to \texttt{video\_in} between the end of the old frame, and the beginning of the new frame. If this timing is not respected, the old configuration will be used and the older image overwritten. Since the SOC only stores two images, the LM32 sends two different addresses alternatively.
 
-\item The LM32 gives the tile antecedent's address to the coproc. Once buffer\_management has raised an interrupt, it responds with the address of the next tile to be pre-fetched. Both processes run in parallel. Buffer\_management reads the internal register image\_ready and loads the pixels into an internal buffer.
+\item The LM32 gives the tile antecedent's address to the coprocessor. Once \texttt{buffer\_management} has raised an interrupt, it responds with the address of the next tile to be pre-fetched. Both processes run in parallel. \texttt{Buffer\_management} reads the internal register \texttt{image\_ready} and loads the pixels into an internal buffer.
 
 \item LM32 also writes the initializations of the variables (s0, s1, ...)  to another slave, with separate addresses for the coefficients of the x and y coordinates. The slave indicates that the initializations are complete by a ready signal (after 40 writes) Similarly, if the coprocessor has read 40 values, the loaded signal indicates this.
 Incremental realizes that the load signal is high and loads the register values into internal registers and starts outputting the calculated source coordinates which are then read by the interpolation module.
 
-\item When buffer\_management has loaded the tile, it sets a public register tile\_ready high to indicate the Incremental to start calculating.
-Buffer\_Management generates Tile\_IRQ to LM32, to start loading the next tile (restarts at 3). 
+\item When \texttt{buffer\_management} has loaded the tile, it sets a public register \texttt{tile\_ready} high to indicate the Incremental to start calculating.
+\texttt{Buffer\_Management} generates \texttt{Tile\_IRQ} to notify the LM32, and to start loading the next tile (restarts at 3). 
 It keeps two buffers: the currently read one and the next one which is pre-loaded for the next 	tile.
 
-\item Once the tile\_ready signal is high, Coproc starts calculating the transformation with outputs x, y, dx and dy. There is one pixel output for every clock cycle (100 MHz). It should be mentioned that the incremental computation can be switched on and off by the en (enable signal) when for instance the next tile hasn't been prefetched yet. This signal is provided by the buffer management module.
-One pixel is sent to buffer\_management which also sends one pixel per clock cycle (no latency because the tile has been stored previously into an internal register) to the Interpolation which always takes 1 clock cycle also.
+\item Once the \texttt{tile\_ready} signal is high, the coprocessor's incremental module starts calculating the transformation with outputs x, y, dx and dy. There is one pixel output for every clock cycle (100 MHz). It should be mentioned that the incremental computation can be switched on and off by the en (enable signal) when for instance the next tile hasn't been pre-fetched yet. This signal is provided by the buffer management module.
+One pixel is sent to \texttt{buffer\_management} which also sends one pixel per clock cycle (no latency because the tile has been stored previously into an internal register) to the Interpolation which always takes 1 clock cycle also.
 Since the coprocessor only works on a tile-by-tile basis, it outputs a finished signal after 16x16 pixels to show that the calculation has finished.
 
-\item Incremental\_Out runs at 100 MHz and contains the calculated pixel values which are output to video\_out. These pixels are sent in a tile by tile fashion to the Ram through the wishbone bus. The base address of the of the image to be sent to Ram is stored in register connected to the wishbone bus and controlled by the processor. It's value is read when a whole image has been sent to Ram. 
+\item \texttt{Incremental\_Out} runs at 100 MHz and contains the calculated pixel values which are output to \texttt{video\_out}. These pixels are sent in a tile by tile fashion to the Ram through the wishbone bus. The base address of the of the image to be sent to Ram is stored in register connected to the wishbone bus and controlled by the processor. It's value is read when a whole image has been sent to Ram. 
 
-\item video\_out like video\_in has two blocks, one synchronized with the 25Mhz clock (Pixel\_out - interfaced with video display) and the other with the 100Mhz clock (Ram\_in-interfacing wishbone bus).
+\item \texttt{video\_out} like \texttt{video\_in} has two blocks, one synchronized with the 25Mhz clock (\texttt{Pixel\_out} - interfaced with video display) and the other with the 100Mhz clock (\texttt{Ram\_in}-interfacing wishbone bus).
 
-\item video\_out's behavior is similar to video\_in's behavior. It will remain idle until the LM32 gives it the first address to read, and then it will raise an interrupt at the end of every frame to ask for the next frame to read and display. It uses again a buffer to temporarily store pixels from the RAM and give them to video display in real time. 
+\item \texttt{video\_out}'s behavior is similar to \texttt{video\_in}'s behavior. It will remain idle until the LM32 gives it the first address to read, and then it will raise an interrupt at the end of every frame to ask for the next frame to read and display. It uses again a buffer to temporarily store pixels from the RAM and give them to video display in real time. 
 
 \end{enumerate}
+
+\subsection{Performance measurements}
+
+To evaluate our current design's performance, we performed the following measurements:
+\begin{itemize}
+\item Initial delay (Time after witch the first image starts to appear on the display) - 32.011ms
+\item Time required to write one block to the RAM (32 bytes) - 1150ns.
+This includes waiting for the fifo to be read.
+
+\item Standalone write time is 430ns.
+
+\item Time requires to read one block from RAM - 1280ns
+\item Standalone read time is 520ns
+
+\item Total time for 1 block - 1150+1280\=2430ns
+
+\item Thus, for 1 tile of 16x16 pixels 19440ns\=19.5us approximatively is required.
+
+
+\end{itemize}

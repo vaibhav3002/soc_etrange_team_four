@@ -14,8 +14,9 @@ Both the modules have been completed in SystemC and System Verilog and have been
 Co-Processor has buffer management, incremental and interpolator in SystemC. All 3 modules have been individually tested using a test bench. All these modules are connected. Testing needs to be done once the synchronisation with LM32 is completed, which means loading the tile address from the LM32 at a suitable timing. 
 
 \subsection{LM32}
-LM32 has interrupt mechanism,Co-Processor Initialisation and Coefficient Calculation for Co-Processor. Code which remains involves writing of the coefficients on Co-Processor's slave registers.
+LM32 has implemented interrupt handlers for VideoIn and VideoOut. It also has Coefficient initialization functions for the coprocessor. Code which remains involves writing of the coefficients on Co-Processor's slave registers.
 
-\subsection{conclusion}
-Integration and testing of Co-processor in SystemC and then it eventual conversion in System Verilog remains. At start, 3 out of 4 members started with video in and video out code in systemC just to get the feel of the system. In hindsight, we would have liked to start the code of Co-Processor from the day one.
+\subsection{Conclusion}
+Integration and testing of Co-processor in SystemC and then it eventual conversion in System Verilog remains. At start, 3 out of 4 members started with video in and video out code in systemC just to get the feel of the system. In hindsight, we would have liked to start the code of Co-Processor from the day one, which would have granted us with sufficient time to finish the development.
+
 
