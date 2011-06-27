@@ -1,3 +1,19 @@
+/*
+ * =============================================================================
+ *
+ *       Filename:  etrange.h
+ *
+ *    Description:  Implements initialization functions for the coprocessor
+ *
+ *	   Author:  Thibault Porteboeuf
+ *        Company:  Telecom Paris TECH
+ *
+ * =============================================================================
+ */
+
+
+
+
 #ifndef _ETRANGE_H
 #define _ETRANGE_H
 

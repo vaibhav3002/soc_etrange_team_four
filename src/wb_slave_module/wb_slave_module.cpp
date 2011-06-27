@@ -1,3 +1,20 @@
+/*
+ * =============================================================================
+ *
+ *       Filename:  wb_slave_module.cpp
+ *
+ *    Description:  generic wb slave module
+ *
+ *	   Author:  Thibault Porteboeuf
+ *         Credit:  Tarik Graba (TG), tarik.graba@telecom-paristech.fr
+ *        Company:  Telecom Paris TECH
+ *
+ * =============================================================================
+ */
+
+
+
+
 #include "wb_slave_module.h"
 
 namespace soclib { namespace caba {

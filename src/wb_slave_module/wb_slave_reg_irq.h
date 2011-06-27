@@ -1,3 +1,19 @@
+/*
+ * =============================================================================
+ *
+ *       Filename:  wb_slave_reg_irq.h
+ *
+ *    Description:  one register wishbone slave including irq wire
+ *
+ *	   Author:  Thibault Porteboeuf
+ *     Company:  Telecom Paris Tech
+ *
+ * =============================================================================
+ */
+
+
+
+
 #ifndef __SLAVE_REG_IRQ_WB__
 #define __SLAVE_REG_IRQ_WB__
 

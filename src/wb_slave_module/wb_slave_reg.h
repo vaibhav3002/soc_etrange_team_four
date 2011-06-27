@@ -1,3 +1,18 @@
+/*
+ * =============================================================================
+ *
+ *       Filename:  wb_slave_reg.h
+ *
+ *    Description:  one register wishbone slave
+ *
+ *	   Author:  Thibault Porteboeuf
+ *        Company:  Telecom Paris TECH
+ *
+ * =============================================================================
+ */
+
+
+
 #ifndef __SLAVE_REG_WB__
 #define __SLAVE_REG_WB__
 

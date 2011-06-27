@@ -7,7 +7,9 @@
  *                  This module takes the pixels stored on the ram and gives  
  * 					them to video display.
  *
- *         Author:  Ted
+ *         Author:  Vaibhav Singh
+ *         			Theodoros Theodoropoulos
+ *        			Thibault Porteboeuf
  *        Company:  Telecom Paris TECH
  *
  * =============================================================================

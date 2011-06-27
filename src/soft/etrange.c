@@ -1,3 +1,19 @@
+/*
+ * =============================================================================
+ *
+ *       Filename:  etrange.c
+ *
+ *    Description:  Implements initialization functions for the coprocessor
+ *
+ *	   Author:  Thibault Porteboeuf
+ *        Company:  Telecom Paris TECH
+ *
+ * =============================================================================
+ */
+
+
+
+
 #include "etrange.h"
 
 inline mfixed fx_mul(mfixed A, mfixed B);

@@ -24,6 +24,9 @@
  *         Nicolas Pouillon <nipo@ssji.net>, 2006-2007
  *
  * Maintainers: tarik.graba@telecom-paristech.fr
+ *
+ * Modified by: Thibault Porteboeuf
+ *
  */
 
 
@@ -79,14 +82,9 @@ void Videoin_IrqHandler() {
 		printf("VIDEO_IN IRQ ACK 0x%x\n",RAM_BASE+0x1100000);
 	}
 	if ((OldStatus>=0)&&(logo==1)) {
-//		unsigned long temp1,temp2;
+		//Copy the logo to the RAM
 		for (i=0; i<LOGO_H; i++) {
 			memcpy((void*) (last_addr+i*(640)),(void*) (&_binary___logo_telecom_pgm_start)+i*(LOGO_W),LOGO_W);
-/*			for (j=0; j<LOGO_W/4; j++) {
-				temp1 =*((&_binary___logo_telecom_pgm_start)+j+i*(LOGO_W/4));
-				temp2 =((temp1&0xFF)<<24) | ((temp1&0xFF00) <<8) | ((temp1 & 0xFF0000) >> 8) | ((temp1 & 0xFF000000) >> 24);
-				*((volatile unsigned long*) last_addr+i*(640/4)+j)=temp2;
-			}*/
 		}
 		
 	}
@@ -112,7 +110,6 @@ int main(void)
 	int j;
 	volatile int OldVideoInStatus = -1;
 	
-//        *((volatile unsigned long*) VIDEO_IN_REG) = 0x55555555;
 
 	for (j=0;j<10;j++) {
 		p3.a[j]=(mfixed) 0;
