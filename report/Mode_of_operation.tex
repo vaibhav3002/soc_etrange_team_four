@@ -47,7 +47,7 @@ Since the coprocessor only works on a tile-by-tile basis, it outputs a finished 
 
 \subsection{Performance measurements}
 
-To evaluate our current design's performance, we performed the following measurements:
+To evaluate our current design's performance, we performed the following measurements on the co-simulation(video-in and video-out in system verilog):
 \begin{itemize}
 \item Initial delay (Time after witch the first image starts to appear on the display) - 32.011ms
 \item Time required to write one block to the RAM (32 bytes) - 1150ns.
@@ -55,7 +55,7 @@ This includes waiting for the fifo to be read.
 
 \item Standalone write time is 430ns.
 
-\item Time requires to read one block from RAM - 1280ns
+\item Time required to read one block from RAM - 1280ns
 \item Standalone read time is 520ns
 
 \item Total time for 1 block - 1150+1280\=2430ns
