@@ -1,5 +1,6 @@
 TEX = $(wildcard *.tex)
-PDF = $(TEX:.tex=.pdf)
+
+AUX = $(TEX:.tex=.aux)
 
 FIGS = $(wildcard figs/*.pdf)
 
@@ -19,4 +20,4 @@ endif
 	@evince $(TARGET).pdf
 
 clean :
-	rm $(PDF)
+	rm $(TARGET).pdf $(TARGET).log $(AUX)
